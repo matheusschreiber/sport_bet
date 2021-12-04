@@ -1,0 +1,56 @@
+[
+  {
+    "group_fase": {
+      "group_A":{
+        "team1": {
+          "name": "team_name",
+          "points": 0,
+          "current_position": 1,
+          "old_position": 1
+        },
+        "team2": {
+          "name": "team_name",
+          "points": 0,
+          "current_position": 1,
+          "old_position": 1
+        }
+      },
+      "group_B":{
+        "teamID1": {
+          "points": 0,
+          "current_position": 1,
+          "old_position": 1
+        },
+        "teamID2": {
+          "points": 0,
+          "current_position": 1,
+          "old_position": 1
+        }
+      }
+    },
+    "final_fase": {
+      "match_1":{
+        "A": "team_name",
+        "B": "teamID2",
+        "score_A_first_leg": 1,
+        "score_B_first_leg": 1,
+        "score_A_second_leg": 1,
+        "score_B_second_leg": 1
+      },
+      "match_2":{
+        "A": "teamID1",
+        "B": "teamID2",
+        "score_A_first_leg": 1,
+        "score_B_first_leg": 1,
+        "score_A_second_leg": 1,
+        "score_B_second_leg": 1
+      },
+      "final":{
+        "A": "teamID1",
+        "B": "teamID2",
+        "score_A": 1,
+        "score_B": 1
+      }
+    }
+  }
+]
