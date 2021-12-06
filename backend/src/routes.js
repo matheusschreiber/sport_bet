@@ -5,9 +5,12 @@ const SeasonController = require('./Controllers/SeasonController');
 const TeamsController = require('./Controllers/TeamsController')
 
 
-router.post('/newteam', TeamsController.createTeam);
-router.post('/newseason', SeasonController.createSeason);
+router.post('/newseason', SeasonController.createSeasonFile);
+router.get('/matches', SeasonController.listGroupMatches);
+router.put('/updateMatchFile', SeasonController.updateMatchesSeason);
 
+router.post('/newteam', TeamsController.createTeam);
 router.put('/match', TeamsController.playMatch);
+
 
 module.exports = router;
