@@ -68,116 +68,178 @@ module.exports = {
     });
   },
 
+  async seasonFile(request, response) {
+    const { year } = request.body;
+    var file = fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8')
+    return response.json(JSON.parse(file))
+  },
+
   async updateMatchesSeason(request, response) {
-    const { year, fase, outcomes } = request.body;
-    
-    fs.readFile(`./src/database/seasons/${year}.json`, 'utf-8' , (err, data)=>{
-      if (err) {throw err}
-      var file = JSON.parse(data);
-      var groups;
-      if (fase==='group') {
-        groups = (file.group_fase)
-        Object.entries(outcomes).forEach((i)=>{
-          var group = i[0]
-          var results = i[1]
-          results.map((k)=>{
-            Object.entries(groups).forEach((g)=>{
-              const [gkey, gvalue] = g
-              if (gkey == group) {
-                Object.entries(gvalue.matches).forEach((m)=>{
-                  const [ mkey, mvalue ] = m;
-                  if (mkey == k[0]){
-                    mvalue.score_A = k[1]
-                    mvalue.score_B = k[2]
+    const { year, fase, outcomes={} } = request.body;
+    var file = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'));
+    var groups;
+    if (fase==='group') {
+      groups = (file.group_fase)
+      Object.entries(outcomes).forEach((i)=>{
+        var group = i[0]
+        var results = i[1]
+        results.map((k)=>{
+          Object.entries(groups).forEach((g)=>{
+            const [gkey, gvalue] = g
+            if (gkey == group) {
+              Object.entries(gvalue.matches).forEach((m)=>{
+                const [ mkey, mvalue ] = m;
+                if (mkey == k[0]){
+                  mvalue.score_A = k[1]
+                  mvalue.score_B = k[2]
 
-                    switch(mvalue.A){
-                      case gvalue.team_1.name:
-                        if (k[1]>k[2]) gvalue.team_1.points+=3;
-                        else if (k[1]==k[2]) gvalue.team_1.points+=1;
-                        break;
-                      case gvalue.team_2.name:
-                        if (k[1]>k[2]) gvalue.team_2.points+=3;
-                        else if (k[1]==k[2]) gvalue.team_2.points+=1;
-                        break;
-                      case gvalue.team_3.name:
-                        if (k[1]>k[2]) gvalue.team_3.points+=3;
-                        else if (k[1]==k[2]) gvalue.team_3.points+=1;
-                        break;
-                      case gvalue.team_4.name:
-                        if (k[1]>k[2]) gvalue.team_4.points+=3;
-                        else if (k[1]==k[2]) gvalue.team_4.points+=1;
-                        break;
-                    }
-
-                    switch(mvalue.B){
-                      case gvalue.team_1.name:
-                        if (k[1]<k[2]) gvalue.team_1.points+=3;
-                        else if (k[1]==k[2]) gvalue.team_1.points+=1;
-                        break;
-                      case gvalue.team_2.name:
-                        if (k[1]<k[2]) gvalue.team_2.points+=3;
-                        else if (k[1]==k[2]) gvalue.team_2.points+=1;
-                        break;
-                      case gvalue.team_3.name:
-                        if (k[1]<k[2]) gvalue.team_3.points+=3;
-                        else if (k[1]==k[2]) gvalue.team_3.points+=1;
-                        break;
-                      case gvalue.team_4.name:
-                        if (k[1]<k[2]) gvalue.team_4.points+=3;
-                        else if (k[1]==k[2]) gvalue.team_4.points+=1;
-                        break;
-                    }
+                  switch(mvalue.A){
+                    case gvalue.team_1.name:
+                      if (k[1]>k[2]) gvalue.team_1.points+=3;
+                      else if (k[1]==k[2]) gvalue.team_1.points+=1;
+                      break;
+                    case gvalue.team_2.name:
+                      if (k[1]>k[2]) gvalue.team_2.points+=3;
+                      else if (k[1]==k[2]) gvalue.team_2.points+=1;
+                      break;
+                    case gvalue.team_3.name:
+                      if (k[1]>k[2]) gvalue.team_3.points+=3;
+                      else if (k[1]==k[2]) gvalue.team_3.points+=1;
+                      break;
+                    case gvalue.team_4.name:
+                      if (k[1]>k[2]) gvalue.team_4.points+=3;
+                      else if (k[1]==k[2]) gvalue.team_4.points+=1;
+                      break;
                   }
-                })
-              }
-            })
-          })
-        })
 
-        Object.entries(groups).forEach((i)=>{
-          const [ key, value ] = i
-          var teams = [
-            [value.team_1.name, value.team_1.points],
-            [value.team_2.name, value.team_2.points],
-            [value.team_3.name, value.team_3.points],
-            [value.team_4.name, value.team_4.points]
-          ]
-
-          teams.sort(function(a, b){
-            if (a[1]>b[1]) return -1;
-            else if (a[1]<b[1]) return 1;
-            return 0;
-          })
-
-          for(i=0;i<4;i++){
-            switch (teams[i][0]) {
-              case value.team_1.name:
-                value.team_1.current_position = i+1
-                break;
-              case value.team_2.name:
-                value.team_2.current_position = i+1
-                break;
-              case value.team_3.name:
-                value.team_3.current_position = i+1
-                break;
-              case value.team_4.name:
-                value.team_4.current_position = i+1
-                break;
+                  switch(mvalue.B){
+                    case gvalue.team_1.name:
+                      if (k[1]<k[2]) gvalue.team_1.points+=3;
+                      else if (k[1]==k[2]) gvalue.team_1.points+=1;
+                      break;
+                    case gvalue.team_2.name:
+                      if (k[1]<k[2]) gvalue.team_2.points+=3;
+                      else if (k[1]==k[2]) gvalue.team_2.points+=1;
+                      break;
+                    case gvalue.team_3.name:
+                      if (k[1]<k[2]) gvalue.team_3.points+=3;
+                      else if (k[1]==k[2]) gvalue.team_3.points+=1;
+                      break;
+                    case gvalue.team_4.name:
+                      if (k[1]<k[2]) gvalue.team_4.points+=3;
+                      else if (k[1]==k[2]) gvalue.team_4.points+=1;
+                      break;
+                  }
+                }
+              })
             }
-          }
+          })
         })
-        
-        file.group_fase = groups      
-        fs.writeFile(`./src/database/seasons/${year}.json`, JSON.stringify(file), 'utf8', (err)=>{
-          if (err) throw Error(err)
-          return response.json(file);
-        });      
+      })
 
-      } else if (fase=="final"){
-        
-      }
+      Object.entries(groups).forEach((i)=>{
+        const [ key, value ] = i
+        var teams = [
+          [value.team_1.name, value.team_1.points],
+          [value.team_2.name, value.team_2.points],
+          [value.team_3.name, value.team_3.points],
+          [value.team_4.name, value.team_4.points]
+        ]
+
+        teams.sort(function(a, b){
+          if (a[1]>b[1]) return -1;
+          else if (a[1]<b[1]) return 1;
+          return 0;
+        })
+
+        for(i=0;i<4;i++){
+          switch (teams[i][0]) {
+            case value.team_1.name:
+              value.team_1.old_position = value.team_1.current_position
+              value.team_1.current_position = i+1
+              break;
+            case value.team_2.name:
+              value.team_2.old_position = value.team_2.current_position
+              value.team_2.current_position = i+1
+              break;
+            case value.team_3.name:
+              value.team_3.old_position = value.team_3.current_position
+              value.team_3.current_position = i+1
+              break;
+            case value.team_4.name:
+              value.team_4.old_position = value.team_4.current_position
+              value.team_4.current_position = i+1
+              break;
+          }
+        }
+      })
       
-    })
+      file.group_fase = groups      
+      fs.writeFile(`./src/database/seasons/${year}.json`, JSON.stringify(file), 'utf8', (err)=>{
+        if (err) throw Error(err)
+        return response.json(file);
+      });      
+
+    } else if (fase=="round of 8"){
+      var matches = Object.entries(file.final_fase.round_of_8)
+      outcomes.map((i)=>{
+        matches[i[0]-1][1].score_A_first_leg = i[1],
+        matches[i[0]-1][1].score_B_first_leg = i[2],
+        matches[i[0]-1][1].score_A_second_leg = i[3],
+        matches[i[0]-1][1].score_B_second_leg = i[4]
+      })
+      
+      file.final_fase.round_of_8 = {
+       match_1: matches[0][1],
+       match_2: matches[1][1],
+       match_3: matches[2][1],
+       match_4: matches[3][1],
+       match_5: matches[4][1],
+       match_6: matches[5][1],
+       match_7: matches[6][1],
+       match_8: matches[7][1],
+      }
+      fs.writeFileSync(`./src/database/seasons/${year}.json`, JSON.stringify(file),'utf-8');
+      return response.json(file.final_fase.round_of_8)
+    } else if (fase=="quarter finals"){
+      var matches = Object.entries(file.final_fase.quarter_finals)
+      outcomes.map((i)=>{
+        matches[i[0]-1][1].score_A_first_leg = i[1],
+        matches[i[0]-1][1].score_B_first_leg = i[2],
+        matches[i[0]-1][1].score_A_second_leg = i[3],
+        matches[i[0]-1][1].score_B_second_leg = i[4]
+      })
+      
+      file.final_fase.quarter_finals = {
+       match_1: matches[0][1],
+       match_2: matches[1][1],
+       match_3: matches[2][1],
+       match_4: matches[3][1] 
+      }
+      fs.writeFileSync(`./src/database/seasons/${year}.json`, JSON.stringify(file),'utf-8');
+      return response.json(file.final_fase.quarter_finals)
+    } else if (fase=="semi finals"){
+      var matches = Object.entries(file.final_fase.semi_finals)
+      outcomes.map((i)=>{
+        matches[i[0]-1][1].score_A_first_leg = i[1],
+        matches[i[0]-1][1].score_B_first_leg = i[2],
+        matches[i[0]-1][1].score_A_second_leg = i[3],
+        matches[i[0]-1][1].score_B_second_leg = i[4]
+      })
+      
+      file.final_fase.semi_finals = {
+       match_1: matches[0][1],
+       match_2: matches[1][1]
+      }
+      fs.writeFileSync(`./src/database/seasons/${year}.json`, JSON.stringify(file),'utf-8');
+      return response.json(file.final_fase.semi_finals)
+    } else if (fase=="final"){  
+      
+      file.final_fase.final.match.score_A = outcomes[0],
+      file.final_fase.final.match.score_B = outcomes[1]
+      fs.writeFileSync(`./src/database/seasons/${year}.json`, JSON.stringify(file),'utf-8');
+      return response.json(file.final_fase.final)
+    }
   },
 
   async listGroupMatches(request, response){
@@ -197,5 +259,168 @@ module.exports = {
     })
   },
 
+  async setupRoundOf8(request, response) {
+    const { year } = request.body;
+    var seasonFile = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'))   
+    if (seasonFile && Object.keys(seasonFile.final_fase).length==0){
+      var classified = [];
+      Object.entries(seasonFile.group_fase).forEach((i)=>{
+        const [ key, value ] = i;
+        Object.entries(value).forEach((j)=>{
+          const [ jkey, jvalue ] = j;
+          if (jvalue.current_position==1 || jvalue.current_position==2) classified.push(jvalue.name);          
+        })
+      })
+  
+      const potA = classified.slice(0, 8)
+      const potB = classified.slice(8, 16)
+     
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+      }
+
+      shuffleArray(potA)
+      shuffleArray(potB)
+
+      var round_of_8 = {}
+      for(i=0, j=1;i<16;i+=2, j++){
+        if (i<8){
+          var match = {
+            "A": potA[i],
+            "B": potA[i+1],
+            "score_A_first_leg": 0,
+            "score_B_first_leg": 0,
+            "score_A_second_leg": 0,
+            "score_B_second_leg": 0
+          }
+        } else {
+          var match = {
+            "A": potB[i-8],
+            "B": potB[i-7],
+            "score_A_first_leg": 0,
+            "score_B_first_leg": 0,
+            "score_A_second_leg": 0,
+            "score_B_second_leg": 0
+          }
+        }
+        round_of_8[`match_${j}`] = match
+      }
+      
+      seasonFile.final_fase = {
+        teams_pot_A: potA,
+        teams_pot_B: potB,
+        round_of_8
+      }
+
+      fs.writeFile(`./src/database/seasons/${year}.json`, JSON.stringify(seasonFile), 'utf-8', (err)=>{
+        if (err) throw Error("Unable to write in season file at round of 8")
+        return response.json(seasonFile.final_fase.round_of_8)
+      })
+    } else if (Object.keys(seasonFile.final_fase).length!=0) {
+      throw Error("Trying to create round of 8 data which alerady exists")
+    } else throw Error("Season File corrupted or inaccessible");
+  },
+
+  async setupQuarter(request, response){
+    const { year } = request.body;
+    var file = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'));
+    if (file && Object.keys(file.final_fase).length==3) {
+      var classified = []
+      Object.entries(file.final_fase.round_of_8).forEach((i)=>{
+        const [ key, value ] = i
+        if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) classified.push(value.A);
+        else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) classified.push(value.B);
+        else classified.push("UNDEFINED BY DUE")
+      })
+  
+      var quarter_finals = {}
+      for(i=0,j=1;i<8;i+=2, j++){
+        var match = {
+          "A": classified[i],
+          "B": classified[i+1],
+          "score_A_first_leg": 0,
+          "score_B_first_leg": 0,
+          "score_A_second_leg": 0,
+          "score_B_second_leg": 0
+        }
+        quarter_finals[`match_${j}`] = match
+      }
+  
+      file.final_fase['quarter_finals'] = quarter_finals;
+      fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
+        if (err) throw Error("Unable to write in season file at quarter finals")
+        response.json(file.final_fase.round_of_8)
+      });
+    } else if (Object.keys(file.final_fase).length!=3) {
+      throw Error("Trying to create quarter finals data which alerady exists")
+    } else throw Error("Season File corrupted or inaccessible");
+  },
+
+  async setupSemis(request, response) {
+    const { year } = request.body;
+    var file = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'));
+    if (file && Object.keys(file.final_fase).length==4) {
+      var classified = []
+      Object.entries(file.final_fase.quarter_finals).forEach((i)=>{
+        const [ key, value ] = i
+        if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) classified.push(value.A);
+        else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) classified.push(value.B);
+        else classified.push("UNDEFINED BY DUE")
+      })
+  
+      var semi_finals = {}
+      for(i=0,j=1;i<4;i+=2, j++){
+        var match = {
+          "A": classified[i],
+          "B": classified[i+1],
+          "score_A_first_leg": 0,
+          "score_B_first_leg": 0,
+          "score_A_second_leg": 0,
+          "score_B_second_leg": 0
+        }
+        semi_finals[`match_${j}`] = match
+      }
+  
+      file.final_fase['semi_finals'] = semi_finals;
+      fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
+        if (err) throw Error("Unable to write in season file at semi finals")
+        response.json(file.final_fase.semi_finals)
+      });
+    } else if (Object.keys(file.final_fase).length!=4) {
+      throw Error("Trying to create semi finals data which alerady exists")
+    } else throw Error("Season File corrupted or inaccessible");
+  },
+
+  async setupFinal(request, response){
+    const { year } = request.body;
+    var file = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'));
+    if (file && Object.keys(file.final_fase).length==5) {
+      var classified = []
+      Object.entries(file.final_fase.semi_finals).forEach((i)=>{
+        const [ key, value ] = i
+        if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) classified.push(value.A);
+        else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) classified.push(value.B);
+        else classified.push("UNDEFINED BY DUE")
+      }) 
+      file.final_fase['final'] = {
+        match: {
+          "A": classified[0],
+          "B": classified[1],
+          "score_A": 0,
+          "score_B": 0,
+        }
+      }
+      fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
+        if (err) throw Error("Unable to write in season file at finals")
+        response.json(file.final_fase.final)
+      });
+    } else if (Object.keys(file.final_fase).length!=5) {
+      throw Error("Trying to create finals data which alerady exists")
+    } else throw Error("Season File corrupted or inaccessible");
+  },
 
 }
+

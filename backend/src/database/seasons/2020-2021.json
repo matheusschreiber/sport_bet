@@ -29,21 +29,58 @@
       }
     },
     "final_fase": {
-      "match_1":{
-        "A": "team_name",
-        "B": "teamID2",
-        "score_A_first_leg": 1,
-        "score_B_first_leg": 1,
-        "score_A_second_leg": 1,
-        "score_B_second_leg": 1
+      "teams_pot_A": [
+        "Paris Saint Germain",
+        "FC Barcelona",
+        "Bayern Munich",
+        "Chelsea",
+        "Manchester United"
+      ],
+      "teams_pot_B":[
+        "tttt",
+        "ttttt"
+      ],
+      "round_of_16":{
+        "match_1":{
+          "A": "team_name",
+          "B": "teamID2",
+          "score_A_first_leg": 1,
+          "score_B_first_leg": 1,
+          "score_A_second_leg": 1,
+          "score_B_second_leg": 1
+        },
+        "match_2":{
+          "A": "teamID1",
+          "B": "teamID2",
+          "score_A_first_leg": 1,
+          "score_B_first_leg": 1,
+          "score_A_second_leg": 1,
+          "score_B_second_leg": 1
+        }
       },
-      "match_2":{
-        "A": "teamID1",
-        "B": "teamID2",
-        "score_A_first_leg": 1,
-        "score_B_first_leg": 1,
-        "score_A_second_leg": 1,
-        "score_B_second_leg": 1
+      "round_of_8":{
+        "match_2":{
+          "A": "teamID1",
+          "B": "teamID2",
+          "score_A_first_leg": 1,
+          "score_B_first_leg": 1,
+          "score_A_second_leg": 1,
+          "score_B_second_leg": 1
+        },
+        "match_1":{
+          "A": "teamID1",
+          "B": "teamID2",
+          "score_A_first_leg": 1,
+          "score_B_first_leg": 1,
+          "score_A_second_leg": 1,
+          "score_B_second_leg": 1
+        }
+      },
+      "quarter_finals":{
+
+      },
+      "semi_finals":{
+
       },
       "final":{
         "A": "teamID1",
