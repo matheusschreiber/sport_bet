@@ -1,7 +1,9 @@
 const express = require('express');
+require('express-async-errors');
+//these two needs to be in this order!!!!!
+
 const cors = require('cors');
 const router = require('./routes');
-require('express-async-errors')
 
 const app = express();
 app.use(express.json());

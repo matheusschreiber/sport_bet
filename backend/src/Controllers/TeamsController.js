@@ -123,5 +123,40 @@ module.exports = {
         fans_added: fan_quota
       }
     })
+  },  
+
+  async setBiggestOpponent(request, response){
+    const { team, biggest_opponent, goals } = request.body;
+    await connection('teams').where('name', team)
+      .update({'biggest_opponent': biggest_opponent, 'biggest_opponent_score': goals})
+    
+    return response.json({message: "Successfully added"})      
   },
+
+  async getBiggestOpponent(request, response) {
+    const { team } = request.params;
+    const [{biggest_opponent, biggest_opponent_score}] = await connection('teams').where('name', team)
+      .select(['biggest_opponent', 'biggest_opponent_score'])
+
+    return response.json({biggest_opponent, biggest_opponent_score})
+  },
+
+  async setWeakestOpponent(request, response){
+    const { team, least_opponent, goals } = request.body;
+    await connection('teams').where('name', team)
+      .update({'least_opponent': least_opponent, 'least_opponent_score': goals})
+    
+    return response.json({message: "Successfully added"})      
+  },
+
+  async getWeakestOpponent(request, response) {
+    const { team } = request.params;
+    const [{least_opponent, least_opponent_score}] = await connection('teams').where('name', team)
+      .select(['least_opponent', 'least_opponent_score'])
+
+    return response.json({least_opponent, least_opponent_score})
+  },
+
+
+
 }

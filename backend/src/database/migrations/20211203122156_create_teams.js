@@ -16,6 +16,10 @@ exports.up = function(knex) {
     table.integer('vices').notNullable();
     table.string('jersey').notNullable();
     table.string('country').notNullable();
+    table.string('biggest_opponent');
+    table.string('biggest_opponent_score');
+    table.string('least_opponent');
+    table.string('least_opponent_score');
   })
 };
 

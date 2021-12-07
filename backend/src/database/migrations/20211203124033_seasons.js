@@ -1,7 +1,7 @@
 
 exports.up = function(knex) {
   return knex.schema.createTable('seasons', function(table){
-    table.string('year').primary().notNullable();
+    table.string('id').primary().notNullable();
     table.string('team_name').notNullable();
     table.string('placement').notNullable();
     table.float('season_score').notNullable();

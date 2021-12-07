@@ -238,7 +238,16 @@ module.exports = {
       file.final_fase.final.match.score_A = outcomes[0],
       file.final_fase.final.match.score_B = outcomes[1]
       fs.writeFileSync(`./src/database/seasons/${year}.json`, JSON.stringify(file),'utf-8');
-      return response.json(file.final_fase.final)
+      
+      var winner = outcomes[0]>outcomes[1] ? file.final_fase.final.match.A : file.final_fase.final.match.B
+      var loser = outcomes[0]<outcomes[1] ? file.final_fase.final.match.A : file.final_fase.final.match.B
+      
+
+      return response.json({
+        final: file.final_fase.final,
+        winner,
+        loser
+      })
     }
   },
 
@@ -264,11 +273,13 @@ module.exports = {
     var seasonFile = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'))   
     if (seasonFile && Object.keys(seasonFile.final_fase).length==0){
       var classified = [];
+      var disclassified = [];
       Object.entries(seasonFile.group_fase).forEach((i)=>{
         const [ key, value ] = i;
         Object.entries(value).forEach((j)=>{
           const [ jkey, jvalue ] = j;
           if (jvalue.current_position==1 || jvalue.current_position==2) classified.push(jvalue.name);          
+          else if (jvalue.name) disclassified.push(jvalue.name);
         })
       })
   
@@ -317,7 +328,10 @@ module.exports = {
 
       fs.writeFile(`./src/database/seasons/${year}.json`, JSON.stringify(seasonFile), 'utf-8', (err)=>{
         if (err) throw Error("Unable to write in season file at round of 8")
-        return response.json(seasonFile.final_fase.round_of_8)
+        return response.json({
+          round_of_8:seasonFile.final_fase.round_of_8,
+          disclassified,
+        })
       })
     } else if (Object.keys(seasonFile.final_fase).length!=0) {
       throw Error("Trying to create round of 8 data which alerady exists")
@@ -329,10 +343,16 @@ module.exports = {
     var file = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'));
     if (file && Object.keys(file.final_fase).length==3) {
       var classified = []
+      var disclassified = []
       Object.entries(file.final_fase.round_of_8).forEach((i)=>{
         const [ key, value ] = i
-        if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) classified.push(value.A);
-        else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) classified.push(value.B);
+        if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) {
+          classified.push(value.A);
+          disclassified.push(value.B);
+        }else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) {
+          classified.push(value.B);
+          disclassified.push(value.A);
+        }
         else classified.push("UNDEFINED BY DUE")
       })
   
@@ -352,7 +372,10 @@ module.exports = {
       file.final_fase['quarter_finals'] = quarter_finals;
       fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
         if (err) throw Error("Unable to write in season file at quarter finals")
-        response.json(file.final_fase.round_of_8)
+        response.json({
+          quarter_finals:file.final_fase.quarter_finals,
+          disclassified,
+        })
       });
     } else if (Object.keys(file.final_fase).length!=3) {
       throw Error("Trying to create quarter finals data which alerady exists")
@@ -364,10 +387,17 @@ module.exports = {
     var file = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'));
     if (file && Object.keys(file.final_fase).length==4) {
       var classified = []
+      var disclassified = []
       Object.entries(file.final_fase.quarter_finals).forEach((i)=>{
         const [ key, value ] = i
-        if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) classified.push(value.A);
-        else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) classified.push(value.B);
+        if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) {
+          classified.push(value.A);
+          disclassified.push(value.B);
+        }
+        else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) {
+          classified.push(value.B);
+          disclassified.push(value.A);
+        }
         else classified.push("UNDEFINED BY DUE")
       })
   
@@ -387,7 +417,10 @@ module.exports = {
       file.final_fase['semi_finals'] = semi_finals;
       fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
         if (err) throw Error("Unable to write in season file at semi finals")
-        response.json(file.final_fase.semi_finals)
+        response.json({
+          semi_finals: file.final_fase.semi_finals,
+          disclassified
+        })
       });
     } else if (Object.keys(file.final_fase).length!=4) {
       throw Error("Trying to create semi finals data which alerady exists")
@@ -399,10 +432,17 @@ module.exports = {
     var file = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'));
     if (file && Object.keys(file.final_fase).length==5) {
       var classified = []
+      var disclassified = []
       Object.entries(file.final_fase.semi_finals).forEach((i)=>{
         const [ key, value ] = i
-        if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) classified.push(value.A);
-        else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) classified.push(value.B);
+        if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) {
+          classified.push(value.A);
+          disclassified.push(value.B);
+        }
+        else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) {
+          classified.push(value.B);
+          disclassified.push(value.A);
+        }
         else classified.push("UNDEFINED BY DUE")
       }) 
       file.final_fase['final'] = {
@@ -415,12 +455,85 @@ module.exports = {
       }
       fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
         if (err) throw Error("Unable to write in season file at finals")
-        response.json(file.final_fase.final)
+        response.json({
+          final: file.final_fase.final,
+          disclassified
+        })
       });
     } else if (Object.keys(file.final_fase).length!=5) {
       throw Error("Trying to create finals data which alerady exists")
     } else throw Error("Season File corrupted or inaccessible");
   },
+
+  async registerSeason(request, response){
+    const { team_name, year, placement } = request.body;
+
+    const [{
+      biggest_opponent,
+      least_opponent,
+      fans,
+      wins,
+      losses,
+      dues,
+      games,
+      goalsfor,
+      goalsagainst
+    }] = await connection('teams').where('name', team_name).select('*');
+        
+    const id = `${year} ${team_name}`;
+
+    var p = 0;
+    switch(placement){
+      case "GROUPS":
+        p = 1;
+        break;
+      case "ROUNDOF8":
+        p = 6;
+        break;
+      case "QUARTERS":
+        p = 7;
+        break;
+      case "SEMIS":
+        p = 8;
+        break;
+      case "FINALIST":
+        const [{vices}] = await connection('teams').where('name', team_name).select('vices')
+        await connection('teams').where('name', team_name).update('vices', vices+1)  
+        p = 9;
+        break;
+      case "TITLE":
+        const [{titles}] = await connection('teams').where('name', team_name).select('titles')
+        await connection('teams').where('name', team_name).update('titles', titles+1)
+        p = 10;
+        break;
+      default:
+        throw Error("Wrong placement informed");
+    }
+
+    let season_score;
+    if (!games) season_score = 0;
+    else season_score = (wins-dues/2-losses)*(4/games)+(p*(5/games))+(goalsfor-goalsagainst)*0.01
+    
+    const data = {
+      id,
+      team_name,
+      placement,
+      season_score,
+      wins,
+      losses,
+      dues,
+      games,
+      goalsfor,
+      goalsagainst,
+      biggest_opponent,
+      least_opponent,
+      fans,
+    }
+
+    await connection('seasons').insert(data)
+    return response.json(data)
+  },
+
 
 }
 
