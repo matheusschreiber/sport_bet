@@ -1,0 +1,26 @@
+.start_container .main_container img{
+  width: 100%;
+  margin-top: 150px;
+}
+
+.start_container .text_container {
+  color: white;
+  text-align: center;
+  width: 50%;
+  margin: 100px auto;
+  font-size: 16pt;
+}
+
+.start_container .text_container h1{
+  margin-bottom: 50px;
+}
+
+.start_container .text_container p {
+  line-height: 17pt;
+}
+
+.button_container {
+  text-align: center;
+  color: white;
+  font-size: 15pt;
+}
