@@ -1,9 +1,9 @@
 import React from "react";
 
-import ChampionsBall from '../../../assets/ChampionsBall.png'
+import ChampionsBall from '../../assets/ChampionsBall.png'
 
 const start_header = {
-  backgroundColor: "var(--vermelho)",
+  backgroundColor: "var(--vermelho_claro)",
   height: "280px",
   width: "90%",
   marginLeft: "30px",

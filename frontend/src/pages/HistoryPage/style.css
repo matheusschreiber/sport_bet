@@ -1,0 +1,75 @@
+.history_container{
+  margin-top: 100px;
+  text-align: center;
+  color: white;
+}
+
+.history_back {
+  color: var(--vermelho_claro);
+  display: flex;
+  width: 100%;
+  text-align: right;
+  justify-content: right;
+  padding-right: 100px;
+}
+
+.history_back h2 {
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.history_container table {
+  margin: 50px auto;
+  width: 70%
+}
+
+.history_container table th {
+  height: 40px;
+}
+
+.history_container table tr:hover {
+  color: var(--vermelho_claro_plus);
+}
+
+.hall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  margin: 10px auto;
+}
+
+.hall section {
+  display: flex;
+  justify-content: space-between;  
+}
+
+.hall_card{
+  width: 400px;
+  text-align: center;
+  margin: 50px 0;
+}
+
+.hall_card h1 {
+  color: white;
+}
+
+.hall_card .HIGHLIGHT {
+  width: 200px;
+}
+
+.hall_card .HIGHLIGHT h1 {
+  color: var(--azul_escuro);
+  font-size: 16pt;
+  font-weight: 400;
+}
+
+.hall_card img {
+  width: 200px;
+  margin: 10px auto;
+  margin-top: 20px;
+}
+
+.hall_card p {
+  color: white;
+}

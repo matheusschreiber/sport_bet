@@ -4,8 +4,8 @@ import Welcome from '../../assets/Welcome.png'
 
 import './style.css'
 
-import Header from './Components/header'
-import Footer from './Components/footer'
+import Header from '../Components/header'
+import Footer from '../Components/footer'
 
 export default function StartPage(){
   return(
