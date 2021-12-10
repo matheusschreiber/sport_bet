@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom'
 
 import Welcome from '../../assets/Welcome.png'
 
@@ -8,6 +9,9 @@ import Header from '../Components/header'
 import Footer from '../Components/footer'
 
 export default function StartPage(){
+  const navigate = useNavigate();
+
+  
   return(
     <div className="start_container">
       <Header />
@@ -20,7 +24,7 @@ export default function StartPage(){
           <p>HAVE FUN BETTING!</p>
         </div>
         <div className="button_container">
-          <div className="button">START SEASON</div>
+          <div className="button" onClick={() => navigate('/groups')}>START SEASON</div>
           <p>CURRENT SEASON: 2020-2021</p>
         </div>
       </div>

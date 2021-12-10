@@ -22,6 +22,8 @@ router.put('/wkOpponent', TeamsController.setWeakestOpponent);
 router.get('/wkOpponent/:team', TeamsController.getWeakestOpponent);
 router.post('/newteam', TeamsController.createTeam);
 router.put('/match', TeamsController.playMatch);
+router.get('/teams', TeamsController.getTeams);
+router.get('/allteams', TeamsController.getAllTeams)
 
 router.post('/rgmatch', MatchesController.registerMatch);
 router.get('/getGoalsOpponent', MatchesController.getScoresbyOpponent);

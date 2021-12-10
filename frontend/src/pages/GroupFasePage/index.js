@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { FiChevronUp, FiChevronDown, FiMinus } from 'react-icons/fi'
+import React, { useState, useEffect } from "react";
+import { FiChevronUp, FiChevronDown, FiMinus, FiAward } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
 import './style.css'
 
 import Header from "../Components/header";
@@ -7,6 +8,11 @@ import Footer from "../Components/footer";
 
 
 export default function GroupFasePage(){
+  useEffect(()=>{
+    window.scroll(0,0)
+  }, [])
+  
+  const nav = useNavigate()
   const [ groups, setGroups ] = useState(['A','B','C','D','E','F','G','H']);
 
 
@@ -14,6 +20,10 @@ export default function GroupFasePage(){
     <div>
       <Header />
       <div className="groups_container">
+        <div className="history_linker" onClick={()=>nav('/history')}>
+          <h2>TEAMS HISTORY</h2>
+          <FiAward size={40}/>
+        </div>
         <div className="title_container">
           <h1>CLASSIFICATIONS</h1>  
           <h2>SEASON 2020-2021</h2>

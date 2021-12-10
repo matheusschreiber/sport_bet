@@ -1,0 +1,196 @@
+[
+  {
+    "Paris Saint Germain":{
+      "acronym":"PSG",
+      "fans":53.9,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/d/d2/Logo_PSG.png",
+      "country": "France"
+    },
+    "Manchester City":{
+      "acronym":"MCI",
+      "fans":28,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/0/02/Manchester_City_Football_Club.png",
+      "country": "England"
+    },
+    "RB Leipzig":{
+      "acronym":"RBL",
+      "fans":1.2,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/6/65/RB_Leipzig_2020_Logo.png",
+      "country":"Germany"
+    },
+    "Club Brugge":{
+      "acronym":"BRU",
+      "fans":0.2,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/c/cc/Club_Brugge_KV_Logo.png",
+      "country":"Belgium"
+    },
+    "Liverpool":{
+      "acronym": "LIV",
+      "fans":34,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/thumb/0/0c/Liverpool_FC.svg/1200px-Liverpool_FC.svg.png",
+      "country":"England"
+    },
+    "Porto":{
+      "acronym":"POR",
+      "fans":1.9,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/c/c5/F.C._Porto_logo.png",
+      "country":"Portugal"
+    },
+    "Milan":{
+      "acronym":"MIL",
+      "fans":11.2,
+      "jersey":"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Logo_of_AC_Milan.svg/110px-Logo_of_AC_Milan.svg.png",
+      "country":"Italy"
+    },
+    "Atlético Madrid":{
+      "acronym":"ATM",
+      "fans":13,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/1/19/AtleticoMadrid2017.png",
+      "country":"Spain"
+    },
+    "Ajax":{
+      "acronym":"AJA",
+      "fans":6.3,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/thumb/b/b8/AFC_Ajax_Amsterdam.svg/1200px-AFC_Ajax_Amsterdam.svg.png",
+      "country":"Holland"
+    },
+    "Sporting CP":{
+      "acronym":"SPO",
+      "fans":1,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/3/3e/Sporting_Clube_de_Portugal.png",
+      "country":"Portugal"
+    },    
+    "Borussia Dortmund":{
+      "acronym":"BOR",
+      "fans":14,
+      "jersey":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Borussia_Dortmund_logo.svg/1200px-Borussia_Dortmund_logo.svg.png",
+      "country":"Germany"
+    },
+    "Besiktas":{
+      "acronym":"BSK",
+      "fans":4.6,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/3/3d/Besiktas_JK_logo.png",
+      "country":"Turkey"
+    },
+    "Real Madrid":{
+      "acronym":"REA",
+      "fans":107,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/9/98/Real_Madrid.png",
+      "country":"Spain"
+    },
+    "Internazionale":{
+      "acronym":"IMA",
+      "fans":7.5,
+      "jersey":"https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/FC_Internazionale_Milano_2021.svg/1024px-FC_Internazionale_Milano_2021.svg.png",
+      "country":"Italy"
+    },
+    "Sheriff Tiraspol":{
+      "acronym":"SHF",
+      "fans":1,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/b/be/FC_Sheriff.png",
+      "country":"Moldavia"
+    },
+    "Shakhtar Donetsk":{
+      "acronym":"SHA",
+      "fans":1,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/2/20/FC_Shakhtar_Donetsk.png",
+      "country":"Ucraine"
+    },
+    "Bayern Munich":{
+      "acronym":"BAY",
+      "fans":29,
+      "jersey":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg/1200px-FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg.png",
+      "country":"Germany"
+    },
+    "FC Barcelona":{
+      "acronym":"BAR",
+      "fans":103,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/thumb/4/43/FCBarcelona.svg/1200px-FCBarcelona.svg.png",
+      "country":"Spain"
+    },
+    "Benfica":{
+      "acronym":"BEN",
+      "fans":2,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/f/f0/500px-SL_Benfica_logo_svg.png",
+      "country":"Portugal"
+    },
+    "Dynamo Kyiv":{
+      "acronym":"KYV",
+      "fans":1,
+      "jersey":"https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/FC_Dynamo_Kyiv_logo.svg/120px-FC_Dynamo_Kyiv_logo.svg.png",
+      "country":"Ucraine"
+    },
+    "Manchester United":{
+      "acronym":"MUN",
+      "fans":52,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/b/b6/Manchester_United_FC_logo.png",
+      "country":"England"
+    },
+    "Villarreal":{
+      "acronym":"VIL",
+      "fans":1,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/thumb/7/70/Villarreal_CF_logo.svg/1200px-Villarreal_CF_logo.svg.png",
+      "country":"Spain"
+    },
+    "Atalanta":{
+      "acronym":"ATA",
+      "fans":0.6,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/f/f6/385px-AtalantaBC.svg.png",
+      "country":"Italy"
+    },
+    "Young Boys":{
+      "acronym":"YB",
+      "fans":1,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/b/bc/BSC_Young_Boys_logo.png",
+      "country":"Suiça"
+    },
+    "Lille":{
+      "acronym":"LOSC",
+      "fans": 1,
+      "jersey":"https://upload.wikimedia.org/wikipedia/en/thumb/3/3f/Lille_OSC_2018_logo.svg/1200px-Lille_OSC_2018_logo.svg.png",
+      "country":"France"
+    },
+    "Red Bull Salzburg":{
+      "acronym":"SALZ",
+      "fans": 2,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/2/24/Red_Bull_Salzburg.png",
+      "country":"Germany"
+    },
+    "Sevilla":{
+      "acronym":"SEV",
+      "fans":1.4,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/c/cd/Sevilla_cf.png",
+      "country":"Spain"
+    },
+    "Vfl Wolfsburg":{
+      "acronym":"WOB",
+      "fans":0.6,
+      "jersey":"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Logo-VfL-Wolfsburg.svg/1200px-Logo-VfL-Wolfsburg.svg.png",
+      "country":"Germany"
+    },
+    "Chelsea":{
+      "acronym":"CHE",
+      "fans":31,
+      "jersey":"https://upload.wikimedia.org/wikipedia/pt/thumb/c/cc/Chelsea_FC.svg/1200px-Chelsea_FC.svg.png",
+      "country":"England"
+    },
+    "Juventus":{
+      "acronym":"JUV",
+      "fans":51,
+      "jersey":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Juventus_FC_2017_logo.svg/1031px-Juventus_FC_2017_logo.svg.png",
+      "country":"Italy"
+    },
+    "Zenit Saint Petersburg":{
+      "acronym":"ZEN",
+      "fans":1,
+      "jersey":"https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/FC_Zenit_1_star_2015_logo.svg/1200px-FC_Zenit_1_star_2015_logo.svg.png",
+      "country":"Russia"
+    },
+    "Malmo FF":{
+      "acronym":"MAL",
+      "fans":1,
+      "jersey":"https://upload.wikimedia.org/wikipedia/en/thumb/e/ef/Malmo_FF_logo.svg/1200px-Malmo_FF_logo.svg.png",
+      "country":"Sweden"
+    }
+  }
+]

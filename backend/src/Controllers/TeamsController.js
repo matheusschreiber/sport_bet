@@ -1,4 +1,5 @@
 const connection = require('../database/connection');
+const fs = require('fs')
 
 module.exports = {
   async createTeam(request, response){
@@ -157,6 +158,14 @@ module.exports = {
     return response.json({least_opponent, least_opponent_score})
   },
 
+  async getTeams(request, response){
+    const data = await connection('teams').select('*')
+    return response.json(data)
+  },
 
+  async getAllTeams(request, response){
+    const file = JSON.parse(fs.readFileSync('./src/database/seasons/teams.json', 'utf-8'))
+    return response.json(file)
+  }
 
 }

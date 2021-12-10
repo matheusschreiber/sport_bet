@@ -102,14 +102,14 @@ export default function FinalFasePage() {
                 <div className="semi_text_container" style={{textAlign: 'right'}}>
                   <h2>PARIS SAINT GERMAIN</h2>
                 </div>
-                <img src={linkLogo1} />
+                <img src={linkLogo1} alt="" />
                 <div className="scores">
                   <h2>FIRST LEG (FRANCE)</h2>
                   <h1>0 - 0</h1>
                   <h2>SECOND LEG (HOLLAND)</h2>
                   <h1>0 - 0</h1>
                 </div>
-                <img src={linkLogo2}/>
+                <img src={linkLogo2} alt=""/>
                 <div className="semi_text_container" style={{textAlign: 'left'}}>
                   <h2>AJAX</h2>
                 </div>
@@ -119,20 +119,20 @@ export default function FinalFasePage() {
               <div className="semi_text_container">
                 <h2>LIVERPOOL</h2>
               </div>
-              <img src={linkLogo3} />
+              <img src={linkLogo3} alt=""/>
               <div className="scores">
                 <h2>FIRST LEG (ENGLAND)</h2>
                 <h1>0 - 0</h1>
                 <h2>SECOND LEG (SPAIN)</h2>
                 <h1>0 - 0</h1>
               </div>
-              <img src={linkLogo4}/>
+              <img src={linkLogo4} alt=""/>
               <div className="semi_text_container" style={{textAlign: 'left'}}>
                 <h2>ATLETICO MADRID</h2>
               </div>
             </div>
           </div>
-          <div style={fase=='GRAND FINAL'?{}:{display:'none'}}>
+          <div style={fase==='GRAND FINAL'?{}:{display:'none'}}>
             <div className="final">
               <div className="final_team">
                 <img src={linkLogo1} alt={"Jersey"} />  
