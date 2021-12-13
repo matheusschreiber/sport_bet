@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from '../../services/api'
 
+import { Dots } from "react-activity";
+import "react-activity/dist/Dots.css";
+
 import './style.css'
 import { FiArrowRight, FiRotateCw } from 'react-icons/fi'
 
@@ -16,13 +19,15 @@ export default function Historypage(){
   
   const nav = useNavigate();
   const [ teams, setTeams ] = useState([]);
-  const [ update, setUpdate ] = useState([false]);
+  const [ loading, setLoading ] = useState(false);
+
 
   useEffect(()=>{
-    api.get('/teams').then((response)=>{setTeams(response.data)})
+    updateTable()
   }, [])
 
   function createAllTeams(){
+    setLoading(true)
     let teamsRaw=[]
     api.get('/allteams').then((response)=>{
       teamsRaw=response.data[0]
@@ -36,19 +41,23 @@ export default function Historypage(){
         }
         api.post('/newteam', data)
       })
+      setLoading(false)
     })
   }
   
   function updateTable(){
+    setLoading(true)
     api.get('/teams').then((response)=>{
-      setTeams(response.data)
-      let a = teams.slice();
+      let a = response.data
       a.sort(function(a,b){
         if (a.titles>b.titles) return -1;
         else if (a.titles<b.titles) return 1;
+        else if (a.vices > b.vices) return -1;
+        else if (a.vices < b.vices) return 1;
         else return 0;
       })
       setTeams(a);
+      setLoading(false)
     })
   }
 
@@ -66,6 +75,7 @@ export default function Historypage(){
           <h1>ALL TIME RECORDS</h1>
           <FiRotateCw size={20} onClick={updateTable} style={{cursor:'pointer'}}/>
         </div>
+        <Dots color="#BB2020" style={loading?{display:'block'}:{display:'none'}}/>
         <table>
           <thead>
             <tr>
