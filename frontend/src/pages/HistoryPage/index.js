@@ -11,25 +11,22 @@ import { FiArrowRight, FiRotateCw } from 'react-icons/fi'
 import Footer from "../Components/footer";
 import Header from "../Components/header";
 
-export default function Historypage(){
-  const linkLogo1 = 'https://upload.wikimedia.org/wikipedia/pt/d/d2/Logo_PSG.png'
-  const linkLogo2 = 'https://upload.wikimedia.org/wikipedia/pt/thumb/b/b8/AFC_Ajax_Amsterdam.svg/1200px-AFC_Ajax_Amsterdam.svg.png'
-  const linkLogo3 = 'https://upload.wikimedia.org/wikipedia/pt/thumb/0/0c/Liverpool_FC.svg/1200px-Liverpool_FC.svg.png'
-  const linkLogo4 = 'https://upload.wikimedia.org/wikipedia/pt/1/19/AtleticoMadrid2017.png'
-  
+export default function Historypage(){  
   const nav = useNavigate();
   const [ teams, setTeams ] = useState([]);
   const [ loading, setLoading ] = useState(false);
+  const [ hall, setHall ] = useState([]);
 
 
   useEffect(()=>{
     updateTable()
+    getHall()
   }, [])
 
-  function createAllTeams(){
+  async function createAllTeams(){
     setLoading(true)
     let teamsRaw=[]
-    api.get('/allteams').then((response)=>{
+    await api.get('/allteams').then((response)=>{
       teamsRaw=response.data[0]
       Object.entries(teamsRaw).map((i)=>{
         const data = {
@@ -45,9 +42,9 @@ export default function Historypage(){
     })
   }
   
-  function updateTable(){
+  async function updateTable(){
     setLoading(true)
-    api.get('/teams').then((response)=>{
+    await api.get('/teams').then((response)=>{
       let a = response.data
       a.sort(function(a,b){
         if (a.titles>b.titles) return -1;
@@ -61,12 +58,30 @@ export default function Historypage(){
     })
   }
 
+  async function getHall(){
+    let array = [];
+    await api.get('/getBiggestWinner').then((response)=>{
+      array[0]=response.data;
+    }).then(api.get('/getTopScorer').then((response)=>{
+      array[1]=response.data;
+    })).then(api.get('/getBestSeason').then((response)=>{
+      array[2]=response.data;
+    })).then(api.get('/getbestWinstreak').then((response)=>{
+      array[3]=response.data;
+      
+      console.log(array)
+      setHall(array.slice());
+
+    }))
+    
+  }
+
   return(
     <div>
       <Header/>
       <div className="history_container">
         <div className="button" onClick={createAllTeams} 
-          style={teams.length!=32?{}:{display:'none'}}>GENERATE TEAMS</div>
+          style={teams.length!==32?{}:{display:'none'}}>GENERATE TEAMS</div>
         <div className="history_back">
           <h2 onClick={()=>nav('/groups')}>GO BACK</h2>
           <FiArrowRight size={27}/>
@@ -83,9 +98,9 @@ export default function Historypage(){
               <th>TEAM</th>
               <th>GOALS FOR</th>
               <th>GOALS AGAINST</th>
-              <th>WINS DUES &amp; LOSSES</th>
-              <th>MAJOR OPPONENT</th>
-              <th>EASIEST OPPONENT</th>
+              <th>WINS <br/> DUES &amp; <br/> LOSSES</th>
+              <th>MAJOR <br/> OPPONENT</th>
+              <th>EASIEST <br/> OPPONENT</th>
               <th>TITLES</th>
             </tr>
           </thead>
@@ -116,42 +131,42 @@ export default function Historypage(){
           <div className="hall_card">
             <div>
               <div className="HIGHLIGHT"><h1>BIGGEST WINNER</h1></div>
-              <div className="HIGHLIGHT_SUB"><h2>6 TITLES</h2></div>
+              <div className="HIGHLIGHT_SUB"><h2>{ hall[0]?hall[0].titles:'LOADING...' } TITLES</h2></div>
             </div>
-            <img src={linkLogo1} alt="" />
-            <h1>PARIS SAINT GERMAIN</h1>
+            <img src={hall[0]?hall[0].jersey:""} alt="" />
+            <h1>{hall[0]?hall[0].name:'LOADING...'}</h1>
           </div>
           <div className="hall_card">
             <div>
               <div className="HIGHLIGHT"><h1>TOP SCORER</h1></div>
-              <div className="HIGHLIGHT_SUB"><h2>350 GOALS</h2></div>
+              <div className="HIGHLIGHT_SUB"><h2>{ hall[1]?hall[1].goalsfor:'LOADING...' } GOALS</h2></div>
             </div>
-            <img src={linkLogo2} alt=""/>
-            <h1>AJAX</h1>
+            <img src={hall[1]?hall[1].jersey:""} alt=""/>
+            <h1>{hall[1]?hall[1].name:'LOADING...'}</h1>
           </div>
         </section>
         <section>
           <div className="hall_card">
             <div>
               <div className="HIGHLIGHT"><h1>BEST SEASON</h1></div>
-              <div className="HIGHLIGHT_SUB"><h2>2019-2020</h2></div>
+              <div className="HIGHLIGHT_SUB"><h2>{ hall[2]?`${(hall[2].season.id).slice(0,4)}-${(hall[2].season.id).slice(4,8)}`:'LOADING...' }</h2></div>
             </div>
-            <img src={linkLogo3} alt=""/>
-            <h1>LIVERPOOL</h1>
+            <img src={hall[2]?hall[2].team[0].jersey:""} alt=""/>
+            <h1>{hall[2]?hall[2].team[0].name:'LOADING...'}</h1>
             <br/>
-            <p>20 GOALS FOR</p>
-            <p>4 GOALS AGAINST</p>
-            <p>8 WINS</p>
-            <p>4 LOSSES</p>
-            <p>FINALIST</p>
+            <p>{ hall[2]?hall[2].season.goalsfor:'loading...' } GOALS FOR</p>
+            <p>{ hall[2]?hall[2].season.goalsagainst:'loading...' } GOALS AGAINST</p>
+            <p>{ hall[2]?hall[2].season.wins:'loading...' } WINS</p>
+            <p>{ hall[2]?hall[2].season.losses:'loading...' } LOSSES</p>
+            <p>{ hall[2]?hall[2].season.placement:'loading...' } </p>
           </div>
           <div className="hall_card">
             <div>
               <div className="HIGHLIGHT"><h1>BIGGEST WINSTREAK</h1></div>
-              <div className="HIGHLIGHT_SUB"><h2>3 SEASONS</h2></div>
+              <div className="HIGHLIGHT_SUB"><h2> {hall[3]?hall[3].streak:'LOADING...'} SEASONS</h2></div>
             </div>
-            <img src={linkLogo4} alt=""/>
-            <h1>ATLETICO MADRID</h1>
+            <img src={hall[3]?hall[3].team.jersey:""} alt=""/>
+            <h1>{hall[3]?hall[3].team.name:'LOADING...'}</h1>
           </div>
         </section>
       </div>

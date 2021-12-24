@@ -166,6 +166,29 @@ module.exports = {
   async getAllTeams(request, response){
     const file = JSON.parse(fs.readFileSync('./src/database/seasons/teams.json', 'utf-8'))
     return response.json(file)
-  }
+  },
 
+  async getBiggestWinner(request, response){
+    const teams = await connection('teams').select('*')
+    let biggest, biggestScore=0;
+    teams.map((i)=>{
+      if (i.titles>biggestScore) {
+        biggestScore = i.titles
+        biggest = i
+      }
+    })
+    return response.json(biggest)
+  },
+
+  async getTopScorer(request, response){
+    const teams = await connection('teams').select('*')
+    let topscorer, topscore=0;
+    teams.map((i)=>{
+      if (i.goalsfor>topscore) {
+        topscore = i.titles
+        topscorer = i
+      }
+    })
+    return response.json(topscorer)
+  },
 }

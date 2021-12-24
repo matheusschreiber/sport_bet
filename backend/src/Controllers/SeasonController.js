@@ -466,21 +466,25 @@ module.exports = {
   },
 
   async registerSeason(request, response){
-    const { team_name, year, placement } = request.body;
-
-    const [{
+    const { 
+      team_name,
+      year,
+      placement,
       biggest_opponent,
       least_opponent,
-      fans,
       wins,
       losses,
       dues,
       games,
       goalsfor,
       goalsagainst
-    }] = await connection('teams').where('name', team_name).select('*');
+    } = request.body;
         
-    const id = `${year} ${team_name}`;
+    const [{ fans }] = await connection('teams').where('name', team_name).select('fans')
+
+    const yearSplited = year.split('-')
+    let yearNumber = parseInt(yearSplited[0])*10000 + parseInt(yearSplited[1])
+    const id = `${yearNumber} ${team_name}`;
 
     var p = 0;
     switch(placement){
@@ -534,6 +538,55 @@ module.exports = {
     return response.json(data)
   },
 
+  async getBestSeason(request, response){
+    const seasons = await connection('seasons').select('*')
+    let bestSeason, bestSeasonScore=0;
+    seasons.map((i)=>{ 
+      if (i.season_score>bestSeasonScore) {
+        bestSeasonScore = i.season_score;
+        bestSeason = i;
+      }
+    })
 
+    const team = await connection('teams').where('name', bestSeason.team_name).select('*')
+    return response.json({
+      season: bestSeason,
+      team: team
+    })
+  },
+
+  async getbestWinstreak(request, response){    
+    const teams = await connection('teams').select('*');
+    let bestWinstreak=0, bestWinstreakTeam;
+
+    teams.map(async(i)=>{
+      const seasons = await connection('seasons')
+        .where({'team_name':i.name, 'placement':'TITLE'})
+        .select('*');
+      
+      let streak=0, streakID;
+      if (seasons) seasons.map((j)=>{
+        if (streakID){
+          let array = streakID.split(' ')
+          nextID = `${parseInt(array[0])+10001} ${array.slice(1)}`
+          nextID = nextID.replace(/,/g, " ");
+          if (j.id === nextID) {
+            streak++;
+            if (streak>bestWinstreak){
+              bestWinstreak = streak;
+              bestWinstreakTeam = i;
+            }
+          } else streak=0;
+        }
+        streakID = j.id;
+      })  
+
+
+      if (teams.indexOf(i)==teams.length-1)return response.json({
+        team: bestWinstreakTeam,
+        streak: bestWinstreak
+      });
+    })
+  }
 }
 

@@ -31,6 +31,10 @@
   color: var(--vermelho_claro_plus);
 }
 
+.history_container table thead{
+  line-height: 16px;
+}
+
 .table_title{
   display: flex;
   justify-content: center;
@@ -59,6 +63,7 @@
   width: 400px;
   text-align: center;
   margin: 50px 0;
+  line-height: 15px;
 }
 
 .hall_card h1 {
