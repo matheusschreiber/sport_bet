@@ -251,21 +251,19 @@ module.exports = {
     }
   },
 
-  async listGroupMatches(request, response){
+  async getGroup(request,response){
     const { year, group } = request.body;
-    fs.readFile(`./src/database/seasons/${year}.json`, 'utf-8' , (err, data)=>{
-      if (err) {throw err}
-      switch(group.toLowerCase()){
-        case "a": return response.json(JSON.parse(data).group_fase.group_a.matches);
-        case "b": return response.json(JSON.parse(data).group_fase.group_b.matches);
-        case "c": return response.json(JSON.parse(data).group_fase.group_c.matches);
-        case "d": return response.json(JSON.parse(data).group_fase.group_d.matches);
-        case "e": return response.json(JSON.parse(data).group_fase.group_e.matches);
-        case "f": return response.json(JSON.parse(data).group_fase.group_f.matches);
-        case "g": return response.json(JSON.parse(data).group_fase.group_g.matches);
-        case "h": return response.json(JSON.parse(data).group_fase.group_h.matches);
-      }
-    })
+    var data = fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8')
+    switch(group.toLowerCase()){
+      case "a": return response.json(JSON.parse(data).group_fase.group_a);
+      case "b": return response.json(JSON.parse(data).group_fase.group_b);
+      case "c": return response.json(JSON.parse(data).group_fase.group_c);
+      case "d": return response.json(JSON.parse(data).group_fase.group_d);
+      case "e": return response.json(JSON.parse(data).group_fase.group_e);
+      case "f": return response.json(JSON.parse(data).group_fase.group_f);
+      case "g": return response.json(JSON.parse(data).group_fase.group_g);
+      case "h": return response.json(JSON.parse(data).group_fase.group_h);
+    }
   },
 
   async setupRoundOf8(request, response) {
@@ -587,6 +585,7 @@ module.exports = {
         streak: bestWinstreak
       });
     })
-  }
+  },
+
 }
 

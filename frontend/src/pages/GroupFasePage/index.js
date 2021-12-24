@@ -13,8 +13,11 @@ export default function GroupFasePage(){
   }, [])
   
   const nav = useNavigate()
-  const [ groups, setGroups ] = useState(['A','B','C','D','E','F','G','H']);
+  const [ groups, setGroups ] = useState([]);
 
+  function updategroups(){
+    
+  }
 
   return(
     <div>

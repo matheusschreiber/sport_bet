@@ -7,7 +7,6 @@ const TeamsController = require('./Controllers/TeamsController')
 
 
 router.post('/newseason', SeasonController.createSeasonFile);
-router.get('/matches', SeasonController.listGroupMatches);
 router.get('/file', SeasonController.seasonFile);
 router.put('/updateMatchFile', SeasonController.updateMatchesSeason);
 router.put('/setup8', SeasonController.setupRoundOf8);
@@ -17,6 +16,7 @@ router.put('/setupfinal', SeasonController.setupFinal);
 router.post('/registerSeason', SeasonController.registerSeason);
 router.get('/getBestSeason', SeasonController.getBestSeason);
 router.get('/getbestWinstreak', SeasonController.getbestWinstreak);
+router.get('/getGroup', SeasonController.getGroup);
 
 router.put('/bgOpponent', TeamsController.setBiggestOpponent);
 router.get('/bgOpponent/:team', TeamsController.getBiggestOpponent);

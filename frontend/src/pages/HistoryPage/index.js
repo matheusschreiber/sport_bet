@@ -59,6 +59,7 @@ export default function Historypage(){
   }
 
   async function getHall(){
+    setLoading(true);
     let array = [];
     await api.get('/getBiggestWinner').then((response)=>{
       array[0]=response.data;
@@ -68,10 +69,8 @@ export default function Historypage(){
       array[2]=response.data;
     })).then(api.get('/getbestWinstreak').then((response)=>{
       array[3]=response.data;
-      
-      console.log(array)
       setHall(array.slice());
-
+      setLoading(false);
     }))
     
   }
@@ -89,8 +88,8 @@ export default function Historypage(){
         <div className="table_title">
           <h1>ALL TIME RECORDS</h1>
           <FiRotateCw size={20} onClick={updateTable} style={{cursor:'pointer'}}/>
+          <Dots color="var(--vermelho_escuro)" style={loading?{display:'block'}:{display:'none'}}/>
         </div>
-        <Dots color="#BB2020" style={loading?{display:'block'}:{display:'none'}}/>
         <table>
           <thead>
             <tr>
@@ -125,6 +124,11 @@ export default function Historypage(){
           }
           </tbody>
         </table>
+      </div>
+      <div className="table_title" style={{color: "var(--amarelo)"}}>
+        <h1>HALL OF FAME</h1>
+        <FiRotateCw size={20} onClick={getHall} style={{cursor:'pointer'}}/>
+        <Dots color="var(--amarelo)" style={loading?{display:'block'}:{display:'none'}}/>
       </div>
       <div className="hall">
         <section>
