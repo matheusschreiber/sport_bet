@@ -41,17 +41,35 @@ export default function GroupFasePage(){
       i.data.sort((a,b)=>a[2]-b[2])
     })
     setGroups(array)
+    console.log(array)
   }
 
   async function simulateGroupFase(){
     //await api.put('/updateMatchFile', )
 
-    function generateRandomOutcome(){
-      let array = [],i=0;
+    function generateGroupOutcomes(g){
+      let array = [];
+      let a1 = Math.round((g[0][4]*Math.random()*3)/g[0][4])          //FANS
+      let a2 = g[0][6]?Math.round(g[0][5]/g[0][6]*Math.random()*4):0  //GOALS/GAMES
+      let a3 = 1;                                                     //HOME or AWAY
+      let a4 = a1+a2+a3==4?Math.round(Math.random()*4):0              //CHOCOLATE MULTIPLIER
+      
+      let b1 = Math.round((g[1][4]*Math.random()*3)/g[1][4])
+      let b2 = g[1][6]?Math.round(g[1][5]/g[1][6]*Math.random()*4):0
+      let b3 = 0;
+      let b4 = b1+b2+b3==4?Math.round(Math.random()*4):0
+      
+      let a5 = (b1+b2+b3+b4)*(-1)
+      let score_a = a1+a2+a3+a4+a5>0?a1+a2+a3+a4+a5:0
 
-      for(i=0;i<8;i++){
-        array[i] = [i+1,Math.floor(Math.random(0,10)*10),Math.floor(Math.random(0,10)*10)]
-      }
+      let b5 = (a1+a2+a3+a4)*(-1)
+      let score_b = b1+b2+b3+b4+b5>0?b1+b2+b3+b4+b5:0
+
+      array[0] = [1,score_a,score_b]
+
+      console.log(`A: ${a1} ${a2} ${a3} ${a4} ${a5} ${score_a}`)
+      console.log(`B: ${b1} ${b2} ${b3} ${b4} ${b5} ${score_b}`)
+
       return array;
     }
 
@@ -59,14 +77,14 @@ export default function GroupFasePage(){
       year: localStorage.getItem('SEASON'),
       fase: 'group',
       outcome: {
-        group_a:generateRandomOutcome(),
-        group_b:generateRandomOutcome(),
-        group_c:generateRandomOutcome(),
-        group_d:generateRandomOutcome(),
-        group_e:generateRandomOutcome(),
-        group_f:generateRandomOutcome(),
-        group_g:generateRandomOutcome(),
-        group_h:generateRandomOutcome(),
+        group_a:generateGroupOutcomes(groups[0].data),
+        group_b:generateGroupOutcomes(groups[1].data),
+        group_c:generateGroupOutcomes(groups[2].data),
+        group_d:generateGroupOutcomes(groups[3].data),
+        group_e:generateGroupOutcomes(groups[4].data),
+        group_f:generateGroupOutcomes(groups[5].data),
+        group_g:generateGroupOutcomes(groups[6].data),
+        group_h:generateGroupOutcomes(groups[7].data),
       }
     }
     console.log(data)
