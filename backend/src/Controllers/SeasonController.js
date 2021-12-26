@@ -26,7 +26,7 @@ module.exports = {
         "name": i,
         "points": 0,
         "current_position": j+1,
-        "old_position": 0
+        "old_position": 5
       }
 
       if (j==3) j=0;
@@ -253,17 +253,50 @@ module.exports = {
 
   async getGroup(request,response){
     const { year, group } = request.body;
-    var data = fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8')
+    let groupLetter, g
+    var data = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'))
     switch(group.toLowerCase()){
-      case "a": return response.json(JSON.parse(data).group_fase.group_a);
-      case "b": return response.json(JSON.parse(data).group_fase.group_b);
-      case "c": return response.json(JSON.parse(data).group_fase.group_c);
-      case "d": return response.json(JSON.parse(data).group_fase.group_d);
-      case "e": return response.json(JSON.parse(data).group_fase.group_e);
-      case "f": return response.json(JSON.parse(data).group_fase.group_f);
-      case "g": return response.json(JSON.parse(data).group_fase.group_g);
-      case "h": return response.json(JSON.parse(data).group_fase.group_h);
+      case "a": 
+        groupLetter = 'A' 
+        g = data.group_fase.group_a
+        break;
+      case "b": 
+        groupLetter = 'B' 
+        g = data.group_fase.group_b
+        break;
+      case "c": 
+        groupLetter = 'C' 
+        g = data.group_fase.group_c
+        break;
+      case "d": 
+        groupLetter = 'D' 
+        g = data.group_fase.group_d
+        break;
+      case "e": 
+        groupLetter = 'E' 
+        g = data.group_fase.group_e
+        break;
+      case "f": 
+        groupLetter = 'F' 
+        g = data.group_fase.group_f
+        break;
+      case "g": 
+        groupLetter = 'G' 
+        g = data.group_fase.group_g
+        break;
+      case "h": 
+        groupLetter = 'H' 
+        g = data.group_fase.group_h
+        break;
     }
+
+    let groupArray=[
+      [g.team_1.name,g.team_1.points,g.team_1.current_position,g.team_1.old_position],
+      [g.team_2.name,g.team_2.points,g.team_2.current_position,g.team_2.old_position],
+      [g.team_3.name,g.team_3.points,g.team_3.current_position,g.team_3.old_position],
+      [g.team_4.name,g.team_4.points,g.team_4.current_position,g.team_4.old_position]
+    ]
+    return response.json({group: groupLetter, data: groupArray});
   },
 
   async setupRoundOf8(request, response) {

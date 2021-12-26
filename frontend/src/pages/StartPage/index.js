@@ -24,7 +24,10 @@ export default function StartPage(){
           <p>HAVE FUN BETTING!</p>
         </div>
         <div className="button_container">
-          <div className="button" onClick={() => navigate('/groups')}>START SEASON</div>
+          <div className="button" onClick={() => {
+            localStorage.setItem('SEASON','2019-2020')
+            navigate('/groups')
+          }}>START SEASON</div>
           <p>CURRENT SEASON: 2020-2021</p>
         </div>
       </div>

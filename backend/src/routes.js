@@ -16,7 +16,7 @@ router.put('/setupfinal', SeasonController.setupFinal);
 router.post('/registerSeason', SeasonController.registerSeason);
 router.get('/getBestSeason', SeasonController.getBestSeason);
 router.get('/getbestWinstreak', SeasonController.getbestWinstreak);
-router.get('/getGroup', SeasonController.getGroup);
+router.post('/getGroup', SeasonController.getGroup);
 
 router.put('/bgOpponent', TeamsController.setBiggestOpponent);
 router.get('/bgOpponent/:team', TeamsController.getBiggestOpponent);
