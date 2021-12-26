@@ -9,11 +9,6 @@ import Footer from "../Components/footer";
 
 
 export default function GroupFasePage(){
-  useEffect(()=>{
-    window.scroll(0,0);
-    getGroups()
-  }, [])
-  
   const nav = useNavigate()
   const [ groups, setGroups ] = useState([{
     group: 'A',
@@ -24,6 +19,12 @@ export default function GroupFasePage(){
       ['LOADING...',0,4,4]
     ]
   }]);
+  
+  useEffect(()=>{
+    window.scroll(0,0);
+    getGroups()
+    
+  }, [])
 
   async function getGroups(){
     let array=[];
@@ -35,7 +36,40 @@ export default function GroupFasePage(){
       .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"f",})).then((response)=>{array[5]=response.data})
       .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"g",})).then((response)=>{array[6]=response.data})
       .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"h",})).then((response)=>{array[7]=response.data})
-      .then(setGroups(array))
+    
+    array.map((i)=>{
+      i.data.sort((a,b)=>a[2]-b[2])
+    })
+    setGroups(array)
+  }
+
+  async function simulateGroupFase(){
+    //await api.put('/updateMatchFile', )
+
+    function generateRandomOutcome(){
+      let array = [],i=0;
+
+      for(i=0;i<8;i++){
+        array[i] = [i+1,Math.floor(Math.random(0,10)*10),Math.floor(Math.random(0,10)*10)]
+      }
+      return array;
+    }
+
+    let data ={
+      year: localStorage.getItem('SEASON'),
+      fase: 'group',
+      outcome: {
+        group_a:generateRandomOutcome(),
+        group_b:generateRandomOutcome(),
+        group_c:generateRandomOutcome(),
+        group_d:generateRandomOutcome(),
+        group_e:generateRandomOutcome(),
+        group_f:generateRandomOutcome(),
+        group_g:generateRandomOutcome(),
+        group_h:generateRandomOutcome(),
+      }
+    }
+    console.log(data)
   }
 
   return(
@@ -50,7 +84,7 @@ export default function GroupFasePage(){
           <h1>CLASSIFICATIONS</h1>  
           <h2>SEASON { localStorage.getItem('SEASON')?localStorage.getItem('SEASON'):'LOADING...' }</h2>
         </div>
-        <div className="HIGHLIGHT"><h1>GROUP FASE</h1></div>
+        <div className="HIGHLIGHT" onClick={getGroups}><h1>GROUP FASE</h1></div>
         
         <div className="groups_grid">
           <ul className="grid">
@@ -92,7 +126,7 @@ export default function GroupFasePage(){
           </ul>
         </div>
 
-        <div className="button">SIMULATE ENTIRE GROUP FASE</div>
+        <div className="button" onClick={simulateGroupFase}>SIMULATE ENTIRE GROUP FASE</div>
       </div>
       <Footer />
     </div>
