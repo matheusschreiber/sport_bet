@@ -28,7 +28,6 @@ export default function GroupFasePage(){
   useEffect(()=>{
     window.scroll(0,0);
     getGroups()
-    
   }, [])
 
   async function getGroups(){
@@ -46,6 +45,8 @@ export default function GroupFasePage(){
       i.data.sort((a,b)=>a[2]-b[2])
     })
     setGroups(array)
+    if (array[0].data[0][1]||array[0].data[1][1]||array[0].data[2][1]||array[0].data[3][1]) setFinished(true)
+    else setFinished(false)
   }
 
   async function simulateGroupFase(){

@@ -321,57 +321,87 @@ module.exports = {
           else if (jvalue.name) disclassified.push(jvalue.name);
         })
       })
+
+      let potA=[], potB=[];
   
-      const potA = classified.slice(0, 8)
-      const potB = classified.slice(8, 16)
-     
-      function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-      }
-
-      shuffleArray(potA)
-      shuffleArray(potB)
-
-      var round_of_8 = {}
-      for(i=0, j=1;i<16;i+=2, j++){
-        if (i<8){
-          var match = {
-            "A": potA[i],
-            "B": potA[i+1],
-            "score_A_first_leg": 0,
-            "score_B_first_leg": 0,
-            "score_A_second_leg": 0,
-            "score_B_second_leg": 0
-          }
-        } else {
-          var match = {
-            "A": potB[i-8],
-            "B": potB[i-7],
-            "score_A_first_leg": 0,
-            "score_B_first_leg": 0,
-            "score_A_second_leg": 0,
-            "score_B_second_leg": 0
-          }
-        }
-        round_of_8[`match_${j}`] = match
-      }
-      
-      seasonFile.final_fase = {
-        teams_pot_A: potA,
-        teams_pot_B: potB,
-        round_of_8
-      }
-
-      fs.writeFile(`./src/database/seasons/${year}.json`, JSON.stringify(seasonFile), 'utf-8', (err)=>{
-        if (err) throw Error("Unable to write in season file at round of 8")
-        return response.json({
-          round_of_8:seasonFile.final_fase.round_of_8,
-          disclassified,
-        })
+      classified.map(async(i)=>{
+        const [{country}] = await connection('teams').where('name',i).select('country')
+        if (classified.indexOf(i)%2) potA.push([i,country])
+        else potB.push([i,country])
       })
+
+      setTimeout(()=>{
+        if (potA && potB) {
+          function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+          }
+          
+          let toBeShuffled = true, control=0;
+          while(toBeShuffled){
+            shuffleArray(potA)
+            shuffleArray(potB)
+            for(i=0;i<8;i+=2){
+              if (potA[i][1]==potA[i+1][1]) {
+                toBeShuffled = true;
+                break;
+              } else toBeShuffled = false;
+              if (potB[i][1]==potB[i+1][1]) {
+                toBeShuffled = true;
+                break;
+              } else toBeShuffled = false;
+            }
+            control++;
+            if (control>=100) return response.json({error: `Couldn't find a right shuffle after ${control} times`})
+          }
+    
+          for(i=0;i<8;i++){
+            potA[i] = potA[i][0]
+            potB[i] = potB[i][0]
+          }
+
+          var round_of_8 = {}
+          for(i=0, j=1;i<16;i+=2, j++){
+            if (i<8){
+              var match = {
+                "A": potA[i],
+                "B": potA[i+1],
+                "score_A_first_leg": 0,
+                "score_B_first_leg": 0,
+                "score_A_second_leg": 0,
+                "score_B_second_leg": 0
+              }
+            } else {
+              var match = {
+                "A": potB[i-8],
+                "B": potB[i-7],
+                "score_A_first_leg": 0,
+                "score_B_first_leg": 0,
+                "score_A_second_leg": 0,
+                "score_B_second_leg": 0
+              }
+            }
+            round_of_8[`match_${j}`] = match
+          }
+          
+          seasonFile.final_fase = {
+            teams_pot_A: potA,
+            teams_pot_B: potB,
+            round_of_8
+          }
+    
+          fs.writeFile(`./src/database/seasons/${year}.json`, JSON.stringify(seasonFile), 'utf-8', (err)=>{
+            if (err) throw Error("Unable to write in season file at round of 8")
+            return response.json({
+              round_of_8:seasonFile.final_fase.round_of_8,
+              disclassified,
+            })
+          })
+        } else return response.json({error:'Problems during database connection'})
+      },1000)
+     
     } else if (Object.keys(seasonFile.final_fase).length!=0) {
       throw Error("Trying to create round of 8 data which alerady exists")
     } else throw Error("Season File corrupted or inaccessible");

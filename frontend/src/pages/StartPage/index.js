@@ -1,15 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom'
 
 import Welcome from '../../assets/Welcome.png'
+import { Dots } from "react-activity";
+import "react-activity/dist/Dots.css";
 
 import './style.css'
 
 import Header from '../Components/header'
 import Footer from '../Components/footer'
+import api from "../../services/api";
 
 export default function StartPage(){
   const navigate = useNavigate();
+  const [ loading, setLoading ] = useState(false);
+  const [ year, setYear ] = useState('2019-2020');
 
   
   return(
@@ -24,11 +29,24 @@ export default function StartPage(){
           <p>HAVE FUN BETTING!</p>
         </div>
         <div className="button_container">
-          <div className="button" onClick={() => {
+          <Dots color="var(--vermelho_escuro)" style={loading?{display:'block'}:{display:'none'}}/>
+          <div className="button" onClick={async () => {
             localStorage.setItem('SEASON','2019-2020')
-            navigate('/groups')
+            setLoading(true)
+            api.get('/teams').then((response)=>{
+              api.get('getTeamsJSON').then((response)=>{
+                api.post('newseason',{
+                  year,
+                  teams:response.data
+                })
+              }).then(setTimeout(()=>{
+                setLoading(false)
+                navigate('/groups')
+              }, 1000))
+            }
+            );
           }}>START SEASON</div>
-          <p>CURRENT SEASON: 2020-2021</p>
+          <p>CURRENT SEASON: {year}</p>
         </div>
       </div>
       <Footer />

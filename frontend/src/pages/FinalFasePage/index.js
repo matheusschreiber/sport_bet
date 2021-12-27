@@ -154,6 +154,7 @@ export default function FinalFasePage() {
             </div>
           </div>
         </div>
+        
         <div className="button" onClick={changeStage}>{buttonStatus}</div>
       </div>
       <Footer />

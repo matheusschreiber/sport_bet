@@ -28,6 +28,8 @@ router.get('/teams', TeamsController.getTeams);
 router.get('/allteams', TeamsController.getAllTeams)
 router.get('/getBiggestWinner', TeamsController.getBiggestWinner);
 router.get('/getTopScorer', TeamsController.getTopScorer);
+router.get('/getTeamsJSON', TeamsController.getTeamsJSON);
+router.get('/getTeam/:team',TeamsController.getTeam);
 
 router.post('/rgmatch', MatchesController.registerMatch);
 router.get('/getGoalsOpponent', MatchesController.getScoresbyOpponent);

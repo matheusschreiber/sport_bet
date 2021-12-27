@@ -188,4 +188,20 @@ module.exports = {
     })
     return response.json(topscorer)
   },
+
+  async getTeamsJSON(request,response){
+    const teams = JSON.parse(fs.readFileSync('./src/database/seasons/teams.json', 'utf-8'))
+    let teamArray = []
+    Object.entries(teams[0]).map((e)=>{
+      const [ key, value ] = e;
+      teamArray.push(key)
+    })
+    return response.json(teamArray)
+  },
+
+  async getTeam(request,response){
+    const {team} = request.params;
+    const teamInfo = await connection('teams').where('name',team).select('*')
+    return response.json(teamInfo)
+  }
 }
