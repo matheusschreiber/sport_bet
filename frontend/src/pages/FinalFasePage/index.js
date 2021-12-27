@@ -5,7 +5,14 @@ import Header from "../Components/header";
 import Footer from "../Components/footer";
 import thropy from '../../assets/Thropy.png'
 
+import api from '../../services/api';
+
 export default function FinalFasePage() {
+  const [ roundOf8, setRoundOf8 ] = useState();
+  api.put('/setup8',{year:localStorage.getItem('SEASON')}).then((response)=>{
+    setRoundOf8(response.data);
+  })
+
   const [ potATeamsMatches, setPotATeamsMatches ] = useState([1,2,3,4]);
   const [ potBTeamsMatches, setPotBTeamsMatches ] = useState([1,2,3,4]);
   const [ buttonStatus, setbuttonStatus ] = useState('SIMULATE ROUND');
@@ -154,7 +161,7 @@ export default function FinalFasePage() {
             </div>
           </div>
         </div>
-        
+
         <div className="button" onClick={changeStage}>{buttonStatus}</div>
       </div>
       <Footer />

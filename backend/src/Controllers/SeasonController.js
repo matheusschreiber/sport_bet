@@ -325,9 +325,9 @@ module.exports = {
       let potA=[], potB=[];
   
       classified.map(async(i)=>{
-        const [{country}] = await connection('teams').where('name',i).select('country')
-        if (classified.indexOf(i)%2) potA.push([i,country])
-        else potB.push([i,country])
+        const [{country, jersey}] = await connection('teams').where('name',i).select('country','jersey')
+        if (classified.indexOf(i)%2) potA.push([i,country,jersey])
+        else potB.push([i,country,jersey])
       })
 
       setTimeout(()=>{
@@ -356,31 +356,34 @@ module.exports = {
             control++;
             if (control>=100) return response.json({error: `Couldn't find a right shuffle after ${control} times`})
           }
-    
-          for(i=0;i<8;i++){
-            potA[i] = potA[i][0]
-            potB[i] = potB[i][0]
-          }
 
-          var round_of_8 = {}
+          var round_of_8 = {};
           for(i=0, j=1;i<16;i+=2, j++){
             if (i<8){
               var match = {
-                "A": potA[i],
-                "B": potA[i+1],
+                "A": potA[i][0],
+                "jerseyA":potA[i][2],
+                "B": potA[i+1][0],
+                "jerseyB":potA[i+1][2],
                 "score_A_first_leg": 0,
                 "score_B_first_leg": 0,
                 "score_A_second_leg": 0,
-                "score_B_second_leg": 0
+                "score_B_second_leg": 0,
+                "localA": potA[i][1],
+                "localB": potA[i+1][1]
               }
             } else {
               var match = {
-                "A": potB[i-8],
-                "B": potB[i-7],
+                "A": potB[i-8][0],
+                "jerseyA":potB[i-8][2],
+                "B": potB[i-7][0],
+                "jerseyB":potB[i-7][2],
                 "score_A_first_leg": 0,
                 "score_B_first_leg": 0,
                 "score_A_second_leg": 0,
-                "score_B_second_leg": 0
+                "score_B_second_leg": 0,
+                "localA": potB[i-8][1],
+                "localB": potB[i-7][1]
               }
             }
             round_of_8[`match_${j}`] = match
