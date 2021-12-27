@@ -29,10 +29,7 @@ module.exports = {
   },
 
   async playMatch(request, response) {
-    const { team_1, team_2 } = request.body;
-
-    var goals_A = Math.floor(Math.random()*5);
-    var goals_B = Math.floor(Math.random()*5);
+    const { team_1, team_2, goals_A, goals_B } = request.body;
     
     var fan_quota = 1;
     var winner = [];

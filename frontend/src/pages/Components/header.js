@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom'
 
 import ChampionsBall from '../../assets/ChampionsBall.png'
 
@@ -43,10 +44,12 @@ const img = {
 }
 
 export default function Header(){
+  const nav = useNavigate()
+  
   return(
     <div style={start_header_bg}>
       <header style={start_header}>
-        <div style={text_container}>
+        <div style={text_container} onClick={()=>{nav('/')}} style={{cursor:'pointer'}}>
           <h1 style={h1}>football</h1>  
           <h2 style={h2}>CHAMPIONS LEAGUE</h2>
         </div>        

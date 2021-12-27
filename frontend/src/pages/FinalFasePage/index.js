@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './style.css'
 
 import Header from "../Components/header";
@@ -14,6 +14,11 @@ export default function FinalFasePage() {
   const linkLogo2 = 'https://upload.wikimedia.org/wikipedia/pt/thumb/b/b8/AFC_Ajax_Amsterdam.svg/1200px-AFC_Ajax_Amsterdam.svg.png'
   const linkLogo3 = 'https://upload.wikimedia.org/wikipedia/pt/thumb/0/0c/Liverpool_FC.svg/1200px-Liverpool_FC.svg.png'
   const linkLogo4 = 'https://upload.wikimedia.org/wikipedia/pt/1/19/AtleticoMadrid2017.png'
+
+  useEffect(()=>{
+    window.scroll(0,0);
+    
+  }, [])
 
   function changeStage(){
     if (buttonStatus==='SIMULATE ROUND') setbuttonStatus('NEXT')

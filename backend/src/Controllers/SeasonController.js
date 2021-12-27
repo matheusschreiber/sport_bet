@@ -9,10 +9,14 @@ module.exports = {
         "2":{"A": team3,"score_A": "-","B": team4,"score_B": "-",},
         "3":{"A": team1,"score_A": "-","B": team3,"score_B": "-",},
         "4":{"A": team2,"score_A": "-","B": team4,"score_B": "-",},
-        "5":{"A": team2,"score_A": "-","B": team1,"score_B": "-",},
-        "6":{"A": team4,"score_A": "-","B": team3,"score_B": "-",},
-        "7":{"A": team3,"score_A": "-","B": team1,"score_B": "-",},
-        "8":{"A": team4,"score_A": "-","B": team2,"score_B": "-",},
+        "5":{"A": team1,"score_A": "-","B": team4,"score_B": "-",},
+        "6":{"A": team2,"score_A": "-","B": team3,"score_B": "-",},
+        "7":{"A": team2,"score_A": "-","B": team1,"score_B": "-",},
+        "8":{"A": team4,"score_A": "-","B": team3,"score_B": "-",},
+        "9":{"A": team3,"score_A": "-","B": team1,"score_B": "-",},
+        "10":{"A": team4,"score_A": "-","B": team2,"score_B": "-",},
+        "11":{"A": team4,"score_A": "-","B": team1,"score_B": "-",},
+        "12":{"A": team3,"score_A": "-","B": team2,"score_B": "-",},
       }
       return matches;
     }

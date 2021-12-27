@@ -4,12 +4,17 @@ import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 import './style.css'
 
+import { Dots } from "react-activity";
+import "react-activity/dist/Dots.css";
+
 import Header from "../Components/header";
 import Footer from "../Components/footer";
 
 
 export default function GroupFasePage(){
   const nav = useNavigate()
+  const [ loading, setLoading ] = useState(false);
+  const [ finished, setFinished ] = useState(false);
   const [ groups, setGroups ] = useState([{
     group: 'A',
     data: [
@@ -41,42 +46,59 @@ export default function GroupFasePage(){
       i.data.sort((a,b)=>a[2]-b[2])
     })
     setGroups(array)
-    console.log(array)
   }
 
   async function simulateGroupFase(){
-    //await api.put('/updateMatchFile', )
-
-    function generateGroupOutcomes(g){
-      let array = [];
-      let a1 = Math.round((g[0][4]*Math.random()*3)/g[0][4])          //FANS
-      let a2 = g[0][6]?Math.round(g[0][5]/g[0][6]*Math.random()*4):0  //GOALS/GAMES
-      let a3 = 1;                                                     //HOME or AWAY
-      let a4 = a1+a2+a3==4?Math.round(Math.random()*4):0              //CHOCOLATE MULTIPLIER
+    
+    function generateMatchOutcome(match, team1, team2){
+      let a1 = Math.round((team1[4]*Math.random()*3)/team1[4])            //FANS
+      let a2 = team1[6]?Math.round(team1[5]/team1[6]*Math.random()*4):0   //GOALS/GAMES
+      let a3 = 1;                                                         //HOME or AWAY
+      let a4 = a1+a2+a3===4?Math.round(Math.random()*4):0                 //CHOCOLATE MULTIPLIER
       
-      let b1 = Math.round((g[1][4]*Math.random()*3)/g[1][4])
-      let b2 = g[1][6]?Math.round(g[1][5]/g[1][6]*Math.random()*4):0
+      let b1 = Math.round((team2[4]*Math.random()*3)/team2[4])
+      let b2 = team2[6]?Math.round(team2[5]/team2[6]*Math.random()*4):0
       let b3 = 0;
-      let b4 = b1+b2+b3==4?Math.round(Math.random()*4):0
+      let b4 = b1+b2+b3===4?Math.round(Math.random()*4):0
       
       let a5 = (b1+b2+b3+b4)*(-1)
       let score_a = a1+a2+a3+a4+a5>0?a1+a2+a3+a4+a5:0
-
+      
       let b5 = (a1+a2+a3+a4)*(-1)
       let score_b = b1+b2+b3+b4+b5>0?b1+b2+b3+b4+b5:0
+      
+      
+      return [match, score_a, score_b];
+    }
+    
+    function generateGroupOutcomes(g){
+      let array = [];
+      
+      array[0] = generateMatchOutcome(1,g[0],g[1]);
+      array[1] = generateMatchOutcome(2,g[2],g[3]);
 
-      array[0] = [1,score_a,score_b]
+      array[2] = generateMatchOutcome(3,g[0],g[2]);
+      array[3] = generateMatchOutcome(4,g[1],g[3]);
 
-      console.log(`A: ${a1} ${a2} ${a3} ${a4} ${a5} ${score_a}`)
-      console.log(`B: ${b1} ${b2} ${b3} ${b4} ${b5} ${score_b}`)
+      array[4] = generateMatchOutcome(5,g[0],g[3]);
+      array[5] = generateMatchOutcome(6,g[1],g[2]);
 
+      array[6] = generateMatchOutcome(7,g[1],g[0]);
+      array[7] = generateMatchOutcome(8,g[3],g[2]);
+
+      array[8] = generateMatchOutcome(9,g[2],g[0]);
+      array[9] = generateMatchOutcome(10,g[3],g[1]);
+
+      array[10] = generateMatchOutcome(11,g[3],g[0]);
+      array[11] = generateMatchOutcome(12,g[2],g[1]);
+      
       return array;
     }
-
+    
     let data ={
       year: localStorage.getItem('SEASON'),
-      fase: 'group',
-      outcome: {
+      fase: "group",
+      outcomes: {
         group_a:generateGroupOutcomes(groups[0].data),
         group_b:generateGroupOutcomes(groups[1].data),
         group_c:generateGroupOutcomes(groups[2].data),
@@ -87,9 +109,16 @@ export default function GroupFasePage(){
         group_h:generateGroupOutcomes(groups[7].data),
       }
     }
-    console.log(data)
+    await api.put('/updateMatchFile', data).then(()=>{
+      setLoading(true)
+      setTimeout(()=>{
+        getGroups()
+        setLoading(false)
+        setFinished(true);
+      }, 500);      
+    })
   }
-
+  
   return(
     <div>
       <Header />
@@ -144,7 +173,9 @@ export default function GroupFasePage(){
           </ul>
         </div>
 
-        <div className="button" onClick={simulateGroupFase}>SIMULATE ENTIRE GROUP FASE</div>
+        <Dots color="var(--vermelho_escuro)" style={loading?{display:'block'}:{display:'none'}}/>
+        <div className="button" style={finished?{display:'none'}:{}} onClick={simulateGroupFase}>SIMULATE ENTIRE GROUP FASE</div>
+        <div className="button" style={finished?{}:{display:'none'}} onClick={()=>nav('/finals')}>GO TO FINAL FASE</div>
       </div>
       <Footer />
     </div>
