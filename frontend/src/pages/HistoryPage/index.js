@@ -37,6 +37,7 @@ export default function Historypage(){
           jersey: i[1].jersey
         }
         api.post('/newteam', data)
+        return 0;
       })
       setLoading(false)
     })
@@ -105,7 +106,7 @@ export default function Historypage(){
           </thead>
           <tbody>
           {
-            teams.map((i)=>(
+            teams.map((i)=>{return(
               <tr style={teams.indexOf(i)+1===1?{color:'var(--amarelo)'}:
               teams.indexOf(i)+1===2?{color:'var(--cinza)'}:
               teams.indexOf(i)+1===3?{color:'var(--bronze)'}:
@@ -120,7 +121,7 @@ export default function Historypage(){
                 <td>{i.least_opponent}</td>
                 <td>{i.titles} 🥇 - {i.vices} 🥈</td>
               </tr>
-            ))
+            )})
           }
           </tbody>
         </table>

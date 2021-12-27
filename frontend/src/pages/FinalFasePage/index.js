@@ -8,13 +8,21 @@ import thropy from '../../assets/Thropy.png'
 import api from '../../services/api';
 
 export default function FinalFasePage() {
-  const [ roundOf8, setRoundOf8 ] = useState();
-  api.put('/setup8',{year:localStorage.getItem('SEASON')}).then((response)=>{
-    setRoundOf8(response.data);
-  })
-
-  const [ potATeamsMatches, setPotATeamsMatches ] = useState([1,2,3,4]);
-  const [ potBTeamsMatches, setPotBTeamsMatches ] = useState([1,2,3,4]);
+  const [ roundOf8, setRoundOf8 ] = useState([]);
+  const [ potATeamsMatches, setPotATeamsMatches ] = useState([]);
+  const [ potBTeamsMatches, setPotBTeamsMatches ] = useState([]);
+  
+  function updateRounds(){
+    //api.get('/getTeamsJSON').then((response)=>{api.post('newseason',{year:localStorage.getItem('SEASON'),teams:response.data})})
+    api.put('/setup8',{year:localStorage.getItem('SEASON')}).then((response)=>{
+      setRoundOf8(response.data.round_of_8);
+      setPotATeamsMatches([roundOf8.match_1,roundOf8.match_2,roundOf8.match_3,roundOf8.match_4]);
+      setPotBTeamsMatches([roundOf8.match_5,roundOf8.match_6,roundOf8.match_7,roundOf8.match_8]);
+      console.log({potATeamsMatches, potBTeamsMatches})
+      console.log(roundOf8)
+    })
+  }
+      
   const [ buttonStatus, setbuttonStatus ] = useState('SIMULATE ROUND');
   const [ fase, setFase ] = useState('ROUND OF 8')
   const linkLogo1 = 'https://upload.wikimedia.org/wikipedia/pt/d/d2/Logo_PSG.png'
@@ -24,7 +32,7 @@ export default function FinalFasePage() {
 
   useEffect(()=>{
     window.scroll(0,0);
-    
+    updateRounds()
   }, [])
 
   function changeStage(){

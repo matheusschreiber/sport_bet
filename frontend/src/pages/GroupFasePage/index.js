@@ -41,9 +41,7 @@ export default function GroupFasePage(){
       .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"g",})).then((response)=>{array[6]=response.data})
       .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"h",})).then((response)=>{array[7]=response.data})
     
-    array.map((i)=>{
-      i.data.sort((a,b)=>a[2]-b[2])
-    })
+    array.map((i)=>{i.data.sort((a,b)=>a[2]-b[2]); return 0;})
     setGroups(array)
     if (array[0].data[0][1]||array[0].data[1][1]||array[0].data[2][1]||array[0].data[3][1]) setFinished(true)
     else setFinished(false)

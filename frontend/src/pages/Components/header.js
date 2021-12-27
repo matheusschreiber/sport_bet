@@ -35,7 +35,8 @@ const h2 = {
 const text_container = {
   textAlign: 'right',
   height: '100px',
-  marginRight: '400px'
+  marginRight: '400px',
+  cursor:'pointer'
 }
 
 const img = {
@@ -49,7 +50,7 @@ export default function Header(){
   return(
     <div style={start_header_bg}>
       <header style={start_header}>
-        <div style={text_container} onClick={()=>{nav('/')}} style={{cursor:'pointer'}}>
+        <div style={text_container} onClick={()=>{nav('/')}}>
           <h1 style={h1}>football</h1>  
           <h2 style={h2}>CHAMPIONS LEAGUE</h2>
         </div>        
