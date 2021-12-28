@@ -130,4 +130,17 @@
   left: -30px;
 }
 
+.load_square {
+  width: 10px;
+  height: 10px;
+  background-color: var(--verde);
+}
+
+.load_square_container{
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-evenly;
+  width: 10%;
+}
+
 

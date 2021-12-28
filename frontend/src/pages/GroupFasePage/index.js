@@ -15,6 +15,7 @@ export default function GroupFasePage(){
   const nav = useNavigate()
   const [ loading, setLoading ] = useState(false);
   const [ finished, setFinished ] = useState(false);
+  const [ loadedGroups, setLoadedGroups ] = useState(0)
   const [ groups, setGroups ] = useState([{
     group: 'A',
     data: [
@@ -48,52 +49,38 @@ export default function GroupFasePage(){
   }
 
   async function simulateGroupFase(){
-    
-    function generateMatchOutcome(match, team1, team2){
-      let a1 = Math.round((team1[4]*Math.random()*3)/team1[4])            //FANS
-      let a2 = team1[6]?Math.round(team1[5]/team1[6]*Math.random()*4):0   //GOALS/GAMES
-      let a3 = 1;                                                         //HOME or AWAY
-      let a4 = a1+a2+a3===4?Math.round(Math.random()*4):0                 //CHOCOLATE MULTIPLIER
-      
-      let b1 = Math.round((team2[4]*Math.random()*3)/team2[4])
-      let b2 = team2[6]?Math.round(team2[5]/team2[6]*Math.random()*4):0
-      let b3 = 0;
-      let b4 = b1+b2+b3===4?Math.round(Math.random()*4):0
-      
-      let a5 = (b1+b2+b3+b4)*(-1)
-      let score_a = a1+a2+a3+a4+a5>0?a1+a2+a3+a4+a5:0
-      
-      let b5 = (a1+a2+a3+a4)*(-1)
-      let score_b = b1+b2+b3+b4+b5>0?b1+b2+b3+b4+b5:0
-      
-      
-      return [match, score_a, score_b];
+    setLoading(true)
+    async function generateMatchOutcome(match, team_1, team_2){
+      const response = await api.put('/match', {team_1,team_2})
+      return [match, response.data.outcome.team_1.goals, response.data.outcome.team_1.goals];
     }
-    
+
     function generateGroupOutcomes(g){
       let array = [];
-      
-      array[0] = generateMatchOutcome(1,g[0],g[1]);
-      array[1] = generateMatchOutcome(2,g[2],g[3]);
-
-      array[2] = generateMatchOutcome(3,g[0],g[2]);
-      array[3] = generateMatchOutcome(4,g[1],g[3]);
-
-      array[4] = generateMatchOutcome(5,g[0],g[3]);
-      array[5] = generateMatchOutcome(6,g[1],g[2]);
-
-      array[6] = generateMatchOutcome(7,g[1],g[0]);
-      array[7] = generateMatchOutcome(8,g[3],g[2]);
-
-      array[8] = generateMatchOutcome(9,g[2],g[0]);
-      array[9] = generateMatchOutcome(10,g[3],g[1]);
-
-      array[10] = generateMatchOutcome(11,g[3],g[0]);
-      array[11] = generateMatchOutcome(12,g[2],g[1]);
-      
+      setTimeout(async()=>{
+        array[0] = await generateMatchOutcome(1,g[0][0],g[1][0]);
+        array[1] = await generateMatchOutcome(2,g[2][0],g[3][0]);
+        
+        array[2] = await generateMatchOutcome(3,g[0][0],g[2][0]);
+        array[3] = await generateMatchOutcome(4,g[1][0],g[3][0]);
+        
+        array[4] = await generateMatchOutcome(5,g[0][0],g[3][0]);
+        array[5] = await generateMatchOutcome(6,g[1][0],g[2][0]);
+        
+        array[6] = await generateMatchOutcome(7,g[1][0],g[0][0]);
+        array[7] = await generateMatchOutcome(8,g[3][0],g[2][0]);
+        
+        array[8] = await generateMatchOutcome(9,g[2][0],g[0][0]);
+        array[9] = await generateMatchOutcome(10,g[3][0],g[1][0]);
+        
+        array[10] = await generateMatchOutcome(11,g[3][0],g[0][0]);
+        array[11] = await generateMatchOutcome(12,g[2][0],g[1][0]);
+        
+        setLoadedGroups(loadedGroups+1);
+      }, 1000);
       return array;
     }
-    
+
     let data ={
       year: localStorage.getItem('SEASON'),
       fase: "group",
@@ -105,17 +92,18 @@ export default function GroupFasePage(){
         group_e:generateGroupOutcomes(groups[4].data),
         group_f:generateGroupOutcomes(groups[5].data),
         group_g:generateGroupOutcomes(groups[6].data),
-        group_h:generateGroupOutcomes(groups[7].data),
+        group_h:generateGroupOutcomes(groups[7].data)
       }
     }
+
     await api.put('/updateMatchFile', data).then(()=>{
-      setLoading(true)
       setTimeout(()=>{
-        getGroups()
-        setLoading(false)
+        getGroups();
         setFinished(true);
-      }, 500);      
+        setLoading(false);
+      }, 5000);      
     })
+
   }
   
   return(
@@ -172,6 +160,16 @@ export default function GroupFasePage(){
           </ul>
         </div>
 
+        <div className="load_square_container" style={loading?{}:{display:'none'}}>
+          <div className="load_square" style={loadedGroups>=1?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
+          <div className="load_square" style={loadedGroups>=2?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
+          <div className="load_square" style={loadedGroups>=3?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
+          <div className="load_square" style={loadedGroups>=4?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
+          <div className="load_square" style={loadedGroups>=5?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
+          <div className="load_square" style={loadedGroups>=6?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
+          <div className="load_square" style={loadedGroups>=7?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
+          <div className="load_square" style={loadedGroups>=8?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
+        </div>
         <Dots color="var(--vermelho_escuro)" style={loading?{display:'block'}:{display:'none'}}/>
         <div className="button" style={finished?{display:'none'}:{}} onClick={simulateGroupFase}>SIMULATE ENTIRE GROUP FASE</div>
         <div className="button" style={finished?{}:{display:'none'}} onClick={()=>nav('/finals')}>GO TO FINAL FASE</div>

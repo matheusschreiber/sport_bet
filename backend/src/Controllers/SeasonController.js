@@ -293,16 +293,12 @@ module.exports = {
         g = data.group_fase.group_h
         break;
     }
-    const [{fans:fans1,games:games1, goalsfor:goalsfor1}] = await connection('teams').where('name',g.team_1.name).select("fans", "games", "goalsfor")
-    const [{fans:fans2,games:games2, goalsfor:goalsfor2}] = await connection('teams').where('name',g.team_2.name).select("fans", "games", "goalsfor")
-    const [{fans:fans3,games:games3, goalsfor:goalsfor3}] = await connection('teams').where('name',g.team_3.name).select("fans", "games", "goalsfor")
-    const [{fans:fans4,games:games4, goalsfor:goalsfor4}] = await connection('teams').where('name',g.team_4.name).select("fans", "games", "goalsfor")
 
     let groupArray=[
-      [g.team_1.name,g.team_1.points,g.team_1.current_position,g.team_1.old_position,fans1,games1,goalsfor1],
-      [g.team_2.name,g.team_2.points,g.team_2.current_position,g.team_2.old_position,fans2,games2,goalsfor2],
-      [g.team_3.name,g.team_3.points,g.team_3.current_position,g.team_3.old_position,fans3,games3,goalsfor3],
-      [g.team_4.name,g.team_4.points,g.team_4.current_position,g.team_4.old_position,fans4,games4,goalsfor4]
+      [g.team_1.name,g.team_1.points,g.team_1.current_position,g.team_1.old_position],
+      [g.team_2.name,g.team_2.points,g.team_2.current_position,g.team_2.old_position],
+      [g.team_3.name,g.team_3.points,g.team_3.current_position,g.team_3.old_position],
+      [g.team_4.name,g.team_4.points,g.team_4.current_position,g.team_4.old_position]
     ]
     return response.json({group: groupLetter, data: groupArray});
   },

@@ -29,7 +29,27 @@ module.exports = {
   },
 
   async playMatch(request, response) {
-    const { team_1, team_2, goals_A, goals_B } = request.body;
+    const { team_1, team_2 } = request.body;
+
+    const [team_1_info] = await connection('teams').where('name',team_1).select('*')
+    const [team_2_info] = await connection('teams').where('name',team_2).select('*')
+
+    let a2 = team_1_info.games?((team_1_info.goalsfor/team_1_info.games)*Math.random()):0   //GOALS/GAMES
+    let a3 = 0.2;                                                                           //HOME or AWAY
+    let a4 = (Math.random()*3)                                                              //LUCKY MULTIPLYER
+    
+    let b2 = team_2_info.games?((team_2_info.goalsfor/team_2_info.games)*Math.random()):0
+    let b3 = 0;
+    let b4 = (Math.random()*3)          
+
+    let a6 = ((b2+b3+b4)*(-1)*0.1)
+    let b6 = ((a2+a3+a4)*(-1)*0.1)
+    
+    const somaA = Math.round(a2+a3+a4+a6)
+    const somaB = Math.round(b2+b3+b4+b6)
+
+    const goals_A = somaA>0?somaA:0
+    const goals_B = somaB>0?somaB:0
     
     var fan_quota = 1;
     var winner = [];

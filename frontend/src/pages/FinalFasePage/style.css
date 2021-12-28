@@ -22,7 +22,8 @@
 
 .round_8_container{
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  margin: 0 auto;
 }
 
 .match_final_fase ul{
@@ -37,12 +38,9 @@
 
 .match_final_fase{
   display: flex;
-  justify-content: center;
-  margin: 30px 0px;  
-}
-
-.teams_final_fase {
+  justify-content: right;
   text-align: right;
+  margin: 30px 30px;  
 }
 
 /* SEMI FINALS SECTION */

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import './style.css'
 
+import { Dots } from "react-activity";
+import "react-activity/dist/Dots.css";
+
 import Header from "../Components/header";
 import Footer from "../Components/footer";
 import thropy from '../../assets/Thropy.png'
@@ -8,19 +11,28 @@ import thropy from '../../assets/Thropy.png'
 import api from '../../services/api';
 
 export default function FinalFasePage() {
-  const [ roundOf8, setRoundOf8 ] = useState([]);
+  const [ loading, setLoading ] = useState(false);
   const [ potATeamsMatches, setPotATeamsMatches ] = useState([]);
   const [ potBTeamsMatches, setPotBTeamsMatches ] = useState([]);
-  
-  function updateRounds(){
-    //api.get('/getTeamsJSON').then((response)=>{api.post('newseason',{year:localStorage.getItem('SEASON'),teams:response.data})})
-    api.put('/setup8',{year:localStorage.getItem('SEASON')}).then((response)=>{
-      setRoundOf8(response.data.round_of_8);
-      setPotATeamsMatches([roundOf8.match_1,roundOf8.match_2,roundOf8.match_3,roundOf8.match_4]);
-      setPotBTeamsMatches([roundOf8.match_5,roundOf8.match_6,roundOf8.match_7,roundOf8.match_8]);
-      console.log({potATeamsMatches, potBTeamsMatches})
-      console.log(roundOf8)
-    })
+   
+  async function updateRoundof8(){
+    setLoading(true)
+    await api.get('/getTeamsJSON').then((response)=>{api.post('newseason',{year:localStorage.getItem('SEASON'),teams:response.data})})
+    .then(setTimeout(()=>{api.put('/setup8',{year:localStorage.getItem('SEASON')}).then((response)=>{
+      setPotATeamsMatches([response.data.round_of_8.match_1,response.data.round_of_8.match_2,response.data.round_of_8.match_3,response.data.round_of_8.match_4]);
+      setPotBTeamsMatches([response.data.round_of_8.match_5,response.data.round_of_8.match_6,response.data.round_of_8.match_7,response.data.round_of_8.match_8]);
+      setLoading(false);
+    })},1500))
+  }
+
+  async function updateQuarters(){
+    setLoading(true)
+    await api.get('/getTeamsJSON').then((response)=>{api.post('newseason',{year:localStorage.getItem('SEASON'),teams:response.data})})
+    .then(setTimeout(()=>{api.put('/setup8',{year:localStorage.getItem('SEASON')}).then((response)=>{
+      setPotATeamsMatches([response.data.round_of_8.match_1,response.data.round_of_8.match_2,response.data.round_of_8.match_3,response.data.round_of_8.match_4]);
+      setPotBTeamsMatches([response.data.round_of_8.match_5,response.data.round_of_8.match_6,response.data.round_of_8.match_7,response.data.round_of_8.match_8]);
+      setLoading(false);
+    })},1500))
   }
       
   const [ buttonStatus, setbuttonStatus ] = useState('SIMULATE ROUND');
@@ -32,11 +44,19 @@ export default function FinalFasePage() {
 
   useEffect(()=>{
     window.scroll(0,0);
-    updateRounds()
+    updateRoundof8();    
   }, [])
 
   function changeStage(){
-    if (buttonStatus==='SIMULATE ROUND') setbuttonStatus('NEXT')
+    if (buttonStatus==='SIMULATE ROUND') {
+      setbuttonStatus('NEXT');
+      /*
+      api.put('/updateMatchFile', {
+        year: localStorage.getItem('SEASON'),
+        fase: fase.toLowerCase(),
+      })
+      */
+    }
     else setbuttonStatus('SIMULATE ROUND')
 
     if (fase === "ROUND OF 8" && buttonStatus==='NEXT') {
@@ -65,6 +85,7 @@ export default function FinalFasePage() {
         <div className="title_container">
           <h1>CLASSIFICATIONS</h1>  
           <h2>SEASON 2020-2021</h2>
+          <Dots color="var(--vermelho_escuro)" style={loading?{display:'block'}:{display:'none'}}/>
         </div>
         <div>
           <div className="HIGHLIGHT"><h1>Final FASE</h1></div>
@@ -79,16 +100,16 @@ export default function FinalFasePage() {
                 potATeamsMatches.map((i)=>(
                   <div className="match_final_fase">
                     <ul className="teams_final_fase">
-                      <li>PARIS SAINT GERMAIN</li>
-                      <li>BARCELONA</li>
+                      <li>{i.A.toUpperCase()}</li>
+                      <li>{i.B.toUpperCase()}</li>
                     </ul>
                     <ul>
-                      <li>0</li>
-                      <li>0</li>
+                      <li>{i.score_A_first_leg}</li>
+                      <li>{i.score_B_first_leg}</li>
                     </ul>
                     <ul>
-                      <li>1</li>
-                      <li>2</li>
+                    <li>{i.score_A_second_leg}</li>
+                    <li>{i.score_B_second_leg}</li>
                     </ul>
                   </div>
                 ))
@@ -97,18 +118,18 @@ export default function FinalFasePage() {
               <div>
               {
                 potBTeamsMatches.map((i)=>(
-                  <div className="match_final_fase">
+                  <div className="match_final_fase" style={{justifyContent:'left',textAlign:'left'}}>
                     <ul>
-                      <li>0</li>
-                      <li>0</li>
+                      <li>{i.score_A_first_leg}</li>
+                      <li>{i.score_B_first_leg}</li>
                     </ul>
                     <ul>
-                      <li>1</li>
-                      <li>2</li>
+                      <li>{i.score_A_second_leg}</li>
+                      <li>{i.score_B_second_leg}</li>
                     </ul>
                     <ul className="teams_final_fase" style={{textAlign:'left'}}>
-                      <li>PARIS SAINT GERMAIN</li>
-                      <li>BARCELONA</li>
+                      <li>{i.A.toUpperCase()}</li>
+                      <li>{i.B.toUpperCase()}</li>
                     </ul>
                   </div>
                 ))
