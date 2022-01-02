@@ -37,6 +37,7 @@ export default function FinalFasePage() {
       
   const [ buttonStatus, setbuttonStatus ] = useState('SIMULATE ROUND');
   const [ fase, setFase ] = useState('ROUND OF 8')
+  
   const linkLogo1 = 'https://upload.wikimedia.org/wikipedia/pt/d/d2/Logo_PSG.png'
   const linkLogo2 = 'https://upload.wikimedia.org/wikipedia/pt/thumb/b/b8/AFC_Ajax_Amsterdam.svg/1200px-AFC_Ajax_Amsterdam.svg.png'
   const linkLogo3 = 'https://upload.wikimedia.org/wikipedia/pt/thumb/0/0c/Liverpool_FC.svg/1200px-Liverpool_FC.svg.png'
