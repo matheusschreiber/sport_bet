@@ -62,16 +62,15 @@ export default function Historypage(){
   async function getHall(){
     setLoading(true);
     let array = [];
-    await api.get('/getBiggestWinner').then((response)=>{
-      array[0]=response.data;
-    }).then(api.get('/getTopScorer').then((response)=>{
-      array[1]=response.data;
-    })).then(api.get('/getBestSeason').then((response)=>{
-      array[2]=response.data;
-    })).then(api.get('/getbestWinstreak').then((response)=>{
-      array[3]=response.data;
-      setHall(array.slice());
-      setLoading(false);
+    await api.get('/getBiggestWinner')
+      .then((response)=>{array[0]=response.data;})
+      .then(api.get('/getTopScorer')
+      .then((response)=>{array[1]=response.data;}))
+      .then(api.get('/getBestSeason').then((response)=>{array[2]=response.data;}))
+      .then(api.get('/getbestWinstreak').then((response)=>{
+        array[3]=response.data;
+        setHall(array.slice());
+        setLoading(false);
     }))
     
   }

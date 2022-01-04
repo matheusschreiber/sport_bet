@@ -202,7 +202,7 @@ module.exports = {
     let topscorer, topscore=0;
     teams.map((i)=>{
       if (i.goalsfor>topscore) {
-        topscore = i.titles
+        topscore = i.goalsfor
         topscorer = i
       }
     })

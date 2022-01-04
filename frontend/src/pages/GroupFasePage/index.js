@@ -32,16 +32,16 @@ export default function GroupFasePage(){
   }, [])
 
   async function getGroups(){
-    console.log('UPDATING GROUPS')
+    console.log('UPDATING GROUPS, YEAR: '+localStorage.getItem('SEASON'))
     let array=[];
     await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"a",}).then((response)=>{array[0]=response.data})
-      .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"b",})).then((response)=>{array[1]=response.data})
-      .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"c",})).then((response)=>{array[2]=response.data})
-      .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"d",})).then((response)=>{array[3]=response.data})
-      .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"e",})).then((response)=>{array[4]=response.data})
-      .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"f",})).then((response)=>{array[5]=response.data})
-      .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"g",})).then((response)=>{array[6]=response.data})
-      .then(()=>api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"h",})).then((response)=>{array[7]=response.data})
+    await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"b",}).then((response)=>{array[1]=response.data})
+    await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"c",}).then((response)=>{array[2]=response.data})
+    await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"d",}).then((response)=>{array[3]=response.data})
+    await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"e",}).then((response)=>{array[4]=response.data})
+    await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"f",}).then((response)=>{array[5]=response.data})
+    await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"g",}).then((response)=>{array[6]=response.data})
+    await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"h",}).then((response)=>{array[7]=response.data})
     
     array.map((i)=>{i.data.sort((a,b)=>a[2]-b[2]); return 0;})
     setGroups(array)
@@ -103,10 +103,11 @@ export default function GroupFasePage(){
       }
     }
 
-    api.put('/updateMatchFile', data).then(()=>{
-      setFinished(true);
-      setLoading(false);
-    })
+    await api.put('/updateMatchFile', data)
+    setFinished(true);
+    setLoading(false);
+    
+    getGroups();
   }
   
   return(
