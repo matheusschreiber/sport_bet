@@ -74,8 +74,10 @@ module.exports = {
 
   async seasonFile(request, response) {
     const { year } = request.body;
-    var file = fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8')
-    return response.json(JSON.parse(file))
+    var file;
+    try {file = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'))}
+    catch (err) {file=0}
+    return response.json(file)
   },
 
   async updateMatchesSeason(request, response) {
@@ -187,11 +189,14 @@ module.exports = {
     } else if (fase=="round of 8"){
       var matches = Object.entries(file.final_fase.round_of_8)
       outcomes.map((i)=>{
-        matches[i[0]-1][1].score_A_first_leg = i[1],
-        matches[i[0]-1][1].score_B_first_leg = i[2],
-        matches[i[0]-1][1].score_A_second_leg = i[3],
+        matches[i[0]-1][1].score_A_first_leg = i[1]
+        matches[i[0]-1][1].score_B_first_leg = i[2]
+        matches[i[0]-1][1].score_A_second_leg = i[3]
         matches[i[0]-1][1].score_B_second_leg = i[4]
+        matches[i[0]-1][1].score_A_penalties = i[5]
+        matches[i[0]-1][1].score_B_penalties = i[6]
       })
+      console.log(matches)
       
       file.final_fase.round_of_8 = {
        match_1: matches[0][1],
@@ -208,10 +213,12 @@ module.exports = {
     } else if (fase=="quarter finals"){
       var matches = Object.entries(file.final_fase.quarter_finals)
       outcomes.map((i)=>{
-        matches[i[0]-1][1].score_A_first_leg = i[1],
-        matches[i[0]-1][1].score_B_first_leg = i[2],
-        matches[i[0]-1][1].score_A_second_leg = i[3],
+        matches[i[0]-1][1].score_A_first_leg = i[1]
+        matches[i[0]-1][1].score_B_first_leg = i[2]
+        matches[i[0]-1][1].score_A_second_leg = i[3]
         matches[i[0]-1][1].score_B_second_leg = i[4]
+        matches[i[0]-1][1].score_A_penalties = i[5]
+        matches[i[0]-1][1].score_B_penalties = i[6]
       })
       
       file.final_fase.quarter_finals = {
@@ -225,10 +232,12 @@ module.exports = {
     } else if (fase=="semi finals"){
       var matches = Object.entries(file.final_fase.semi_finals)
       outcomes.map((i)=>{
-        matches[i[0]-1][1].score_A_first_leg = i[1],
-        matches[i[0]-1][1].score_B_first_leg = i[2],
-        matches[i[0]-1][1].score_A_second_leg = i[3],
+        matches[i[0]-1][1].score_A_first_leg = i[1]
+        matches[i[0]-1][1].score_B_first_leg = i[2]
+        matches[i[0]-1][1].score_A_second_leg = i[3]
         matches[i[0]-1][1].score_B_second_leg = i[4]
+        matches[i[0]-1][1].score_A_penalties = i[5]
+        matches[i[0]-1][1].score_B_penalties = i[6]
       })
       
       file.final_fase.semi_finals = {
@@ -237,14 +246,17 @@ module.exports = {
       }
       fs.writeFileSync(`./src/database/seasons/${year}.json`, JSON.stringify(file),'utf-8');
       return response.json(file.final_fase.semi_finals)
-    } else if (fase=="final"){  
+    } else if (fase=="grand final"){  
       
-      file.final_fase.final.match.score_A = outcomes[0],
-      file.final_fase.final.match.score_B = outcomes[1]
+      file.final_fase.final.match.score_A = outcomes[1]
+      file.final_fase.final.match.score_B = outcomes[2]
+      file.final_fase.final.match.score_A_penalties = outcomes[3]
+      file.final_fase.final.match.score_B_penalties = outcomes[4]
+
       fs.writeFileSync(`./src/database/seasons/${year}.json`, JSON.stringify(file),'utf-8');
       
-      var winner = outcomes[0]>outcomes[1] ? file.final_fase.final.match.A : file.final_fase.final.match.B
-      var loser = outcomes[0]<outcomes[1] ? file.final_fase.final.match.A : file.final_fase.final.match.B
+      var winner = outcomes[1]>outcomes[2]||outcomes[3]>outcomes[4]?file.final_fase.final.match.A:file.final_fase.final.match.B
+      var loser = outcomes[1]<outcomes[2]||outcomes[3]<outcomes[4]?file.final_fase.final.match.A:file.final_fase.final.match.B
       
 
       return response.json({
@@ -365,6 +377,8 @@ module.exports = {
                 "score_B_first_leg": 0,
                 "score_A_second_leg": 0,
                 "score_B_second_leg": 0,
+                "score_A_penalties":0,
+                "score_B_penalties":0,
                 "localA": potA[i][1],
                 "localB": potA[i+1][1]
               }
@@ -378,6 +392,8 @@ module.exports = {
                 "score_B_first_leg": 0,
                 "score_A_second_leg": 0,
                 "score_B_second_leg": 0,
+                "score_A_penalties":0,
+                "score_B_penalties":0,
                 "localA": potB[i-8][1],
                 "localB": potB[i-7][1]
               }
@@ -412,39 +428,66 @@ module.exports = {
     if (file && Object.keys(file.final_fase).length==3) {
       var classified = []
       var disclassified = []
-      Object.entries(file.final_fase.round_of_8).forEach((i)=>{
+      Object.entries(file.final_fase.round_of_8).map((i)=>{
         const [ key, value ] = i
-        if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) {
+        if ((value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg)
+        || (value.score_A_second_leg>value.score_B_first_leg)) {
           classified.push(value.A);
           disclassified.push(value.B);
-        }else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) {
+        } else if ((value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg)
+        || (value.score_A_second_leg<value.score_B_first_leg)) {
           classified.push(value.B);
           disclassified.push(value.A);
+        } else if (value.score_A_penalties>value.score_B_penalties) {
+          classified.push(value.A) 
+          disclassified.push(value.B)
+        } else if (value.score_A_penalties<value.score_B_penalties) {
+          classified.push(value.B) 
+          disclassified.push(value.A)
+        } else {
+          console.log('PROBLEM AT '+value.A+' x '+value.B)
+          console.log('FIRST LEG: '+value.score_A_first_leg+' x '+value.score_B_first_leg)
+          console.log('SECOND LEG: '+value.score_A_second_leg+' x '+value.score_B_second_leg)
         }
-        else classified.push("UNDEFINED BY DUE")
       })
   
-      var quarter_finals = {}
-      for(i=0,j=1;i<8;i+=2, j++){
-        var match = {
-          "A": classified[i],
-          "B": classified[i+1],
-          "score_A_first_leg": 0,
-          "score_B_first_leg": 0,
-          "score_A_second_leg": 0,
-          "score_B_second_leg": 0
+      let infos=[]
+
+      classified.map(async(i)=>{
+        const [{ country, jersey }] = await connection('teams').where('name', i).select('country', 'jersey')
+        infos.push([i,country,jersey])
+      })
+      setTimeout(()=>{
+        console.log({classified, infos})
+        var quarter_finals = {}
+        for(i=0,j=1;i<8;i+=2, j++){
+          var match = {
+            "A": infos[i][0],
+            "jerseyA":infos[i][2],
+            "B": infos[i+1][0],
+            "jerseyB":infos[i+1][2],
+            "score_A_first_leg": 0,
+            "score_B_first_leg": 0,
+            "score_A_second_leg": 0,
+            "score_B_second_leg": 0,
+            "score_A_penalties": 0,
+            "score_B_penalties":0,
+            "localA":infos[i][1],
+            "localB":infos[i+1][1]
+          }
+          quarter_finals[`match_${j}`] = match
         }
-        quarter_finals[`match_${j}`] = match
-      }
-  
-      file.final_fase['quarter_finals'] = quarter_finals;
-      fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
-        if (err) throw Error("Unable to write in season file at quarter finals")
-        response.json({
-          quarter_finals:file.final_fase.quarter_finals,
-          disclassified,
-        })
-      });
+    
+        file.final_fase['quarter_finals'] = quarter_finals;
+        fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
+          if (err) throw Error("Unable to write in season file at quarter finals")
+          response.json({
+            quarter_finals:file.final_fase.quarter_finals,
+            disclassified,
+          })
+        });
+      },1000)
+      
     } else if (Object.keys(file.final_fase).length!=3) {
       throw Error("Trying to create quarter finals data which alerady exists")
     } else throw Error("Season File corrupted or inaccessible");
@@ -458,38 +501,61 @@ module.exports = {
       var disclassified = []
       Object.entries(file.final_fase.quarter_finals).forEach((i)=>{
         const [ key, value ] = i
-        if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) {
+        if ((value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg)
+          || (value.score_A_second_leg>value.score_B_first_leg)) {
           classified.push(value.A);
           disclassified.push(value.B);
-        }
-        else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) {
+        } else if ((value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg)
+          || value.score_A_second_leg<value.score_B_first_leg) {
           classified.push(value.B);
           disclassified.push(value.A);
-        }
-        else classified.push("UNDEFINED BY DUE")
+        } else if (value.score_A_penalties>value.score_B_penalties) {
+          classified.push(value.A) 
+          disclassified.push(value.B)
+        } else if (value.score_A_penalties<value.score_B_penalties) {
+          classified.push(value.B) 
+          disclassified.push(value.A)
+        } else classified.push("UNDEFINED BY DUE")
       })
-  
-      var semi_finals = {}
-      for(i=0,j=1;i<4;i+=2, j++){
-        var match = {
-          "A": classified[i],
-          "B": classified[i+1],
-          "score_A_first_leg": 0,
-          "score_B_first_leg": 0,
-          "score_A_second_leg": 0,
-          "score_B_second_leg": 0
+
+      let infos=[]
+
+      classified.map(async(i)=>{
+        const [{ country, jersey }] = await connection('teams').where('name', i).select('country', 'jersey')
+        infos.push([i,country,jersey])
+      })
+
+      setTimeout(()=>{
+        console.log({classified, infos})
+        var semi_finals = {}
+        for(i=0,j=1;i<4;i+=2, j++){
+          var match = {
+            "A": infos[i][0],
+            "jerseyA":infos[i][2],
+            "B": infos[i+1][0],
+            "jerseyB":infos[i+1][2],
+            "score_A_first_leg": 0,
+            "score_B_first_leg": 0,
+            "score_A_second_leg": 0,
+            "score_B_second_leg": 0,
+            "score_A_penalties":0,
+            "score_B_penalties":0,
+            "localA":infos[i][1],
+            "localB":infos[i+1][1]
+          }
+          semi_finals[`match_${j}`] = match
         }
-        semi_finals[`match_${j}`] = match
-      }
-  
-      file.final_fase['semi_finals'] = semi_finals;
-      fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
-        if (err) throw Error("Unable to write in season file at semi finals")
-        response.json({
-          semi_finals: file.final_fase.semi_finals,
-          disclassified
-        })
-      });
+    
+        file.final_fase['semi_finals'] = semi_finals;
+        fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
+          if (err) throw Error("Unable to write in season file at semi finals")
+          response.json({
+            semi_finals: file.final_fase.semi_finals,
+            disclassified
+          })
+        });
+      },1000)
+
     } else if (Object.keys(file.final_fase).length!=4) {
       throw Error("Trying to create semi finals data which alerady exists")
     } else throw Error("Season File corrupted or inaccessible");
@@ -506,19 +572,46 @@ module.exports = {
         if (value.score_A_first_leg+value.score_A_second_leg > value.score_B_first_leg+value.score_B_second_leg) {
           classified.push(value.A);
           disclassified.push(value.B);
-        }
-        else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) {
+        } else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) {
           classified.push(value.B);
           disclassified.push(value.A);
-        }
-        else classified.push("UNDEFINED BY DUE")
+        } else if (value.score_A_penalties>value.score_B_penalties) {
+          classified.push(value.A) 
+          disclassified.push(value.B)
+        } else if (value.score_A_penalties<value.score_B_penalties) {
+          classified.push(value.B) 
+          disclassified.push(value.A)
+        } else classified.push("UNDEFINED BY DUE")
       }) 
+
+      const choices = [
+        'Wembley Stadium - England',
+        'Allianz Arena - Germany',
+        'Gazprom Arena - Russia',
+        'Estadio do Dragao - Portugal',
+        'Estadio da Luz - Portugal',
+        'Wanda Metropolitano - Spain',
+        'NSC Olimpiyskiy - Ukraine',
+        'Millennium Stadium - Wales',
+        'San Siro - Spain',
+        'Olympiastadion Berlin - Germany'
+      ]
+      const stadium = choices[Math.round(Math.random()*10)]
+
+      const jerseyA = await connection('teams').where('name',classified[0]).select('jersey')
+      const jerseyB = await connection('teams').where('name',classified[1]).select('jersey')
+
       file.final_fase['final'] = {
         match: {
           "A": classified[0],
           "B": classified[1],
           "score_A": 0,
+          "jerseyA":jerseyA[0].jersey,
           "score_B": 0,
+          "jerseyB":jerseyB[0].jersey,
+          "score_A_penalties":0,
+          "score_A_penalties":0,
+          "local": stadium
         }
       }
       fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{

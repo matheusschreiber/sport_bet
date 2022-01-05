@@ -143,6 +143,40 @@ module.exports = {
     })
   },  
 
+  async penalties(request, response){
+    const { team_1, team_2 } = request.body;
+    const fan_quota = 1
+
+    const [team_1_info] = await connection('teams').where('name',team_1).select('*')
+    const [team_2_info] = await connection('teams').where('name',team_2).select('*')
+
+    let score_A=0, score_B=0, taken=0;
+    
+    while(true){
+      if (Math.round(Math.random()*10)>=5) score_A++; 
+      if (Math.round(Math.random()*10)>=5) score_B++;
+      taken++;
+
+      if (Math.abs(score_A-score_B)>=3) break;
+      else if (taken>=5 && Math.abs(score_A-score_B)) break;
+    }
+
+    await connection('teams').where('name',team_1).update({goalsfor:team_1_info.goalsfor+score_A, goalsagainst:team_1_info.goalsagainst+score_B})
+    await connection('teams').where('name',team_2).update({goalsfor:team_2_info.goalsfor+score_B, goalsagainst:team_2_info.goalsagainst+score_A})
+
+    return response.json({outcome:{
+      team_1:{
+        name: team_1,
+        goals: score_A,
+      },
+      team_2:{
+        name: team_2,
+        goals: score_B,
+      },
+      fans_added: fan_quota
+    }})
+  },
+
   async setBiggestOpponent(request, response){
     const { team, biggest_opponent, goals } = request.body;
     await connection('teams').where('name', team)

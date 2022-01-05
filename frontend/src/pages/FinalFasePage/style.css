@@ -64,6 +64,8 @@
 
 .semi_final_container img {
   width: 100px;
+  max-height: 100px;
+  object-fit: contain;
 }
 
 .semi_final_container h2 {
@@ -107,7 +109,8 @@
 }
 
 .final_team img {
-  width: 200px;
+  max-height: 200px;
+  object-fit: contain;
   margin-bottom: 20px;
 }
 
@@ -118,4 +121,9 @@
 .final_score h1 {
   margin-top: 20px;
   font-size: 40pt;
+}
+
+.final_score h2 {
+  color: var(--amarelo);
+  margin-top: 30px;
 }

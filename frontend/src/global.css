@@ -59,6 +59,11 @@ body {
   transform: scale(1.1);
 }
 
+#pressed {
+  opacity: .3;
+  cursor: not-allowed;
+}
+
 .HIGHLIGHT{
   background-color: var(--amarelo);
   color: var(--azul_escuro);
