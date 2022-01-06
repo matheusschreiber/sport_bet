@@ -196,7 +196,6 @@ module.exports = {
         matches[i[0]-1][1].score_A_penalties = i[5]
         matches[i[0]-1][1].score_B_penalties = i[6]
       })
-      console.log(matches)
       
       file.final_fase.round_of_8 = {
        match_1: matches[0][1],
@@ -458,7 +457,6 @@ module.exports = {
         infos.push([i,country,jersey])
       })
       setTimeout(()=>{
-        console.log({classified, infos})
         var quarter_finals = {}
         for(i=0,j=1;i<8;i+=2, j++){
           var match = {
@@ -526,7 +524,6 @@ module.exports = {
       })
 
       setTimeout(()=>{
-        console.log({classified, infos})
         var semi_finals = {}
         for(i=0,j=1;i<4;i+=2, j++){
           var match = {

@@ -13,12 +13,25 @@ import thropy from '../../assets/Thropy.png'
 import api from '../../services/api';
 
 export default function FinalFasePage() {
-  const [ loading, setLoading ] = useState(false);
-  const [ loadingRound, setLoadingRound ] = useState(false)
-  const [ loadedMatches, setLoadedMatches ] = useState([]);
   const [ potATeamsMatches, setPotATeamsMatches ] = useState([]);
   const [ potBTeamsMatches, setPotBTeamsMatches ] = useState([]);    
   const [ buttonStatus, setbuttonStatus ] = useState('PRESSED');
+  const [ loadingRound, setLoadingRound ] = useState(false)
+  const [ winningSeason, setWinningSeason ] = useState({
+    team_name:'LOADING',
+    year: localStorage.getItem('SEASON'),
+    placement: 'LOADING',
+    biggest_opponent:'',
+    least_opponent:'',
+    wins:0,
+    losses:0,
+    dues:0,
+    games:0,
+    goalsfor:0,
+    goalsagainst:0
+  });
+  const [ loadedMatches, setLoadedMatches ] = useState([]);
+  const [ loading, setLoading ] = useState(false);
   const [ fase, setFase ] = useState('ROUND OF 8')
 
   const nav = useNavigate();
@@ -68,6 +81,20 @@ export default function FinalFasePage() {
         aux[0].score_A_penalties = answer[3]
         aux[0].score_B_penalties = answer[4]
         setPotATeamsMatches(aux)
+
+        if ((answer[1]>answer[2])||(answer[3]>answer[4])) setWinningSeason({
+          team_name:'LOADING',
+          year: localStorage.getItem('SEASON'),
+          placement: 'TITLE',
+          biggest_opponent:'',
+          least_opponent:'',
+          wins:0,
+          losses:0,
+          dues:0,
+          games:0,
+          goalsfor:0,
+          goalsagainst:0
+        })
 
         return [1, answer[1], answer[2], answer[3], answer[4]]
       }
@@ -161,6 +188,7 @@ export default function FinalFasePage() {
       await updateRound();
       setbuttonStatus('PRESSED');
     } else if (buttonStatus==='FINISH SEASON'){
+      setWinningSeason([])
       nav('/')
     }
   }
@@ -357,9 +385,20 @@ export default function FinalFasePage() {
         <div className="button" onClick={changeStage} id={buttonStatus==='PRESSED'?'pressed':''}>
           {buttonStatus!=='PRESSED'?buttonStatus:'LOADING'}
         </div>
+      <div className="season_overall" style={fase==='GRAND FINAL'?{}:{display:'none'}}>
+        <h1>{winningSeason.team_name}'s Season {winningSeason.year}</h1>
+        <h3>{winningSeason.wins} wins</h3>
+        <h3>{winningSeason.losses} losses</h3>
+        <h3>{winningSeason.dues} dues</h3>
+        <h3>{winningSeason.games} games</h3>
+        <h3>{winningSeason.goalsfor} goals for</h3>
+        <h3>{winningSeason.goalsagainst} goals against</h3>
+        <h2>{winningSeason.placement}</h2>
+      </div>
       </div>
       <Footer />
     </div>
 
   );
 }
+
