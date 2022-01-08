@@ -54,7 +54,7 @@ export default function GroupFasePage(){
 
     async function generateMatchOutcome(match, team_1, team_2){
       let answer = []
-      await api.put('/match', {team_1,team_2}).then((response)=>{
+      await api.put('/match', {year:localStorage.getItem('SEASON'),team_1,team_2}).then((response)=>{
         console.log(response.data.outcome.team_1.name + ' ' + response.data.outcome.team_1.goals + ' x ' + response.data.outcome.team_2.goals + ' ' + response.data.outcome.team_2.name)
         answer = [ match, response.data.outcome.team_1.goals, response.data.outcome.team_2.goals ];
       })

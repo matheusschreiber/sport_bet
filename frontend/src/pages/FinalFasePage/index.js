@@ -42,16 +42,16 @@ export default function FinalFasePage() {
 
     async function generateMatchOutcome(match, team1, team2){
       let answer = []
-      const response1 = await api.put('/match', {team_1:team1,team_2:team2})
+      const response1 = await api.put('/match', {year: localStorage.getItem('SEASON'), team_1:team1,team_2:team2})
       console.log(response1.data.outcome.team_1.name + ' ' + response1.data.outcome.team_1.goals + ' x ' + response1.data.outcome.team_2.goals + ' ' + response1.data.outcome.team_2.name)
-      const response2 = await api.put('/match', {team_1:team2,team_2:team1})
+      const response2 = await api.put('/match', {year: localStorage.getItem('SEASON'), team_1:team2,team_2:team1})
       console.log(response2.data.outcome.team_1.name + ' ' + response2.data.outcome.team_1.goals + ' x ' + response2.data.outcome.team_2.goals + ' ' + response2.data.outcome.team_2.name)
       
       answer = [ match, response1.data.outcome.team_1.goals, response1.data.outcome.team_2.goals, response2.data.outcome.team_2.goals, response2.data.outcome.team_1.goals ];
       answer[5] = 0
       answer[6] = 0
       if ((answer[1]+answer[3]===answer[2]+answer[4])&&(answer[2]===answer[3])){
-        const response = await api.put('/penalties', {team_1:team2, team_2:team1})
+        const response = await api.put('/penalties', {year: localStorage.getItem('SEASON'), team_1:team2, team_2:team1})
         answer[5] = response.data.outcome.team_2.goals
         answer[6] = response.data.outcome.team_1.goals
       }
@@ -69,6 +69,7 @@ export default function FinalFasePage() {
         console.log(response.data.outcome.team_1.name + ' ' + answer[1] + ' x ' + answer[2] + ' ' + response.data.outcome.team_2.name)
         answer[3] = 0
         answer[4] = 0
+        
         if (answer[1]===answer[2]){
           const res = await api.put('/penalties', {team_1:matchLegsA[0].A, team_2:matchLegsA[0].B})
           answer[3] = res.data.outcome.team_1.goals
@@ -82,19 +83,8 @@ export default function FinalFasePage() {
         aux[0].score_B_penalties = answer[4]
         setPotATeamsMatches(aux)
 
-        if ((answer[1]>answer[2])||(answer[3]>answer[4])) setWinningSeason({
-          team_name:'LOADING',
-          year: localStorage.getItem('SEASON'),
-          placement: 'TITLE',
-          biggest_opponent:'',
-          least_opponent:'',
-          wins:0,
-          losses:0,
-          dues:0,
-          games:0,
-          goalsfor:0,
-          goalsagainst:0
-        })
+        //season = await api.get(`season/${localStorage.getItem('SEASON').replace(/-/g,"")} ${matchLegsA[0].A}`)
+        //setWinningSeason(season)
 
         return [1, answer[1], answer[2], answer[3], answer[4]]
       }
@@ -132,12 +122,21 @@ export default function FinalFasePage() {
       outcomes: await generateOutcome(potATeamsMatches, potBTeamsMatches)
     }
 
-    await api.put('/updateMatchFile', data)
+    await api.put('/updateMatchFile', data);
     setLoadedMatches([0]);
     setLoading(false);
     setLoadingRound(false);
     if (fase==='GRAND FINAL') setbuttonStatus('FINISH SEASON')
     else setbuttonStatus('NEXT');
+  }
+
+  async function registerDisclassified(disclassified, placement){
+    let i=0;
+    for(i=0;i<disclassified.length;i++){
+      const season = await api.get(`getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${disclassified[i]}`)
+      season.placement = placement
+      await api.put('updateSeason', season)
+    }
   }
   
   async function updateRound(){
@@ -148,15 +147,17 @@ export default function FinalFasePage() {
         setPotATeamsMatches([round.data.quarter_finals.match_1,round.data.quarter_finals.match_2]);
         setPotBTeamsMatches([round.data.quarter_finals.match_3,round.data.quarter_finals.match_4]);
         setFase("QUARTER FINALS");
+        registerDisclassified(round.data.disclassified, 'ROUNDOF8')
         setLoading(false);
         setbuttonStatus('SIMULATE ROUND');
-      },1000)
+      },500)
     } else if (fase === "QUARTER FINALS" && buttonStatus==='NEXT') {
       setTimeout(async()=>{
         const round = await api.put('setup2',{year:localStorage.getItem('SEASON')})
         setPotATeamsMatches([round.data.semi_finals.match_1]);
         setPotBTeamsMatches([round.data.semi_finals.match_2]);
         setFase("SEMI FINALS");
+        registerDisclassified(round.data.disclassified, 'QUARTERS')
         setLoading(false);
         setbuttonStatus('SIMULATE ROUND');
       },500)
@@ -166,6 +167,7 @@ export default function FinalFasePage() {
         setPotATeamsMatches([round.data.final.match]);
         setPotBTeamsMatches([]);
         setFase("GRAND FINAL");
+        registerDisclassified(round.data.disclassified, 'SEMIS')
         setLoading(false);
         setbuttonStatus('SIMULATE ROUND');
       },500)
@@ -174,6 +176,7 @@ export default function FinalFasePage() {
         const round = await api.put('setup8',{year:localStorage.getItem('SEASON')})
         setPotATeamsMatches([round.data.round_of_8.match_1,round.data.round_of_8.match_2,round.data.round_of_8.match_3,round.data.round_of_8.match_4]);
         setPotBTeamsMatches([round.data.round_of_8.match_5,round.data.round_of_8.match_6,round.data.round_of_8.match_7,round.data.round_of_8.match_8]);
+        registerDisclassified(round.data.disclassified, 'GROUPS')
         setLoading(false);
         setbuttonStatus('SIMULATE ROUND');
       },500)
@@ -203,24 +206,24 @@ export default function FinalFasePage() {
       else setbuttonStatus('SIMULATE ROUND')
     } else if (response.data.final_fase.semi_finals) {
       setFase('SEMI FINALS')
-      const aux = response.data.semi_finals
+      const aux = response.data.final_fase.semi_finals
       setPotATeamsMatches([aux.match_1])
       setPotBTeamsMatches([aux.match_2])
-      if(aux.match_1.score_A||aux.match_1.score_B||aux.match_1.score_A_penalties||aux.match_1.score_B_penalties) setbuttonStatus('NEXT')
+      if(aux.match_1.score_A_first_leg||aux.match_1.score_B_first_leg||aux.match_1.score_A_second_leg||aux.match_1.score_B_second_leg||aux.match_1.score_A_penalties||aux.match_1.score_B_penalties) setbuttonStatus('NEXT')
       else setbuttonStatus('SIMULATE ROUND')
     } else if (response.data.final_fase.quarter_finals) {
       const aux = response.data.final_fase.quarter_finals
       setFase('QUARTER FINALS')
       setPotATeamsMatches([aux.match_1, aux.match_2])
       setPotBTeamsMatches([aux.match_3, aux.match_4])
-      if(aux.match_1.score_A||aux.match_1.score_B||aux.match_1.score_A_penalties||aux.match_1.score_B_penalties) setbuttonStatus('NEXT')
+      if(aux.match_1.score_A_first_leg||aux.match_1.score_B_first_leg||aux.match_1.score_A_second_leg||aux.match_1.score_B_second_leg||aux.match_1.score_A_penalties||aux.match_1.score_B_penalties) setbuttonStatus('NEXT')
       else setbuttonStatus('SIMULATE ROUND')
     } else if (response.data.final_fase.round_of_8) {
       const aux = response.data.final_fase.round_of_8
       setFase('ROUND OF 8')
       setPotATeamsMatches([aux.match_1, aux.match_2, aux.match_3, aux.match_4])
       setPotBTeamsMatches([aux.match_5, aux.match_6, aux.match_7, aux.match_8])
-      if(aux.match_1.score_A||aux.match_1.score_B||aux.match_1.score_A_penalties||aux.match_1.score_B_penalties) setbuttonStatus('NEXT')
+      if(aux.match_1.score_A_first_leg||aux.match_1.score_B_first_leg||aux.match_1.score_A_second_leg||aux.match_1.score_B_second_leg||aux.match_1.score_A_penalties||aux.match_1.score_B_penalties) setbuttonStatus('NEXT')
       else setbuttonStatus('SIMULATE ROUND')
     } else {
       console.log("No current final fase found, creating one...")
@@ -385,7 +388,7 @@ export default function FinalFasePage() {
         <div className="button" onClick={changeStage} id={buttonStatus==='PRESSED'?'pressed':''}>
           {buttonStatus!=='PRESSED'?buttonStatus:'LOADING'}
         </div>
-      <div className="season_overall" style={fase==='GRAND FINAL'?{}:{display:'none'}}>
+      <div className="season_overall" style={buttonStatus==='FINISH SEASON'?{}:{display:'none'}}>
         <h1>{winningSeason.team_name}'s Season {winningSeason.year}</h1>
         <h3>{winningSeason.wins} wins</h3>
         <h3>{winningSeason.losses} losses</h3>

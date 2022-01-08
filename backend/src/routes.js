@@ -13,10 +13,11 @@ router.put('/setup8', SeasonController.setupRoundOf8);
 router.put('/setup4', SeasonController.setupQuarter);
 router.put('/setup2', SeasonController.setupSemis);
 router.put('/setupfinal', SeasonController.setupFinal);
-router.post('/registerSeason', SeasonController.registerSeason);
+router.post('/updateSeason', SeasonController.updateSeason);
 router.get('/getBestSeason', SeasonController.getBestSeason);
 router.get('/getbestWinstreak', SeasonController.getbestWinstreak);
 router.post('/getGroup', SeasonController.getGroup);
+router.put('/getSeason/:id', SeasonController.getSeason)
 
 router.put('/bgOpponent', TeamsController.setBiggestOpponent);
 router.get('/bgOpponent/:team', TeamsController.getBiggestOpponent);
@@ -32,7 +33,7 @@ router.get('/getTopScorer', TeamsController.getTopScorer);
 router.get('/getTeamsJSON', TeamsController.getTeamsJSON);
 router.get('/getTeam/:team',TeamsController.getTeam);
 
-router.post('/rgmatch', MatchesController.registerMatch);
+router.post('/rgmatch', MatchesController.registerMatch); //REMOVER DEPOIS
 router.get('/getGoalsOpponent', MatchesController.getScoresbyOpponent);
 
 

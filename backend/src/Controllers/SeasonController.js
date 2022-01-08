@@ -20,24 +20,32 @@ module.exports = {
       }
       return matches;
     }
+
     const { year, teams } = request.body;
     
     var teamsFormatted = [];
     var j=0, k=0;
 
-    teams.map((i)=>{
+    teams.map(async(i)=>{
       teamsFormatted[k] = {
         "name": i,
         "points": 0,
         "current_position": j+1,
         "old_position": 5
       }
-
       if (j==3) j=0;
       else j++;
-      
       k++;
     })
+
+    for(i=0;i<teams.length;i++){
+      const [{fans}] = await connection('teams').where('name', teams[i]).select('fans');
+      const season = await connection('seasons').where('id', `${year.replace(/-/g,"")} ${teams[i]}`).select('*');
+      if (season[0]) await connection('seasons').where('id', `${year.replace(/-/g,"")} ${teams[i]}`).update({id:`${year.replace(/-/g,"")} ${teams[i]}`,team_name:teams[i],
+        placement:'PENDING',season_score:0,wins:0,losses:0,dues:0,games:0,goalsfor:0,goalsagainst:0,biggest_opponent:'',least_opponent:'',fans})
+      else await connection('seasons').insert({id:`${year.replace(/-/g,"")} ${teams[i]}`,team_name:teams[i],
+        placement:'PENDING',season_score:0,wins:0,losses:0,dues:0,games:0,goalsfor:0,goalsagainst:0,biggest_opponent:'',least_opponent:'',fans})
+    }
 
     var groups = [];
     for(i=0, j=0;i<8;i++, j+=4){
@@ -399,7 +407,7 @@ module.exports = {
             }
             round_of_8[`match_${j}`] = match
           }
-          
+
           seasonFile.final_fase = {
             teams_pot_A: potA,
             teams_pot_B: potB,
@@ -572,6 +580,12 @@ module.exports = {
         } else if (value.score_A_first_leg+value.score_A_second_leg < value.score_B_first_leg+value.score_B_second_leg) {
           classified.push(value.B);
           disclassified.push(value.A);
+        } else if (value.score_A_second_leg>value.score_B_first_leg){
+          classified.push(value.A);
+          disclassified.push(value.B);
+        } else if (value.score_A_second_leg<value.score_B_first_leg){
+          classified.push(value.B);
+          disclassified.push(value.A);
         } else if (value.score_A_penalties>value.score_B_penalties) {
           classified.push(value.A) 
           disclassified.push(value.B)
@@ -623,10 +637,16 @@ module.exports = {
     } else throw Error("Season File corrupted or inaccessible");
   },
 
-  async registerSeason(request, response){
+  async getSeason(request,response){
+    const { id } = request.params;
+    const data = await connection('seasons').where('id', id.replace(/_/g," ")).select('*')
+    return response.json(data)
+  },
+  
+  async updateSeason(request, response){
     const { 
-      team_name,
       year,
+      team_name,
       placement,
       biggest_opponent,
       least_opponent,
@@ -640,9 +660,7 @@ module.exports = {
         
     const [{ fans }] = await connection('teams').where('name', team_name).select('fans')
 
-    const yearSplited = year.split('-')
-    let yearNumber = parseInt(yearSplited[0])*10000 + parseInt(yearSplited[1])
-    const id = `${yearNumber} ${team_name}`;
+    const id = `${year.replace(/-/g,"")} ${team_name}`;
 
     var p = 0;
     switch(placement){
@@ -668,6 +686,8 @@ module.exports = {
         await connection('teams').where('name', team_name).update('titles', titles+1)
         p = 10;
         break;
+      case "PENDING":
+        break;
       default:
         throw Error("Wrong placement informed");
     }
@@ -691,8 +711,9 @@ module.exports = {
       least_opponent,
       fans,
     }
-
-    await connection('seasons').insert(data)
+    const season = await connection('seasons').where('id',id).select('*')
+    if (season[0]) await connection('seasons').where('id',id).update(data)
+    else await connection('seasons').insert(data)
     return response.json(data)
   },
 

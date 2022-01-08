@@ -29,7 +29,7 @@ module.exports = {
   },
 
   async playMatch(request, response) {
-    const { team_1, team_2 } = request.body;
+    const { year, team_1, team_2 } = request.body;
 
     const [team_1_info] = await connection('teams').where('name',team_1).select('*')
     const [team_2_info] = await connection('teams').where('name',team_2).select('*')
@@ -69,61 +69,48 @@ module.exports = {
     if (!due) {
       const [{wins:wA, goalsfor:gfA, goalsagainst:gaA, games:gA, fans:fA}] = await connection('teams')
         .where('name',winner[0])
-        .select([
-        'wins',
-        'goalsfor',
-        'goalsagainst',
-        'games',
-        'fans',
-      ]);
+        .select(['wins','goalsfor','goalsagainst','games','fans',]);
       await connection('teams')
         .where('name', winner[0])
-        .update({
-          wins: wA+1,
-          goalsfor: gfA+winner[1],
-          goalsagainst: gaA+loser[1],
-          games: gA+1,
-          fans:fA+fan_quota
-        });
-      
+        .update({wins: wA+1,goalsfor: gfA+winner[1],goalsagainst: gaA+loser[1],games: gA+1,fans:fA+fan_quota});
+
+      const [{wins:wA_season, goalsfor:gfA_season, goalsagainst:gaA_season, games:gA_season, fans:fA_season}] = await connection('seasons')
+        .where('id',`${year.replace(/-/g,"")} ${winner[0]}`)
+        .select(['wins','goalsfor','goalsagainst','games','fans']);
+      await connection('seasons')
+        .where('id',`${year.replace(/-/g,"")} ${winner[0]}`)
+        .update({wins:wA_season+1,goalsfor:gfA_season+winner[1], goalsagainst:gaA_season+loser[1], games:gA_season+1, fans:fA_season+fan_quota});
+    
       const [{losses:lB, goalsfor:gfB, goalsagainst:gaB, games:gB, fans:fB}] = await connection('teams')
         .where('name',loser[0])
-        .select([
-        'losses',
-        'goalsfor',
-        'goalsagainst',
-        'games',
-        'fans',
-      ]);
+        .select(['losses','goalsfor','goalsagainst','games','fans',]);
       await connection('teams')
         .where('name', loser[0])
-        .update({
-          losses: lB+1,
-          goalsfor: gfB+loser[1],
-          goalsagainst: gaB+winner[1],
-          games: gB+1,
-          fans:fB+fan_quota
-        });
+        .update({losses: lB+1,goalsfor: gfB+loser[1],goalsagainst: gaB+winner[1],games: gB+1,fans:fB+fan_quota});
 
+      const [{losses:lB_season, goalsfor:gfB_season, goalsagainst:gaB_season, games:gB_season, fans:fB_season}] = await connection('seasons')
+        .where('id',`${year.replace(/-/g,"")} ${loser[0]}`)
+        .select(['losses','goalsfor','goalsagainst','games','fans']);
+      await connection('seasons')
+        .where('id',`${year.replace(/-/g,"")} ${loser[0]}`)
+        .update({losses:lB_season+1,goalsfor:gfB_season+loser[1], goalsagainst:gaB_season+winner[1], games:gB_season+1, fans:fB_season-fan_quota});
     } else {
       var team = [ team_1, goals_A, goals_B];
       for(i=0;i<2;i++){
         const [{dues, goalsfor, goalsagainst, games}] = await connection('teams')
           .where('name',team[0])
-          .select([
-          'dues',
-          'goalsfor',
-          'goalsagainst',
-          'games',
-        ]);
+          .select(['dues','goalsfor','goalsagainst','games']);
         await connection('teams')
           .where('name', team[0])
-          .update({
-            dues: dues+1,
-            goalsfor: goalsfor+team[1],
-            goalsagainst: goalsagainst+team[2],
-            games: games+1
-        });
+          .update({dues: dues+1,goalsfor: goalsfor+team[1],goalsagainst: goalsagainst+team[2],games: games+1});
+        
+        const [{dues:d_season, goalsfor:gf_season, goalsagainst:ga_season, games:g_season, fans:f_season}] = await connection('seasons')
+          .where('id',`${year.replace(/-/g,"")} ${team[0]}`)
+          .select(['dues','goalsfor','goalsagainst','games','fans']);
+        await connection('seasons')
+          .where('id',`${year.replace(/-/g,"")} ${team[0]}`)
+          .update({dues:d_season+1,goalsfor:gf_season+team[1], goalsagainst:ga_season+team[2], games:g_season+1, fans:f_season+fan_quota});
+
         team = [ team_2, goals_B, goals_A ];
       }
     }
@@ -144,7 +131,7 @@ module.exports = {
   },  
 
   async penalties(request, response){
-    const { team_1, team_2 } = request.body;
+    const { year, team_1, team_2 } = request.body;
     const fan_quota = 1
 
     const [team_1_info] = await connection('teams').where('name',team_1).select('*')
@@ -162,7 +149,10 @@ module.exports = {
     }
 
     await connection('teams').where('name',team_1).update({goalsfor:team_1_info.goalsfor+score_A, goalsagainst:team_1_info.goalsagainst+score_B})
+    await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_1}`).update({goalsfor:score_A, goalsagainst:score_B})
+
     await connection('teams').where('name',team_2).update({goalsfor:team_2_info.goalsfor+score_B, goalsagainst:team_2_info.goalsagainst+score_A})
+    await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_2}`).update({goalsfor:score_B, goalsagainst:score_A})
 
     return response.json({outcome:{
       team_1:{
