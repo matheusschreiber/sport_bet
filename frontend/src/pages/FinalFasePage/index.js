@@ -63,7 +63,7 @@ export default function FinalFasePage() {
     async function generateOutcome(matchLegsA, matchLegsB){
       let i, answer=[1];
       if (fase==='GRAND FINAL') {
-        const response = await api.put('/match', {team_1:matchLegsA[0].A,team_2:matchLegsA[0].B})
+        const response = await api.put('/match', {year:localStorage.getItem('SEASON'), team_1:matchLegsA[0].A,team_2:matchLegsA[0].B})
         answer[1] = response.data.outcome.team_1.goals;
         answer[2] = response.data.outcome.team_2.goals
         console.log(response.data.outcome.team_1.name + ' ' + answer[1] + ' x ' + answer[2] + ' ' + response.data.outcome.team_2.name)
@@ -232,12 +232,14 @@ export default function FinalFasePage() {
   }
 
   useEffect(()=>{
-    window.scroll(0,0);
-    setLoading(true)
-    setTimeout(async()=>{
+    async function fetchData() {
       await checkRound();
       setLoading(false);
-    }, 1000)
+    }
+    
+    window.scroll(0,0);
+    setLoading(true);
+    fetchData();
   }, [])
 
 
@@ -268,22 +270,23 @@ export default function FinalFasePage() {
               <div>
               {
                 potATeamsMatches.map((i)=>(
-                  <div className="match_final_fase">
-                    <ul className="teams_final_fase">
-                      <li key={"potA"+i.A}>{i.A.toUpperCase()}</li>
-                      <li key={"potA"+i.B}>{i.B.toUpperCase()}</li>
+                  <div className="match_final_fase" key={i.A}>
+                    <ul className="teams_final_fase" key={i.A + "UL1"}>
+                      <li key={i.A + "UL1_li1"}>{i.A.toUpperCase()}</li>
+                      <li key={i.A + "UL1_li2"}>{i.B.toUpperCase()}</li>
                     </ul>
-                    <ul>
-                      <li key={`potAscore1_${i.A}`}>{i.score_A_first_leg}</li>
-                      <li key={`potAscore1_${i.B}`}>{i.score_B_first_leg}</li>
+                    <ul key={i.A + "UL2"}>
+                      <li key={i.A + "UL2_li1"}>{i.score_A_first_leg}</li>
+                      <li key={i.A + "UL2_li2"}>{i.score_B_first_leg}</li>
                     </ul>
-                    <ul>
-                      <li key={`potAscore2_${i.A}`}>{i.score_A_second_leg}</li>
-                      <li key={`potAscore2_${i.B}`}>{i.score_B_second_leg}</li>
+                    <ul key={i.A + "UL3"}>
+                      <li key={i.A + "UL3_li1"}>{i.score_A_second_leg}</li>
+                      <li key={i.A + "UL3_li2"}>{i.score_B_second_leg}</li>
                     </ul>
-                    <ul style={i.score_A_penalties||i.score_B_penalties?{fontSize:'12pt', color:'var(--amarelo)'}:{display:'none'}}>
-                      <li key={`potApenalties_${i.A}`}>{i.score_A_penalties}</li>
-                      <li key={`potApenalties_${i.B}`}>{i.score_B_penalties}</li>
+                    <ul style={i.score_A_penalties||i.score_B_penalties?{fontSize:'12pt', color:'var(--amarelo)'}:{display:'none'}}
+                      key={i.A + "UL4"}>
+                      <li key={i.A + "UL4_li1"}>{i.score_A_penalties}</li>
+                      <li key={i.A + "UL4_li2"}>{i.score_B_penalties}</li>
                     </ul>
                   </div>
                 ))
@@ -292,22 +295,23 @@ export default function FinalFasePage() {
               <div>
               {
                 potBTeamsMatches.map((i)=>(
-                  <div className="match_final_fase" style={{justifyContent:'left',textAlign:'left'}}>
-                    <ul style={i.score_A_penalties||i.score_B_penalties?{fontSize:'12pt', color:'var(--amarelo)'}:{display:'none'}}>
-                      <li key={`potBpenalties_${i.A}`}>{i.score_A_penalties}</li>
-                      <li key={`potBpenalties_${i.B}`}>{i.score_B_penalties}</li>
+                  <div className="match_final_fase" style={{justifyContent:'left',textAlign:'left'}} key={i.B}>
+                    <ul style={i.score_A_penalties||i.score_B_penalties?{fontSize:'12pt', color:'var(--amarelo)'}:{display:'none'}}
+                      key={i.B + "UL1"}>
+                      <li key={i.B + "UL1_li1"}>{i.score_A_penalties}</li>
+                      <li key={i.B + "UL1_li2"}>{i.score_B_penalties}</li>
                     </ul>
-                    <ul>
-                      <li key={`potBscore1_${i.A}`}>{i.score_A_first_leg}</li>
-                      <li key={`potBscore1_${i.B}`}>{i.score_B_first_leg}</li>
+                    <ul key={i.B + "UL2"}>
+                      <li key={i.B + "UL2_li1"}>{i.score_A_first_leg}</li>
+                      <li key={i.B + "UL2_li2"}>{i.score_B_first_leg}</li>
                     </ul>
-                    <ul>
-                      <li key={`potBscore2_${i.A}`}>{i.score_A_second_leg}</li>
-                      <li key={`potBscore2_${i.B}`}>{i.score_B_second_leg}</li>
+                    <ul key={i.B + "UL3"}>
+                      <li key={i.B + "UL3_li1"}>{i.score_A_second_leg}</li>
+                      <li key={i.B + "UL3_li2"}>{i.score_B_second_leg}</li>
                     </ul>
-                    <ul className="teams_final_fase" style={{textAlign:'left'}}>
-                      <li key={"potB"+i.A}>{i.A.toUpperCase()}</li>
-                      <li key={"potB"+i.B}>{i.B.toUpperCase()}</li>
+                    <ul className="teams_final_fase" style={{textAlign:'left'}} key={i.B + "UL4"}>
+                      <li key={i.B + "UL4_li1"}>{i.A.toUpperCase()}</li>
+                      <li key={i.B + "UL4_li2"}>{i.B.toUpperCase()}</li>
                     </ul>
                   </div>
                 ))

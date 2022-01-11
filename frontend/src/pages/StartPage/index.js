@@ -33,16 +33,10 @@ export default function StartPage(){
           <div className="button" onClick={async () => {
             localStorage.setItem('SEASON','2019-2020')
             setLoading(true)
-            api.get('getTeamsJSON').then((response)=>{
-              api.post('newseason',{
-                year,
-                teams:response.data
-              })
-            }).then(setTimeout(()=>{
-              setLoading(false)
-              navigate('/groups')
-            }, 1000)
-            );
+            const response = await api.get('getTeamsJSON')
+            await api.post('newseason',{year,teams:response.data})
+            setLoading(false)
+            navigate('/groups')
           }}>START SEASON</div>
           <p>CURRENT SEASON: {year}</p>
         </div>
