@@ -132,10 +132,15 @@ export default function FinalFasePage() {
 
   async function registerDisclassified(disclassified, placement){
     let i=0;
+    function sleep(ms) {return new Promise(resolve => setTimeout(resolve, ms));}
+    await sleep(500);
+
     for(i=0;i<disclassified.length;i++){
-      const season = await api.get(`getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${disclassified[i]}`)
-      season.placement = placement
-      await api.put('updateSeason', season)
+      const response = await api.put(`/getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${disclassified[i]}`)
+      const season = response.data
+      season[0].placement = placement
+      season[0].year = localStorage.getItem('SEASON');
+      await api.put('updateSeason', season[0])
     }
   }
   
@@ -146,37 +151,37 @@ export default function FinalFasePage() {
         const round = await api.put('setup4',{year:localStorage.getItem('SEASON')})
         setPotATeamsMatches([round.data.quarter_finals.match_1,round.data.quarter_finals.match_2]);
         setPotBTeamsMatches([round.data.quarter_finals.match_3,round.data.quarter_finals.match_4]);
+        await registerDisclassified(round.data.disclassified, 'ROUNDOF8')
         setFase("QUARTER FINALS");
-        registerDisclassified(round.data.disclassified, 'ROUNDOF8')
-        setLoading(false);
         setbuttonStatus('SIMULATE ROUND');
+        setLoading(false);
       },500)
     } else if (fase === "QUARTER FINALS" && buttonStatus==='NEXT') {
       setTimeout(async()=>{
         const round = await api.put('setup2',{year:localStorage.getItem('SEASON')})
         setPotATeamsMatches([round.data.semi_finals.match_1]);
         setPotBTeamsMatches([round.data.semi_finals.match_2]);
+        await registerDisclassified(round.data.disclassified, 'QUARTERS')
         setFase("SEMI FINALS");
-        registerDisclassified(round.data.disclassified, 'QUARTERS')
-        setLoading(false);
         setbuttonStatus('SIMULATE ROUND');
+        setLoading(false);
       },500)
     } else if (fase === "SEMI FINALS" && buttonStatus==='NEXT') {
       setTimeout(async()=>{
         const round = await api.put('setupfinal',{year:localStorage.getItem('SEASON')})
         setPotATeamsMatches([round.data.final.match]);
         setPotBTeamsMatches([]);
+        await registerDisclassified(round.data.disclassified, 'SEMIS')
         setFase("GRAND FINAL");
-        registerDisclassified(round.data.disclassified, 'SEMIS')
-        setLoading(false);
         setbuttonStatus('SIMULATE ROUND');
+        setLoading(false);
       },500)
     } else {
       setTimeout(async()=>{
         const round = await api.put('setup8',{year:localStorage.getItem('SEASON')})
         setPotATeamsMatches([round.data.round_of_8.match_1,round.data.round_of_8.match_2,round.data.round_of_8.match_3,round.data.round_of_8.match_4]);
         setPotBTeamsMatches([round.data.round_of_8.match_5,round.data.round_of_8.match_6,round.data.round_of_8.match_7,round.data.round_of_8.match_8]);
-        registerDisclassified(round.data.disclassified, 'GROUPS')
+        await registerDisclassified(round.data.disclassified, 'GROUPS')
         setLoading(false);
         setbuttonStatus('SIMULATE ROUND');
       },500)
@@ -231,15 +236,11 @@ export default function FinalFasePage() {
     }
   }
 
-  useEffect(()=>{
-    async function fetchData() {
-      await checkRound();
-      setLoading(false);
-    }
-    
+  useEffect(()=>{    
     window.scroll(0,0);
     setLoading(true);
-    fetchData();
+    checkRound();
+    setLoading(false);
   }, [])
 
 
@@ -261,6 +262,11 @@ export default function FinalFasePage() {
             updateRound();    
             window.location.reload();
           }} style={{cursor:'pointer', fontSize:'20pt', lineHeight:'50pt'}}>RESET</h3>
+
+          <h3 onClick={async()=>{
+            const response = await api.put(`getSeason/20192020 Paris Saint Germain`)
+            console.log(response.data)
+          }}>TEST</h3>
 
         </div>
 

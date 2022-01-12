@@ -639,7 +639,7 @@ module.exports = {
 
   async getSeason(request,response){
     const { id } = request.params;
-    const data = await connection('seasons').where('id', id.replace(/_/g," ")).select('*')
+    const data = await connection('seasons').where('id', id).select('*')
     return response.json(data)
   },
   

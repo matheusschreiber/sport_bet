@@ -30,20 +30,24 @@ export default function GroupFasePage(){
   
   async function getGroups(){
     console.log('UPDATING GROUPS, YEAR: '+localStorage.getItem('SEASON'))
-    let array=[], response;
-    response = await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"a",}); array[0] = response.data;
-    response = await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"b",}); array[1] = response.data;
-    response = await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"c",}); array[2] = response.data;
-    response = await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"d",}); array[3] = response.data;
-    response = await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"e",}); array[4] = response.data;
-    response = await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"f",}); array[5] = response.data;
-    response = await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"g",}); array[6] = response.data;
-    response = await api.post('/getGroup', {year: localStorage.getItem('SEASON'),group:"h",}); array[7] = response.data;
-    
-    array.map((i)=>{i.data.sort((a,b)=>a[2]-b[2]); return 0;})
-    setGroups(array)
-    if (array[7].data[0][1]||array[7].data[1][1]||array[7].data[2][1]||array[7].data[3][1]) setFinished(true)
-    else setFinished(false)
+    try{
+      let array=[], response;
+      response = await api.put('/getGroup', {year: localStorage.getItem('SEASON'),group:"a",}); array[0] = response.data;
+      response = await api.put('/getGroup', {year: localStorage.getItem('SEASON'),group:"b",}); array[1] = response.data;
+      response = await api.put('/getGroup', {year: localStorage.getItem('SEASON'),group:"c",}); array[2] = response.data;
+      response = await api.put('/getGroup', {year: localStorage.getItem('SEASON'),group:"d",}); array[3] = response.data;
+      response = await api.put('/getGroup', {year: localStorage.getItem('SEASON'),group:"e",}); array[4] = response.data;
+      response = await api.put('/getGroup', {year: localStorage.getItem('SEASON'),group:"f",}); array[5] = response.data;
+      response = await api.put('/getGroup', {year: localStorage.getItem('SEASON'),group:"g",}); array[6] = response.data;
+      response = await api.put('/getGroup', {year: localStorage.getItem('SEASON'),group:"h",}); array[7] = response.data;
+      
+      array.map((i)=>{i.data.sort((a,b)=>a[2]-b[2]); return 0;})
+      setGroups(array)
+      if (array[7].data[0][1]||array[7].data[1][1]||array[7].data[2][1]||array[7].data[3][1]) setFinished(true)
+      else setFinished(false)
+    } catch(err){
+      alert('PROBLEM IN CONNECTION WITH BACKEND TRY RESTARTING THE PAGE')
+    }
   }
   
   async function simulateGroupFase(){
@@ -80,49 +84,50 @@ export default function GroupFasePage(){
       return array;
     }
 
+    function sleep(ms) {return new Promise(resolve => setTimeout(resolve, ms));}
+
     let i=0;
     for(i=0;i<8;i++) {
       let data, done = false;
-      const response = await api.post('/getGroup', {year:localStorage.getItem('SEASON'),group:groups[i].group})
-      if (response.data.data[0][1]||response.data.data[1][1]||response.data.data[2][1]||response.data.data[3][1]) done = true;
-    
-      if (!done) {
-        switch (groups[i].group){
-          case "A":
-            data = {group_a: await generateGroupOutcomes(groups[i].data)}
-            break;
-          case "B":
-            data = {group_b: await generateGroupOutcomes(groups[i].data)}
-            break;
-          case "C":
-            data = {group_c: await generateGroupOutcomes(groups[i].data)}
-            break;
-          case "D":
-            data = {group_d: await generateGroupOutcomes(groups[i].data)}
-            break;
-          case "E":
-            data = {group_e: await generateGroupOutcomes(groups[i].data)}
-            break;
-          case "F":
-            data = {group_f: await generateGroupOutcomes(groups[i].data)}
-            break;
-          case "G":
-            data = {group_g: await generateGroupOutcomes(groups[i].data)}
-            break;
-          case "H":
-            data = {group_h: await generateGroupOutcomes(groups[i].data)}
-            break;
-          default:
-            data = null;
+      try {
+        const response = await api.put('/getGroup', {year:localStorage.getItem('SEASON'),group:groups[i].group})
+        if (response.data.data[0][1]||response.data.data[1][1]||response.data.data[2][1]||response.data.data[3][1]) done = true;
+        if (!done) {
+          switch (groups[i].group){
+            case "A": data = {group_a: await generateGroupOutcomes(groups[i].data)};break;
+            case "B": data = {group_b: await generateGroupOutcomes(groups[i].data)};break;
+            case "C": data = {group_c: await generateGroupOutcomes(groups[i].data)};break;
+            case "D": data = {group_d: await generateGroupOutcomes(groups[i].data)};break;
+            case "E": data = {group_e: await generateGroupOutcomes(groups[i].data)};break;
+            case "F": data = {group_f: await generateGroupOutcomes(groups[i].data)};break;
+            case "G": data = {group_g: await generateGroupOutcomes(groups[i].data)};break;
+            case "H": data = {group_h: await generateGroupOutcomes(groups[i].data)};break;
+            default: data = null;
+          }
+
+          await api.put('/updateMatchFile', {
+            year: localStorage.getItem('SEASON'),
+            fase: "group",
+            outcomes: data
+          })
+
+          const res = await api.put('/getGroup', {year:localStorage.getItem('SEASON'),group:groups[i].group})
+          let array = groups.slice()
+          array[i].data = res.data.data
+          array.map((j)=>{j.data.sort((a,b)=>a[2]-b[2]); return 0;})
+          setGroups(array)
+
+          await sleep(1000)
+
         }
-  
-        await api.put('/updateMatchFile', {
-          year: localStorage.getItem('SEASON'),
-          fase: "group",
-          outcomes: data
-        })
+        setLoadedGroups(loadedGroups.push(0))
+        
+      } catch(err){
+        alert('REQUEST RESPONSE DELAY MUST BE RECONFIGURED FOR THIS CONNECTION. CONTACT THE CODE OWNER FOR DETAILS')
+        setUpdate(update.push(0))
+    setFinished(true);
+    setLoading(false);
       }
-      setLoadedGroups(loadedGroups.push(0))
     }
     setUpdate(update.push(0))
     setFinished(true);
@@ -199,7 +204,9 @@ export default function GroupFasePage(){
           <div className="load_square" style={loadedGroups>7?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
         </div>
         <Dots color="var(--vermelho_escuro)" style={loading?{display:'block'}:{display:'none'}}/>
-        <div className="button" style={finished?{display:'none'}:{}} onClick={simulateGroupFase}>SIMULATE ENTIRE GROUP FASE</div>
+        <div className="button" style={finished?{display:'none'}:{}} onClick={simulateGroupFase} id={loading?'pressed':''}>
+          {loading?'LOADING':'SIMULATE ENTIRE GROUP FASE'}</div>
+
         <div className="button" style={finished?{}:{display:'none'}} onClick={()=>nav('/finals')}>GO TO FINAL FASE</div>
       </div>
       <Footer />
