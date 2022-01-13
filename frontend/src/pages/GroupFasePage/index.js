@@ -116,13 +116,14 @@ export default function GroupFasePage(){
           array[i].data = res.data.data
           array.map((j)=>{j.data.sort((a,b)=>a[2]-b[2]); return 0;})
           setGroups(array)
-          await sleep(1000)
+          await sleep(1500)
         }
         setLoadedGroups(loadedGroups.push(0))
       } catch(err){
         alert('REQUEST RESPONSE DELAY MUST BE RECONFIGURED FOR THIS CONNECTION. CONTACT THE CODE OWNER FOR DETAILS')
         setFinished(true);
         setLoading(false);
+        break;
       }
     }
     setFinished(true);
@@ -138,10 +139,6 @@ export default function GroupFasePage(){
     <div>
       <Header />
       <div className="groups_container">
-        <div className="history_linker" onClick={()=>nav('/history')}>
-          <h2>TEAMS HISTORY</h2>
-          <FiAward size={40}/>
-        </div>
         <div className="title_container">
           <h1>CLASSIFICATIONS</h1>  
           <h2>SEASON { localStorage.getItem('SEASON')?localStorage.getItem('SEASON'):'LOADING...' }</h2>

@@ -61,18 +61,13 @@ export default function Historypage(){
 
   async function getHall(){
     setLoading(true);
-    let array = [];
-    await api.get('/getBiggestWinner')
-      .then((response)=>{array[0]=response.data;})
-      .then(api.get('/getTopScorer')
-      .then((response)=>{array[1]=response.data;}))
-      .then(api.get('/getBestSeason').then((response)=>{array[2]=response.data;}))
-      .then(api.get('/getbestWinstreak').then((response)=>{
-        array[3]=response.data;
-        setHall(array.slice());
-        setLoading(false);
-    }))
-    
+    let array = [], response;
+    response = await api.get('/getBiggestWinner');  array[0]=response.data;
+    response = await api.get('/getTopScorer');      array[1]=response.data;
+    response = await api.get('/getBestSeason');     array[2]=response.data;
+    response = await api.get('/getbestWinstreak');  array[3]=response.data;
+    setHall(array.slice());
+    setLoading(false);    
   }
 
   return(
@@ -82,7 +77,7 @@ export default function Historypage(){
         <div className="button" onClick={createAllTeams} 
           style={teams.length!==32?{}:{display:'none'}}>GENERATE TEAMS</div>
         <div className="history_back">
-          <h2 onClick={()=>nav('/groups')}>GO BACK</h2>
+          <h2 onClick={()=>nav('/')}>GO BACK</h2>
           <FiArrowRight size={27}/>
         </div>
         <div className="table_title">

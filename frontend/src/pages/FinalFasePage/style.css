@@ -137,5 +137,10 @@
 }
 
 .season_overall h2 {
-  color: var(--amarelo)
+  color: var(--amarelo);
+  margin-top: 10px;
+}
+
+.season_overall h1 {
+  margin-bottom: 20px;
 }

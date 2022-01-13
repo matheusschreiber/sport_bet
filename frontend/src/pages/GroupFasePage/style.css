@@ -102,34 +102,6 @@
   padding: 0;
 }
 
-.history_linker{
-  background-color: var(--vermelho_claro);
-  width: 230px;
-  height: 60px;
-  font-weight: 400;
-  padding: 20px;
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: right;
-  line-height: 17pt;
-  position: relative;
-  left:-50px;
-  cursor: pointer;
-  transition: .2s;
-}
-
-.history_linker h2 {
-  font-size: 16pt;
-  margin-bottom: 10px;
-  width: 100px;
-}
-
-.history_linker:hover{
-  transition: .2s;
-  left: -30px;
-}
-
 .load_square {
   width: 10px;
   height: 10px;

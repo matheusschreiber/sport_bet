@@ -738,15 +738,16 @@ module.exports = {
 
   async getbestWinstreak(request, response){    
     const teams = await connection('teams').select('*');
-    let bestWinstreak=0, bestWinstreakTeam;
+    let bestWinstreak=1, bestWinstreakTeam;
 
     teams.map(async(i)=>{
       const seasons = await connection('seasons')
         .where({'team_name':i.name, 'placement':'TITLE'})
         .select('*');
-      
-      let streak=0, streakID;
+        
+        let streak=1, streakID;
       if (seasons) seasons.map((j)=>{
+        if (!bestWinstreakTeam) bestWinstreakTeam = i;
         if (streakID){
           let array = streakID.split(' ')
           nextID = `${parseInt(array[0])+10001} ${array.slice(1)}`
@@ -757,18 +758,21 @@ module.exports = {
               bestWinstreak = streak;
               bestWinstreakTeam = i;
             }
-          } else streak=0;
+          } else streak=1;
         }
         streakID = j.id;
       })  
 
-
-      if (teams.indexOf(i)==teams.length-1)return response.json({
-        team: bestWinstreakTeam,
-        streak: bestWinstreak
-      });
+      if (teams.indexOf(i)==teams.length-1) return response.json({team: bestWinstreakTeam,streak: bestWinstreak});
     })
   },
+
+  async getAnyFile(request,response){
+    fs.readdir('./src/database/seasons', (err, files)=>{
+      if(err) return response.json(err)
+      return response.json(files[files.length-2]);
+    })
+  }
 
 }
 

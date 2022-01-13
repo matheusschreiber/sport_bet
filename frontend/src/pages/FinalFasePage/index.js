@@ -133,13 +133,13 @@ export default function FinalFasePage() {
   async function updateSeasonWinner(){
     let pot = potATeamsMatches[0];
     if ((pot.score_A>pot.score_B)||(pot.score_A_penalties>pot.score_B_penalties)){
-      registerSeason([pot.A], 'TITLE')
-      registerSeason([pot.B], 'FINALIST')
+      await registerSeason([pot.A], 'TITLE')
+      await registerSeason([pot.B], 'FINALIST')
       const res = await api.put(`/getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${pot.A}`)
       setWinningSeason(res.data[0])
     } else {
-      registerSeason([pot.B], 'TITLE')
-      registerSeason([pot.A], 'FINALIST')
+      await registerSeason([pot.B], 'TITLE')
+      await registerSeason([pot.A], 'FINALIST')
       const res = await api.put(`/getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${pot.B}`)
       setWinningSeason(res.data[0])
     }
@@ -413,6 +413,7 @@ export default function FinalFasePage() {
         <h3>{winningSeason.games} games</h3>
         <h3>{winningSeason.goalsfor} goals for</h3>
         <h3>{winningSeason.goalsagainst} goals against</h3>
+        <h2>SEASON SCORE {winningSeason.season_score} </h2>
       </div>
       </div>
       <Footer />
