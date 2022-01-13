@@ -116,20 +116,15 @@ export default function GroupFasePage(){
           array[i].data = res.data.data
           array.map((j)=>{j.data.sort((a,b)=>a[2]-b[2]); return 0;})
           setGroups(array)
-
           await sleep(1000)
-
         }
         setLoadedGroups(loadedGroups.push(0))
-        
       } catch(err){
         alert('REQUEST RESPONSE DELAY MUST BE RECONFIGURED FOR THIS CONNECTION. CONTACT THE CODE OWNER FOR DETAILS')
-        setUpdate(update.push(0))
-    setFinished(true);
-    setLoading(false);
+        setFinished(true);
+        setLoading(false);
       }
     }
-    setUpdate(update.push(0))
     setFinished(true);
     setLoading(false);
   }

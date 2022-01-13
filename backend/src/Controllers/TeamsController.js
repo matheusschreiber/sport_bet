@@ -149,10 +149,13 @@ module.exports = {
     }
 
     await connection('teams').where('name',team_1).update({goalsfor:team_1_info.goalsfor+score_A, goalsagainst:team_1_info.goalsagainst+score_B})
-    await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_1}`).update({goalsfor:score_A, goalsagainst:score_B})
-
     await connection('teams').where('name',team_2).update({goalsfor:team_2_info.goalsfor+score_B, goalsagainst:team_2_info.goalsagainst+score_A})
-    await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_2}`).update({goalsfor:score_B, goalsagainst:score_A})
+    
+    const [{goalsfor:gfA_season, goalsagainst:gaA_season}] = await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_1}`).select(['goalsfor','goalsagainst']);
+    await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_1}`).update({goalsfor:gfA_season+score_A, goalsagainst:gaA_season+score_B});
+
+    const [{goalsfor:gfB_season, goalsagainst:gaB_season}] = await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_2}`).select(['goalsfor','goalsagainst']);
+    await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_2}`).update({goalsfor:gfB_season+score_B, goalsagainst:gaB_season+score_A});
 
     return response.json({outcome:{
       team_1:{

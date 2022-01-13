@@ -668,23 +668,23 @@ module.exports = {
         p = 1;
         break;
       case "ROUNDOF8":
-        p = 6;
+        p = 2;
         break;
       case "QUARTERS":
-        p = 7;
+        p = 3;
         break;
       case "SEMIS":
-        p = 8;
+        p = 4;
         break;
       case "FINALIST":
         const [{vices}] = await connection('teams').where('name', team_name).select('vices')
         await connection('teams').where('name', team_name).update('vices', vices+1)  
-        p = 9;
+        p = 10;
         break;
       case "TITLE":
         const [{titles}] = await connection('teams').where('name', team_name).select('titles')
         await connection('teams').where('name', team_name).update('titles', titles+1)
-        p = 10;
+        p = 20;
         break;
       case "PENDING":
         break;
@@ -694,7 +694,9 @@ module.exports = {
 
     let season_score;
     if (!games) season_score = 0;
-    else season_score = (wins-dues/2-losses)*(4/games)+(p*(5/games))+(goalsfor-goalsagainst)*0.01
+    else season_score = (wins-dues/2-losses)*(4/games)+(5*p/20)+(goalsfor-goalsagainst)*0.01
+
+    season_score = (Math.round(season_score*100))/100
     
     const data = {
       id,
