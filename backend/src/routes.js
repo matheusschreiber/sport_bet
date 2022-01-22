@@ -3,8 +3,7 @@ const MatchesController = require('./Controllers/MatchesController');
 const router = express.Router()
 
 const SeasonController = require('./Controllers/SeasonController');
-const TeamsController = require('./Controllers/TeamsController')
-
+const TeamsController = require('./Controllers/TeamsController');
 
 router.post('/newseason', SeasonController.createSeasonFile);
 router.put('/file', SeasonController.seasonFile);
@@ -20,10 +19,7 @@ router.put('/getGroup', SeasonController.getGroup);
 router.put('/getSeason/:id', SeasonController.getSeason)
 router.get('/getAnyFile', SeasonController.getAnyFile);
 
-router.put('/bgOpponent', TeamsController.setBiggestOpponent);
-router.get('/bgOpponent/:team', TeamsController.getBiggestOpponent);
-router.put('/wkOpponent', TeamsController.setWeakestOpponent);
-router.get('/wkOpponent/:team', TeamsController.getWeakestOpponent);
+router.put('/updateOpponent', TeamsController.updateOpponents);
 router.post('/newteam', TeamsController.createTeam);
 router.put('/match', TeamsController.playMatch);
 router.put('/penalties', TeamsController.penalties);
@@ -34,8 +30,8 @@ router.get('/getTopScorer', TeamsController.getTopScorer);
 router.get('/getTeamsJSON', TeamsController.getTeamsJSON);
 router.get('/getTeam/:team',TeamsController.getTeam);
 
-router.post('/rgmatch', MatchesController.registerMatch); //REMOVER DEPOIS
-router.get('/getGoalsOpponent', MatchesController.getScoresbyOpponent);
+router.post('/rgmatch', MatchesController.registerMatch); 
+router.put('/getGoalsOpponent', MatchesController.getScoresbyOpponent);
 
 
 module.exports = router;

@@ -1,0 +1,7 @@
+disclaimer:
+  in this backend i was using nodemon when building the code in the beggining, but then i was getting 
+  some erros about connection refused because the server was restarting each time the json file was
+  updated, so that was causing me a lot of trouble. I change the start script to only node index when i
+  was testing the frontend stuff.
+
+  You can change back to 'nodemon src/index.js' whenever you desire.

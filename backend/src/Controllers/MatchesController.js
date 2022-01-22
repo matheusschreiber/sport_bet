@@ -17,22 +17,36 @@ module.exports = {
   },
 
   async getScoresbyOpponent(request, response){
-    const { team, opponent, year } = request.body;
+    const { team, year } = request.body;
     
-    const goalsB = await connection('matches')
-      .where({'team_A': team, 'team_B':opponent, 'year':year})
-      .select('score_B')
+    const teams = await connection('teams').whereNot('name', team).select('*')
+    let biggestScore=0, biggestScorer=""
+    let leastScore=100000, leastScorer=""
     
-    var totalGoals=0;
-    goalsB.map((i)=>{totalGoals+=parseInt(i.score_B)})
-
-    const goalsA = await connection('matches')
-      .where({'team_B': team, 'team_A':opponent, 'year':year})
+    await Promise.all(teams.map(async(t)=>{
+      var totalGoals=0;
+      
+      const goalsA = await connection('matches')
+      .where({'team_B': team, 'team_A':t.name, 'year':year})
       .select('score_A')
+      const goalsB = await connection('matches')
+      .where({'team_A': team, 'team_B':t.name, 'year':year})
+      .select('score_B')
+      
+      goalsA.map((i)=>{totalGoals+=parseInt(i.score_A)})
+      goalsB.map((i)=>{totalGoals+=parseInt(i.score_B)})
+      
+      if (totalGoals>biggestScore){
+        biggestScore = totalGoals
+        biggestScorer = t.name
+      }
+      if (totalGoals<leastScore){
+        leastScore=totalGoals
+        leastScorer=t.name
+      }
+    }))
     
-    goalsA.map((i)=>{totalGoals+=parseInt(i.score_A)})
-
-    return response.json({goals: totalGoals})
+    return response.json({easy:leastScorer, easyScore:leastScore, hard: biggestScorer, hardScore: biggestScore})
   },
 
 }

@@ -425,8 +425,12 @@ module.exports = {
       },1000)
      
     } else if (Object.keys(seasonFile.final_fase).length!=0) {
+      console.log('error')
       throw Error("Trying to create round of 8 data which alerady exists")
-    } else throw Error("Season File corrupted or inaccessible");
+    } else {
+      console.log('errro hre')
+      throw Error("Season File corrupted or inaccessible");
+    }
   },
 
   async setupQuarter(request, response){

@@ -56,6 +56,22 @@ export default function FinalFasePage() {
         answer[6] = response.data.outcome.team_1.goals
       }
       
+      await api.post('./rgmatch', {
+        year:localStorage.getItem('SEASON'),
+        team_A:team1,
+        team_B:team2,
+        score_A:answer[1],
+        score_B:answer[2],
+      })
+
+      await api.post('./rgmatch', {
+        year:localStorage.getItem('SEASON'),
+        team_A:team1,
+        team_B:team2,
+        score_A:answer[2]+answer[5],
+        score_B:answer[3]+answer[6]
+      })
+
       setLoadedMatches(loadedMatches.push(0))
       return answer;
     }
@@ -75,6 +91,14 @@ export default function FinalFasePage() {
           answer[3] = res.data.outcome.team_1.goals
           answer[4] = res.data.outcome.team_2.goals
         }
+
+        await api.post('./rgmatch', {
+          year:localStorage.getItem('SEASON'),
+          team_A:matchLegsA[0].A,
+          team_B:matchLegsA[0].B,
+          score_A:answer[1]+answer[3],
+          score_B:answer[2]+answer[4]
+        })
 
         let aux = potATeamsMatches;
         aux[0].score_A = answer[1]
@@ -145,64 +169,61 @@ export default function FinalFasePage() {
     }
   }
   
-  function sleep(ms) {return new Promise(resolve => setTimeout(resolve, ms));}
-
   async function registerSeason(disclassified, placement){
     let i=0;
-    await sleep(500);
-
-    for(i=0;i<disclassified.length;i++){
+    await Promise.all(disclassified.map(async(d)=>{
       let response;
-      if (disclassified.length===1) response = await api.put(`/getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${disclassified}`)
-      else response = await api.put(`/getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${disclassified[i]}`)
+      response = await api.put(`/getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${d}`)
       const season = response.data
+      response = await api.put('/getGoalsOpponent', {year:localStorage.getItem('SEASON'), team:d})
+      
+      await api.put('/updateOpponent', {
+        team:d,
+        bg_opponent:`${response.data.hardScore} - ${response.data.hard}`,
+        lt_opponent:`${response.data.easyScore} - ${response.data.easy}`
+      })
+
+      season[0].biggest_opponent = `${response.data.hardScore} - ${response.data.hard}`
+      season[0].least_opponent = `${response.data.easyScore} - ${response.data.easy}`
       season[0].placement = placement
       season[0].year = localStorage.getItem('SEASON');
       await api.put('updateSeason', season[0])
-    }
+    }))
   }
   
   async function updateRound(){
     setLoading(true)
     if (fase === "ROUND OF 8" && buttonStatus==='NEXT') {
-      setTimeout(async()=>{
-        const round = await api.put('setup4',{year:localStorage.getItem('SEASON')})
-        setPotATeamsMatches([round.data.quarter_finals.match_1,round.data.quarter_finals.match_2]);
-        setPotBTeamsMatches([round.data.quarter_finals.match_3,round.data.quarter_finals.match_4]);
-        await registerSeason(round.data.disclassified, 'ROUNDOF8')
-        setFase("QUARTER FINALS");
-        setbuttonStatus('SIMULATE ROUND');
-        setLoading(false);
-      },500)
+      const round = await api.put('setup4',{year:localStorage.getItem('SEASON')})
+      setPotATeamsMatches([round.data.quarter_finals.match_1,round.data.quarter_finals.match_2]);
+      setPotBTeamsMatches([round.data.quarter_finals.match_3,round.data.quarter_finals.match_4]);
+      await registerSeason(round.data.disclassified, 'ROUNDOF8')
+      setFase("QUARTER FINALS");
+      setbuttonStatus('SIMULATE ROUND');
+      setLoading(false);
     } else if (fase === "QUARTER FINALS" && buttonStatus==='NEXT') {
-      setTimeout(async()=>{
-        const round = await api.put('setup2',{year:localStorage.getItem('SEASON')})
-        setPotATeamsMatches([round.data.semi_finals.match_1]);
-        setPotBTeamsMatches([round.data.semi_finals.match_2]);
-        await registerSeason(round.data.disclassified, 'QUARTERS')
-        setFase("SEMI FINALS");
-        setbuttonStatus('SIMULATE ROUND');
-        setLoading(false);
-      },500)
+      const round = await api.put('setup2',{year:localStorage.getItem('SEASON')})
+      setPotATeamsMatches([round.data.semi_finals.match_1]);
+      setPotBTeamsMatches([round.data.semi_finals.match_2]);
+      await registerSeason(round.data.disclassified, 'QUARTERS')
+      setFase("SEMI FINALS");
+      setbuttonStatus('SIMULATE ROUND');
+      setLoading(false);
     } else if (fase === "SEMI FINALS" && buttonStatus==='NEXT') {
-      setTimeout(async()=>{
-        const round = await api.put('setupfinal',{year:localStorage.getItem('SEASON')})
-        setFase("GRAND FINAL");
-        setPotATeamsMatches([round.data.final.match]);
-        setPotBTeamsMatches([]);
-        await registerSeason(round.data.disclassified, 'SEMIS')
-        setbuttonStatus('SIMULATE ROUND');
-        setLoading(false);
-      },500)
+      const round = await api.put('setupfinal',{year:localStorage.getItem('SEASON')})
+      setFase("GRAND FINAL");
+      setPotATeamsMatches([round.data.final.match]);
+      setPotBTeamsMatches([]);
+      await registerSeason(round.data.disclassified, 'SEMIS')
+      setbuttonStatus('SIMULATE ROUND');
+      setLoading(false);
     } else {
-      setTimeout(async()=>{
-        const round = await api.put('setup8',{year:localStorage.getItem('SEASON')})
-        setPotATeamsMatches([round.data.round_of_8.match_1,round.data.round_of_8.match_2,round.data.round_of_8.match_3,round.data.round_of_8.match_4]);
-        setPotBTeamsMatches([round.data.round_of_8.match_5,round.data.round_of_8.match_6,round.data.round_of_8.match_7,round.data.round_of_8.match_8]);
-        await registerSeason(round.data.disclassified, 'GROUPS')
-        setLoading(false);
-        setbuttonStatus('SIMULATE ROUND');
-      },500)
+      const round = await api.put('setup8',{year:localStorage.getItem('SEASON')})
+      setPotATeamsMatches([round.data.round_of_8.match_1,round.data.round_of_8.match_2,round.data.round_of_8.match_3,round.data.round_of_8.match_4]);
+      setPotBTeamsMatches([round.data.round_of_8.match_5,round.data.round_of_8.match_6,round.data.round_of_8.match_7,round.data.round_of_8.match_8]);
+      await registerSeason(round.data.disclassified, 'GROUPS')
+      setLoading(false);
+      setbuttonStatus('SIMULATE ROUND');
     }
   }
 
@@ -211,8 +232,8 @@ export default function FinalFasePage() {
       setbuttonStatus('PRESSED');
       await simulateRound();
     } else if (buttonStatus==='NEXT'){
-      await updateRound();
       setbuttonStatus('PRESSED');
+      await updateRound();
     } else if (buttonStatus==='FINISH SEASON'){
       setbuttonStatus('PRESSED');
       nav('/')
@@ -366,9 +387,11 @@ export default function FinalFasePage() {
               <div className="semi_text_container" style={{textAlign: 'left'}}>
                 <h2>{potBTeamsMatches[0]?potBTeamsMatches[0].B:'LOADING'}</h2>
               </div>
+              
             </div>
           </div>
-          <div style={fase==='GRAND FINAL'?{}:{display:'none'}}>
+          <div style={fase==='GRAND FINAL'?{}:{display:'none'}} className="final_container">
+            <h2 id="stadium">{potATeamsMatches[0]?potATeamsMatches[0].local:'LOADING'}</h2>
             <div className="final">
               <div className="final_team">
                 <img src={potATeamsMatches[0]?potATeamsMatches[0].jerseyA:'LOADING'} alt={"Jersey"} />  

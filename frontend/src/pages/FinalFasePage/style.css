@@ -144,3 +144,8 @@
 .season_overall h1 {
   margin-bottom: 20px;
 }
+
+.final_container h2#stadium{
+  margin-bottom: 50px;
+  font-size: 15pt;
+}

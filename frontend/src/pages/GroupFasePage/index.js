@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiChevronUp, FiChevronDown, FiMinus, FiAward } from 'react-icons/fi'
+import { FiChevronUp, FiChevronDown, FiMinus} from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 import './style.css'
@@ -17,6 +17,7 @@ export default function GroupFasePage(){
   const [ update, setUpdate ] = useState([])
   const [ finished, setFinished ] = useState(false);
   const [ loadedGroups, setLoadedGroups ] = useState([])
+  const [ match_log, setMatchLog ] = useState([[],[],[],[],[],[],[],[],[]])
   const [ groups, setGroups ] = useState([{
     group: 'A',
     data: [
@@ -53,38 +54,50 @@ export default function GroupFasePage(){
   async function simulateGroupFase(){
     setLoading(true)
     
-    async function generateMatchOutcome(match, team_1, team_2){
+    async function generateMatchOutcome(match, team_1, team_2, id){
       let answer = []
       const response = await api.put('/match', {year:localStorage.getItem('SEASON'),team_1,team_2})
-      console.log(response.data.outcome.team_1.name + ' ' + response.data.outcome.team_1.goals + ' x ' + response.data.outcome.team_2.goals + ' ' + response.data.outcome.team_2.name)
+      
+      await api.post('./rgmatch', {
+        year:localStorage.getItem('SEASON'),
+        team_A:response.data.outcome.team_1.name,
+        team_B:response.data.outcome.team_2.name,
+        score_A:response.data.outcome.team_1.goals,
+        score_B:response.data.outcome.team_2.goals
+      })
+      
+      let matchArray = match_log.slice()      
+      matchArray[id].push(response.data.outcome.team_1.name + ' ' + response.data.outcome.team_1.goals + ' x ' + response.data.outcome.team_2.goals + ' ' + response.data.outcome.team_2.name)      
+      setMatchLog(matchArray)    
+
       answer = [ match, response.data.outcome.team_1.goals, response.data.outcome.team_2.goals ];
       return answer;
     }
     
-    async function generateGroupOutcomes(g){
+    async function generateGroupOutcomes(g, id){
       let array = [];
-      array[0] = await generateMatchOutcome(1,g[0][0],g[1][0]);
-      array[1] = await generateMatchOutcome(2,g[2][0],g[3][0]);
+      array[0] = await generateMatchOutcome(1,g[0][0],g[1][0], id);
+      array[1] = await generateMatchOutcome(2,g[2][0],g[3][0], id);
       
-      array[2] = await generateMatchOutcome(3,g[0][0],g[2][0]);
-      array[3] = await generateMatchOutcome(4,g[1][0],g[3][0]);
+      array[2] = await generateMatchOutcome(3,g[0][0],g[2][0], id);
+      array[3] = await generateMatchOutcome(4,g[1][0],g[3][0], id);
       
-      array[4] = await generateMatchOutcome(5,g[0][0],g[3][0]);
-      array[5] = await generateMatchOutcome(6,g[1][0],g[2][0]);
+      array[4] = await generateMatchOutcome(5,g[0][0],g[3][0], id);
+      array[5] = await generateMatchOutcome(6,g[1][0],g[2][0], id);
       
-      array[6] = await generateMatchOutcome(7,g[1][0],g[0][0]);
-      array[7] = await generateMatchOutcome(8,g[3][0],g[2][0]);
+      array[6] = await generateMatchOutcome(7,g[1][0],g[0][0], id);
+      array[7] = await generateMatchOutcome(8,g[3][0],g[2][0], id);
       
-      array[8] = await generateMatchOutcome(9,g[2][0],g[0][0]);
-      array[9] = await generateMatchOutcome(10,g[3][0],g[1][0]);
+      array[8] = await generateMatchOutcome(9,g[2][0],g[0][0], id);
+      array[9] = await generateMatchOutcome(10,g[3][0],g[1][0], id);
       
-      array[10] = await generateMatchOutcome(11,g[3][0],g[0][0]);
-      array[11] = await generateMatchOutcome(12,g[2][0],g[1][0]);
-  
+      array[10] = await generateMatchOutcome(11,g[3][0],g[0][0], id);
+      array[11] = await generateMatchOutcome(12,g[2][0],g[1][0], id);
+      
+      
+      
       return array;
     }
-
-    function sleep(ms) {return new Promise(resolve => setTimeout(resolve, ms));}
 
     let i=0;
     for(i=0;i<8;i++) {
@@ -94,14 +107,14 @@ export default function GroupFasePage(){
         if (response.data.data[0][1]||response.data.data[1][1]||response.data.data[2][1]||response.data.data[3][1]) done = true;
         if (!done) {
           switch (groups[i].group){
-            case "A": data = {group_a: await generateGroupOutcomes(groups[i].data)};break;
-            case "B": data = {group_b: await generateGroupOutcomes(groups[i].data)};break;
-            case "C": data = {group_c: await generateGroupOutcomes(groups[i].data)};break;
-            case "D": data = {group_d: await generateGroupOutcomes(groups[i].data)};break;
-            case "E": data = {group_e: await generateGroupOutcomes(groups[i].data)};break;
-            case "F": data = {group_f: await generateGroupOutcomes(groups[i].data)};break;
-            case "G": data = {group_g: await generateGroupOutcomes(groups[i].data)};break;
-            case "H": data = {group_h: await generateGroupOutcomes(groups[i].data)};break;
+            case "A": data = {group_a: await generateGroupOutcomes(groups[i].data, i)};break;
+            case "B": data = {group_b: await generateGroupOutcomes(groups[i].data, i)};break;
+            case "C": data = {group_c: await generateGroupOutcomes(groups[i].data, i)};break;
+            case "D": data = {group_d: await generateGroupOutcomes(groups[i].data, i)};break;
+            case "E": data = {group_e: await generateGroupOutcomes(groups[i].data, i)};break;
+            case "F": data = {group_f: await generateGroupOutcomes(groups[i].data, i)};break;
+            case "G": data = {group_g: await generateGroupOutcomes(groups[i].data, i)};break;
+            case "H": data = {group_h: await generateGroupOutcomes(groups[i].data, i)};break;
             default: data = null;
           }
 
@@ -116,11 +129,11 @@ export default function GroupFasePage(){
           array[i].data = res.data.data
           array.map((j)=>{j.data.sort((a,b)=>a[2]-b[2]); return 0;})
           setGroups(array)
-          await sleep(1500)
         }
         setLoadedGroups(loadedGroups.push(0))
       } catch(err){
         alert('REQUEST RESPONSE DELAY MUST BE RECONFIGURED FOR THIS CONNECTION. CONTACT THE CODE OWNER FOR DETAILS')
+        console.log(err)
         setFinished(true);
         setLoading(false);
         break;
@@ -144,6 +157,8 @@ export default function GroupFasePage(){
           <h2>SEASON { localStorage.getItem('SEASON')?localStorage.getItem('SEASON'):'LOADING...' }</h2>
         </div>
         <div className="HIGHLIGHT" onClick={getGroups}><h1>GROUP FASE</h1></div>
+
+        <p>{match_log}</p>
         
         <div className="groups_grid">
           <ul className="grid">
@@ -176,6 +191,11 @@ export default function GroupFasePage(){
                             {i.data[3][2]<i.data[3][3]?<li><FiChevronUp size={20} color="var(--verde)"/></li>:i.data[3][2]>i.data[3][3]?<li><FiChevronDown size={20} color="var(--vermelho_claro_plus)"/></li>:<li><FiMinus size={20} color="var(--cinza)"/></li>}
                           </ul>
                         </div>
+                          <div className="match_log" style={match_log[groups.indexOf(i)].length && !match_log[groups.indexOf(i)+1].length && !finished?{}:{display:'none'}}>
+                            {match_log[groups.indexOf(i)]?match_log[groups.indexOf(i)].map((j)=>(
+                                <p>{j}</p>
+                              )):""}
+                          </div>
                       </div>
                     </div>
                   </div>

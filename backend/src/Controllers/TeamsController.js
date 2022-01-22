@@ -170,12 +170,18 @@ module.exports = {
     }})
   },
 
-  async setBiggestOpponent(request, response){
-    const { team, biggest_opponent, goals } = request.body;
-    await connection('teams').where('name', team)
-      .update({'biggest_opponent': biggest_opponent, 'biggest_opponent_score': goals})
+  async updateOpponents(request, response){
+    const { team, bg_opponent, lt_opponent } = request.body;
     
-    return response.json({message: "Successfully added"})      
+    const [{biggest_opponent, least_opponent}] = await connection('teams').where('name',team).select('biggest_opponent', 'least_opponent')
+    
+    if (!biggest_opponent || parseInt(biggest_opponent.split('-')[0]) < parseInt(bg_opponent.split('-')[0])) 
+      await connection('teams').where('name', team).update({'biggest_opponent': bg_opponent})
+
+    if (!least_opponent || parseInt(least_opponent.split('-')[0]) > parseInt(lt_opponent.split('-')[0])) 
+      await connection('teams').where('name', team).update({'least_opponent': lt_opponent})
+    
+    return response.json({biggest_opponent,bg_opponent,least_opponent,lt_opponent})      
   },
 
   async getBiggestOpponent(request, response) {

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "teste",
-    "start": "nodemon src/index.js"
+    "start":"node src/index.js"
   },
   "author": "Matheus Schreiber",
   "license": "ISC",

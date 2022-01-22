@@ -115,4 +115,22 @@
   width: 10%;
 }
 
+.match_log{
+  margin: 0 auto;
+  margin-top: 10px;
+  background-color: var(--vermelho_escuro);
+  color: var(--amarelo);
+  width: 90%;
+  font-size: 8pt;
+  border-radius: 4px;
+  height: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  padding: 5px;
+  overflow: hidden;
+
+  transition: .2s;
+}
+
 

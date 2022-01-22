@@ -45,18 +45,17 @@ export default function Historypage(){
   
   async function updateTable(){
     setLoading(true)
-    await api.get('/teams').then((response)=>{
-      let a = response.data
-      a.sort(function(a,b){
-        if (a.titles>b.titles) return -1;
-        else if (a.titles<b.titles) return 1;
-        else if (a.vices > b.vices) return -1;
-        else if (a.vices < b.vices) return 1;
-        else return 0;
-      })
-      setTeams(a);
-      setLoading(false)
+    const response = await api.get('/teams')
+    let a = response.data
+    a.sort(function(a,b){
+      if (a.titles>b.titles) return -1;
+      else if (a.titles<b.titles) return 1;
+      else if (a.vices > b.vices) return -1;
+      else if (a.vices < b.vices) return 1;
+      else return 0;
     })
+    setTeams(a);
+    setLoading(false)
   }
 
   async function getHall(){
