@@ -126,11 +126,13 @@
   height: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: end;
   padding: 5px;
   overflow: hidden;
 
-  transition: .2s;
 }
 
+.inner_match_log{
+  transition: .2s;
+  
+}
 

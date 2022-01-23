@@ -45,17 +45,27 @@ export default function StartPage(){
           <p>THIS WEBSITE SEEKS TO FUNCTION AS A PRACTICE PROJECT IN ORDER TO EXERCICE THE REACT JS FRONT END AND NODE JS BACK END DEVELOPMENT, AT THE SAME TIME THAT CIRCLES AROUND A NICE THEME, FILLED WITH STATISTICS AND VARIOUS INTERESTING MECANISMS.</p><br/>
           <p>THE FULL ACCESS TO THE CODE IS AT THE GITHUB LINK AVAILABLE AT THE BOTTOM OF THE PAGE.</p><br/>
           <p>HAVE FUN BETTING!</p>
+          <h2>DISCLAIMER</h2>
+          <p>THE JERSEYS AND TEAM'S MEDIAS ARE CONNECTED TO WIKIPEDIA IMAGES, SO ANY INCONSISTENCY OVER THE LOADING OF THESE CONTENTS MAY BE CAUSED BY POOR/UNAVAILABLE INTERNET CONNECTION</p>
         </div>
-        <div className="button_container">
+        <div className="button_outer_container">
           <Dots color="var(--vermelho_escuro)" style={loading?{display:'block'}:{display:'none'}}/>
-          <div className="button" onClick={async () => {
-            localStorage.setItem('SEASON',year[1])
-            setLoading(true)
-            const response = await api.get('getTeamsJSON')
-            await api.post('newseason',{year:year[1],teams:response.data})
-            setLoading(false)
-            navigate('/groups')
-          }}>START SEASON</div>
+          <div className="button_container">
+            <div className="button" onClick={async () => {
+              localStorage.setItem('SEASON',year[1])
+              setLoading(true)
+              const response = await api.get('getTeamsJSON')
+              await api.post('newseason',{year:year[1],teams:response.data})
+              setLoading(false)
+              navigate('/groups')
+            }}>START NEW SEASON</div>
+
+            <div className="button" onClick={async () => {
+                localStorage.setItem('SEASON',year[0])
+                setLoading(true)
+                navigate('/groups')
+              }}>CONTINUE SEASON</div>
+          </div>
           <p>LAST SEASON: <span>{year[0]}</span> NEXT SEASON: <span>{year[1]}</span> </p>
         </div>
         <div className="year_selector">

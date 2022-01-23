@@ -4,6 +4,7 @@ const router = express.Router()
 
 const SeasonController = require('./Controllers/SeasonController');
 const TeamsController = require('./Controllers/TeamsController');
+const BetsController = require('./Controllers/BetsController');
 
 router.post('/newseason', SeasonController.createSeasonFile);
 router.put('/file', SeasonController.seasonFile);
@@ -32,6 +33,10 @@ router.get('/getTeam/:team',TeamsController.getTeam);
 
 router.post('/rgmatch', MatchesController.registerMatch); 
 router.put('/getGoalsOpponent', MatchesController.getScoresbyOpponent);
+
+router.post('/createBet', BetsController.createBetOdd);
+router.post('/registerBet', BetsController.registerBet);
+router.post('/createPlayer/:name', BetsController.createPlayer);
 
 
 module.exports = router;

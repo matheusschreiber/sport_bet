@@ -154,8 +154,8 @@ export default function FinalFasePage() {
     } else setbuttonStatus('NEXT');
   }
   
-  async function updateSeasonWinner(){
-    let pot = potATeamsMatches[0];
+  async function updateSeasonWinner(data){
+    let pot = data;
     if ((pot.score_A>pot.score_B)||(pot.score_A_penalties>pot.score_B_penalties)){
       await registerSeason([pot.A], 'TITLE')
       await registerSeason([pot.B], 'FINALIST')
@@ -247,7 +247,7 @@ export default function FinalFasePage() {
       const aux = response.data.final_fase.final.match
       setPotATeamsMatches([aux]);
       setPotBTeamsMatches([]);
-      await updateSeasonWinner();
+      await updateSeasonWinner(aux);
       if(aux.score_A||aux.score_B||aux.score_A_penalties||aux.score_B_penalties) setbuttonStatus('FINISH SEASON')
       else setbuttonStatus('SIMULATE ROUND')
     } else if (response.data.final_fase.semi_finals) {
@@ -285,6 +285,8 @@ export default function FinalFasePage() {
   }, [])
 
 
+  
+
   return (
     <div>
       <Header />
@@ -303,52 +305,61 @@ export default function FinalFasePage() {
             <div className="round_8_container">
               <div>
               {
-                potATeamsMatches.map((i)=>(
-                  <div className="match_final_fase" key={i.A}>
-                    <ul className="teams_final_fase" key={i.A + "UL1"}>
-                      <li key={i.A + "UL1_li1"}>{i.A.toUpperCase()}</li>
-                      <li key={i.A + "UL1_li2"}>{i.B.toUpperCase()}</li>
-                    </ul>
-                    <ul key={i.A + "UL2"}>
-                      <li key={i.A + "UL2_li1"}>{i.score_A_first_leg}</li>
-                      <li key={i.A + "UL2_li2"}>{i.score_B_first_leg}</li>
-                    </ul>
-                    <ul key={i.A + "UL3"}>
-                      <li key={i.A + "UL3_li1"}>{i.score_A_second_leg}</li>
-                      <li key={i.A + "UL3_li2"}>{i.score_B_second_leg}</li>
-                    </ul>
-                    <ul style={i.score_A_penalties||i.score_B_penalties?{fontSize:'12pt', color:'var(--amarelo)'}:{display:'none'}}
-                      key={i.A + "UL4"}>
-                      <li key={i.A + "UL4_li1"}>{i.score_A_penalties}</li>
-                      <li key={i.A + "UL4_li2"}>{i.score_B_penalties}</li>
-                    </ul>
-                  </div>
-                ))
+                potATeamsMatches.map((i)=>{
+                  const styleAWinnerHighlightPOTA = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties>i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg == i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg>i.score_B_first_leg)?{color:'var(--verde)'}:{}
+                  const styleBWinnerHighlightPOTA = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties<i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg == i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg<i.score_B_first_leg)?{color:'var(--verde)'}:{}
+                  
+                  return (
+                    <div className="match_final_fase" key={i.A}>
+                      <ul className="teams_final_fase" key={i.A + "UL1"}>
+                        <li key={i.A + "UL1_li1"} style={styleAWinnerHighlightPOTA}>{i.A.toUpperCase()}</li>
+                        <li key={i.A + "UL1_li2"} style={styleBWinnerHighlightPOTA}>{i.B.toUpperCase()}</li>
+                      </ul>
+                      <ul key={i.A + "UL2"}>
+                        <li key={i.A + "UL2_li1"} style={styleAWinnerHighlightPOTA}>{i.score_A_first_leg}</li>
+                        <li key={i.A + "UL2_li2"} style={styleBWinnerHighlightPOTA}>{i.score_B_first_leg}</li>
+                      </ul>
+                      <ul key={i.A + "UL3"}>
+                        <li key={i.A + "UL3_li1"} style={styleAWinnerHighlightPOTA}>{i.score_A_second_leg}</li>
+                        <li key={i.A + "UL3_li2"} style={styleBWinnerHighlightPOTA}>{i.score_B_second_leg}</li>
+                      </ul>
+                      <ul style={i.score_A_penalties||i.score_B_penalties?{fontSize:'12pt', color:'var(--amarelo)'}:{display:'none'}}
+                        key={i.A + "UL4"}>
+                        <li key={i.A + "UL4_li1"}>{i.score_A_penalties}</li>
+                        <li key={i.A + "UL4_li2"}>{i.score_B_penalties}</li>
+                      </ul>
+                    </div>
+                  )
+                })
               }
               </div>
               <div>
               {
-                potBTeamsMatches.map((i)=>(
-                  <div className="match_final_fase" style={{justifyContent:'left',textAlign:'left'}} key={i.B}>
-                    <ul style={i.score_A_penalties||i.score_B_penalties?{fontSize:'12pt', color:'var(--amarelo)'}:{display:'none'}}
-                      key={i.B + "UL1"}>
-                      <li key={i.B + "UL1_li1"}>{i.score_A_penalties}</li>
-                      <li key={i.B + "UL1_li2"}>{i.score_B_penalties}</li>
-                    </ul>
-                    <ul key={i.B + "UL2"}>
-                      <li key={i.B + "UL2_li1"}>{i.score_A_first_leg}</li>
-                      <li key={i.B + "UL2_li2"}>{i.score_B_first_leg}</li>
-                    </ul>
-                    <ul key={i.B + "UL3"}>
-                      <li key={i.B + "UL3_li1"}>{i.score_A_second_leg}</li>
-                      <li key={i.B + "UL3_li2"}>{i.score_B_second_leg}</li>
-                    </ul>
-                    <ul className="teams_final_fase" style={{textAlign:'left'}} key={i.B + "UL4"}>
-                      <li key={i.B + "UL4_li1"}>{i.A.toUpperCase()}</li>
-                      <li key={i.B + "UL4_li2"}>{i.B.toUpperCase()}</li>
-                    </ul>
-                  </div>
-                ))
+                potBTeamsMatches.map((i)=>{
+                  const styleAWinnerHighlightPOTB = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties>i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg == i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg>i.score_B_first_leg)?{color:'var(--verde)'}:{}
+                  const styleBWinnerHighlightPOTB = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties<i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg == i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg<i.score_B_first_leg)?{color:'var(--verde)'}:{}
+                  return(
+                    <div className="match_final_fase" style={{justifyContent:'left',textAlign:'left'}} key={i.B}>
+                      <ul style={i.score_A_penalties||i.score_B_penalties?{fontSize:'12pt', color:'var(--amarelo)'}:{display:'none'}}
+                        key={i.B + "UL1"}>
+                        <li key={i.B + "UL1_li1"}>{i.score_A_penalties}</li>
+                        <li key={i.B + "UL1_li2"}>{i.score_B_penalties}</li>
+                      </ul>
+                      <ul key={i.B + "UL2"}>
+                        <li key={i.B + "UL2_li1"}style={styleAWinnerHighlightPOTB}>{i.score_A_first_leg}</li>
+                        <li key={i.B + "UL2_li2"}style={styleBWinnerHighlightPOTB}>{i.score_B_first_leg}</li>
+                      </ul>
+                      <ul key={i.B + "UL3"}>
+                        <li key={i.B + "UL3_li1"}style={styleAWinnerHighlightPOTB}>{i.score_A_second_leg}</li>
+                        <li key={i.B + "UL3_li2"}style={styleBWinnerHighlightPOTB}>{i.score_B_second_leg}</li>
+                      </ul>
+                      <ul className="teams_final_fase" style={{textAlign:'left'}} key={i.B + "UL4"}>
+                        <li key={i.B + "UL4_li1"}style={styleAWinnerHighlightPOTB}>{i.A.toUpperCase()}</li>
+                        <li key={i.B + "UL4_li2"}style={styleBWinnerHighlightPOTB}>{i.B.toUpperCase()}</li>
+                      </ul>
+                    </div>
+                  )
+                })
               }
               </div>
             </div>
@@ -370,6 +381,9 @@ export default function FinalFasePage() {
                 <div className="semi_text_container" style={{textAlign: 'left'}}>
                   <h2>{potATeamsMatches[0]?potATeamsMatches[0].B:'LOADING'}</h2>
                 </div>
+                <h2 style={potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties||potATeamsMatches[0].score_B_penalties?{}:{display:'none'}:{display:'none'}}>
+                  {potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties:'LOADING'} - {potATeamsMatches[0]?potATeamsMatches[0].score_B_penalties:'LOADING'}
+                </h2>
               </div>
             </div>
             <div className="semi_final_container" style={{textAlign: 'right'}}>
@@ -387,7 +401,9 @@ export default function FinalFasePage() {
               <div className="semi_text_container" style={{textAlign: 'left'}}>
                 <h2>{potBTeamsMatches[0]?potBTeamsMatches[0].B:'LOADING'}</h2>
               </div>
-              
+              <h2 style={potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties||potATeamsMatches[0].score_B_penalties?{}:{display:'none'}:{display:'none'}}>
+                {potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties:'LOADING'} - {potATeamsMatches[0]?potATeamsMatches[0].score_B_penalties:'LOADING'}
+              </h2>
             </div>
           </div>
           <div style={fase==='GRAND FINAL'?{}:{display:'none'}} className="final_container">

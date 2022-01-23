@@ -157,8 +157,6 @@ export default function GroupFasePage(){
           <h2>SEASON { localStorage.getItem('SEASON')?localStorage.getItem('SEASON'):'LOADING...' }</h2>
         </div>
         <div className="HIGHLIGHT" onClick={getGroups}><h1>GROUP FASE</h1></div>
-
-        <p>{match_log}</p>
         
         <div className="groups_grid">
           <ul className="grid">
@@ -192,9 +190,11 @@ export default function GroupFasePage(){
                           </ul>
                         </div>
                           <div className="match_log" style={match_log[groups.indexOf(i)].length && !match_log[groups.indexOf(i)+1].length && !finished?{}:{display:'none'}}>
-                            {match_log[groups.indexOf(i)]?match_log[groups.indexOf(i)].map((j)=>(
-                                <p>{j}</p>
-                              )):""}
+                            <div className="inner_match_log" style={{marginTop:`-${(match_log[groups.indexOf(i)].length-1)*13}px`}}>
+                              {match_log[groups.indexOf(i)]?match_log[groups.indexOf(i)].map((j)=>(
+                                  <p>{j}</p>
+                                )):""}
+                            </div>
                           </div>
                       </div>
                     </div>
