@@ -13,8 +13,8 @@ module.exports = {
       losses: 0,
       games: 0,
       fans,
-      goalsfor: 0,
-      goalsagainst: 0,
+      goals_for: 0,
+      goals_against: 0,
       jersey,
       country,
       winstreak: 0,
@@ -34,11 +34,11 @@ module.exports = {
     const [team_1_info] = await connection('teams').where('name',team_1).select('*')
     const [team_2_info] = await connection('teams').where('name',team_2).select('*')
 
-    let a2 = team_1_info.games?((team_1_info.goalsfor/team_1_info.games)*Math.random()):0   //GOALS/GAMES
+    let a2 = team_1_info.games?((team_1_info.goals_for/team_1_info.games)*Math.random()):0   //GOALS/GAMES
     let a3 = 0.2;                                                                           //HOME or AWAY
     let a4 = (Math.random()*3)                                                              //LUCKY MULTIPLYER
     
-    let b2 = team_2_info.games?((team_2_info.goalsfor/team_2_info.games)*Math.random()):0
+    let b2 = team_2_info.games?((team_2_info.goals_for/team_2_info.games)*Math.random()):0
     let b3 = 0;
     let b4 = (Math.random()*3)          
 
@@ -67,49 +67,49 @@ module.exports = {
     }
 
     if (!due) {
-      const [{wins:wA, goalsfor:gfA, goalsagainst:gaA, games:gA, fans:fA}] = await connection('teams')
+      const [{wins:wA, goals_for:gfA, goals_against:gaA, games:gA, fans:fA}] = await connection('teams')
         .where('name',winner[0])
-        .select(['wins','goalsfor','goalsagainst','games','fans',]);
+        .select(['wins','goals_for','goals_against','games','fans',]);
       await connection('teams')
         .where('name', winner[0])
-        .update({wins: wA+1,goalsfor: gfA+winner[1],goalsagainst: gaA+loser[1],games: gA+1,fans:fA+fan_quota});
+        .update({wins: wA+1,goals_for: gfA+winner[1],goals_against: gaA+loser[1],games: gA+1,fans:fA+fan_quota});
 
-      const [{wins:wA_season, goalsfor:gfA_season, goalsagainst:gaA_season, games:gA_season, fans:fA_season}] = await connection('seasons')
+      const [{wins:wA_season, goals_for:gfA_season, goals_against:gaA_season, games:gA_season, fans:fA_season}] = await connection('seasons')
         .where('id',`${year.replace(/-/g,"")} ${winner[0]}`)
-        .select(['wins','goalsfor','goalsagainst','games','fans']);
+        .select(['wins','goals_for','goals_against','games','fans']);
       await connection('seasons')
         .where('id',`${year.replace(/-/g,"")} ${winner[0]}`)
-        .update({wins:wA_season+1,goalsfor:gfA_season+winner[1], goalsagainst:gaA_season+loser[1], games:gA_season+1, fans:fA_season+fan_quota});
+        .update({wins:wA_season+1,goals_for:gfA_season+winner[1], goals_against:gaA_season+loser[1], games:gA_season+1, fans:fA_season+fan_quota});
     
-      const [{losses:lB, goalsfor:gfB, goalsagainst:gaB, games:gB, fans:fB}] = await connection('teams')
+      const [{losses:lB, goals_for:gfB, goals_against:gaB, games:gB, fans:fB}] = await connection('teams')
         .where('name',loser[0])
-        .select(['losses','goalsfor','goalsagainst','games','fans',]);
+        .select(['losses','goals_for','goals_against','games','fans',]);
       await connection('teams')
         .where('name', loser[0])
-        .update({losses: lB+1,goalsfor: gfB+loser[1],goalsagainst: gaB+winner[1],games: gB+1,fans:fB+fan_quota});
+        .update({losses: lB+1,goals_for: gfB+loser[1],goals_against: gaB+winner[1],games: gB+1,fans:fB+fan_quota});
 
-      const [{losses:lB_season, goalsfor:gfB_season, goalsagainst:gaB_season, games:gB_season, fans:fB_season}] = await connection('seasons')
+      const [{losses:lB_season, goals_for:gfB_season, goals_against:gaB_season, games:gB_season, fans:fB_season}] = await connection('seasons')
         .where('id',`${year.replace(/-/g,"")} ${loser[0]}`)
-        .select(['losses','goalsfor','goalsagainst','games','fans']);
+        .select(['losses','goals_for','goals_against','games','fans']);
       await connection('seasons')
         .where('id',`${year.replace(/-/g,"")} ${loser[0]}`)
-        .update({losses:lB_season+1,goalsfor:gfB_season+loser[1], goalsagainst:gaB_season+winner[1], games:gB_season+1, fans:fB_season-fan_quota});
+        .update({losses:lB_season+1,goals_for:gfB_season+loser[1], goals_against:gaB_season+winner[1], games:gB_season+1, fans:fB_season-fan_quota});
     } else {
       var team = [ team_1, goals_A, goals_B];
       for(i=0;i<2;i++){
-        const [{dues, goalsfor, goalsagainst, games}] = await connection('teams')
+        const [{dues, goals_for, goals_against, games}] = await connection('teams')
           .where('name',team[0])
-          .select(['dues','goalsfor','goalsagainst','games']);
+          .select(['dues','goals_for','goals_against','games']);
         await connection('teams')
           .where('name', team[0])
-          .update({dues: dues+1,goalsfor: goalsfor+team[1],goalsagainst: goalsagainst+team[2],games: games+1});
+          .update({dues: dues+1,goals_for: goals_for+team[1],goals_against: goals_against+team[2],games: games+1});
         
-        const [{dues:d_season, goalsfor:gf_season, goalsagainst:ga_season, games:g_season, fans:f_season}] = await connection('seasons')
+        const [{dues:d_season, goals_for:gf_season, goals_against:ga_season, games:g_season, fans:f_season}] = await connection('seasons')
           .where('id',`${year.replace(/-/g,"")} ${team[0]}`)
-          .select(['dues','goalsfor','goalsagainst','games','fans']);
+          .select(['dues','goals_for','goals_against','games','fans']);
         await connection('seasons')
           .where('id',`${year.replace(/-/g,"")} ${team[0]}`)
-          .update({dues:d_season+1,goalsfor:gf_season+team[1], goalsagainst:ga_season+team[2], games:g_season+1, fans:f_season+fan_quota});
+          .update({dues:d_season+1,goals_for:gf_season+team[1], goals_against:ga_season+team[2], games:g_season+1, fans:f_season+fan_quota});
 
         team = [ team_2, goals_B, goals_A ];
       }
@@ -148,14 +148,14 @@ module.exports = {
       else if (taken>=5 && Math.abs(score_A-score_B)) break;
     }
 
-    await connection('teams').where('name',team_1).update({goalsfor:team_1_info.goalsfor+score_A, goalsagainst:team_1_info.goalsagainst+score_B})
-    await connection('teams').where('name',team_2).update({goalsfor:team_2_info.goalsfor+score_B, goalsagainst:team_2_info.goalsagainst+score_A})
+    await connection('teams').where('name',team_1).update({goals_for:team_1_info.goals_for+score_A, goals_against:team_1_info.goals_against+score_B})
+    await connection('teams').where('name',team_2).update({goals_for:team_2_info.goals_for+score_B, goals_against:team_2_info.goals_against+score_A})
     
-    const [{goalsfor:gfA_season, goalsagainst:gaA_season}] = await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_1}`).select(['goalsfor','goalsagainst']);
-    await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_1}`).update({goalsfor:gfA_season+score_A, goalsagainst:gaA_season+score_B});
+    const [{goals_for:gfA_season, goals_against:gaA_season}] = await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_1}`).select(['goals_for','goals_against']);
+    await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_1}`).update({goals_for:gfA_season+score_A, goals_against:gaA_season+score_B});
 
-    const [{goalsfor:gfB_season, goalsagainst:gaB_season}] = await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_2}`).select(['goalsfor','goalsagainst']);
-    await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_2}`).update({goalsfor:gfB_season+score_B, goalsagainst:gaB_season+score_A});
+    const [{goals_for:gfB_season, goals_against:gaB_season}] = await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_2}`).select(['goals_for','goals_against']);
+    await connection('seasons').where('id',`${year.replace(/-/g,"")} ${team_2}`).update({goals_for:gfB_season+score_B, goals_against:gaB_season+score_A});
 
     return response.json({outcome:{
       team_1:{
@@ -234,8 +234,8 @@ module.exports = {
     const teams = await connection('teams').select('*')
     let topscorer, topscore=0;
     teams.map((i)=>{
-      if (i.goalsfor>topscore) {
-        topscore = i.goalsfor
+      if (i.goals_for>topscore) {
+        topscore = i.goals_for
         topscorer = i
       }
     })

@@ -6,6 +6,9 @@ exports.up = function(knex) {
     table.float('odd').notNullable();
     table.integer('value').notNullable();
     table.boolean('outcome').notNullable();
+    table.string('description').notNullable();
+    table.string('year').notNullable();
+    table.string('team').notNullable();
   })
 };
 

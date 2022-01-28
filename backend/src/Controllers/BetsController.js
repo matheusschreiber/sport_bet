@@ -1,12 +1,43 @@
 const connection = require('../database/connection')
 const crypto = require('crypto')
+const fs = require('fs');
 
 module.exports = {
   async createBetOdd(request, response){
     const { team, description, year, value, player } = request.body;
 
+    let lastYear = String(parseInt(year.replace(/-/g, "")) - 10001)
+    lastYear = `${lastYear.slice(0, 4)}-${lastYear.slice(4,8)}`
 
-    //inser level of probability of the description to the math of the odd
+    const [ lastSeason ] = await connection('seasons').where('id',`${lastYear.replace(/-/g,"")} ${team}`).select('*')
+    lastPosition = lastSeason.position_groups;
+
+    const allSeasons = await connection('seasons').where('team_name', team).select('*')
+    
+    let averagePoints=0, seasons=0;
+    Object.entries(allSeasons).map((i)=>{ averagePoints+=i[1].points; seasons+=1; })
+    averagePoints/=seasons;
+
+    let averageGoals=0;
+    Object.entries(allSeasons).map((i)=>{ averageGoals+=i[1].goals_for; })
+    averageGoals/=seasons;
+
+    return response.json(averageGoals)
+
+    
+    let coef=0;
+    switch(description){
+      case "IN LAST": coef = 1/lastPosition; break;
+      case "IN FIRST": coef = 1/(5-lastPosition); break;
+    }
+
+    if (description==="IN LAST") coef = 1/lastPosition; 
+    else if (description==="IN FIRST") coef = 1/(5-lastPosition);
+    else if (description.includes("POINTS")) coef=parseInt(description.split(' ')[1])?parseInt(description.split(' ')[1])/averagePoints:1/averagePoints;
+
+    return response.json(coef)
+
+
 
     const [playerInfo] = await connection('players').where('name', player).select('*')
     if (value>playerInfo.wallet) return response.json({message: "Insufficient funds"})

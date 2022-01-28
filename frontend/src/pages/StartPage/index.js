@@ -29,7 +29,7 @@ export default function StartPage(){
     setYear(array)
   }
 
-  useEffect(getLatestYear,[])
+  useEffect(()=>getLatestYear(),[])
   
   return(
     <div className="start_container">

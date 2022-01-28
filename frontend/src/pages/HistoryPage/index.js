@@ -107,8 +107,8 @@ export default function Historypage(){
               key={i.name}>
                 <td>{teams.indexOf(i)+1}</td>
                 <td>{i.name.toUpperCase()}</td>
-                <td>{i.goalsfor}</td>
-                <td>{i.goalsagainst}</td>
+                <td>{i.goals_for}</td>
+                <td>{i.goals_against}</td>
                 <td>{i.wins} - {i.dues} - {i.losses}</td>
                 <td>{i.biggest_opponent}</td>
                 <td>{i.least_opponent}</td>
@@ -157,6 +157,7 @@ export default function Historypage(){
             <p>{ hall[2]?hall[2].season.wins:'loading...' } WINS</p>
             <p>{ hall[2]?hall[2].season.losses:'loading...' } LOSSES</p>
             <p>{ hall[2]?hall[2].season.placement:'loading...' } </p>
+            <p style={{color:'var(--amarelo)'}}>{ hall[2]?hall[2].season.season_score:'loading...' } </p>
           </div>
           <div className="hall_card">
             <div>

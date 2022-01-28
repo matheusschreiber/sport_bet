@@ -170,7 +170,6 @@ export default function FinalFasePage() {
   }
   
   async function registerSeason(disclassified, placement){
-    let i=0;
     await Promise.all(disclassified.map(async(d)=>{
       let response;
       response = await api.put(`/getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${d}`)
@@ -245,9 +244,9 @@ export default function FinalFasePage() {
     if (response.data.final_fase.final) {
       setFase('GRAND FINAL')
       const aux = response.data.final_fase.final.match
+      await updateSeasonWinner(aux);
       setPotATeamsMatches([aux]);
       setPotBTeamsMatches([]);
-      await updateSeasonWinner(aux);
       if(aux.score_A||aux.score_B||aux.score_A_penalties||aux.score_B_penalties) setbuttonStatus('FINISH SEASON')
       else setbuttonStatus('SIMULATE ROUND')
     } else if (response.data.final_fase.semi_finals) {
@@ -279,9 +278,9 @@ export default function FinalFasePage() {
 
   useEffect(()=>{    
     window.scroll(0,0);
-    setLoading(true);
-    checkRound();
-    setLoading(false);
+    setLoading(true); 
+    checkRound(); 
+    setLoading(false); //eslint-disable-next-line
   }, [])
 
 
@@ -306,8 +305,8 @@ export default function FinalFasePage() {
               <div>
               {
                 potATeamsMatches.map((i)=>{
-                  const styleAWinnerHighlightPOTA = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties>i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg == i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg>i.score_B_first_leg)?{color:'var(--verde)'}:{}
-                  const styleBWinnerHighlightPOTA = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties<i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg == i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg<i.score_B_first_leg)?{color:'var(--verde)'}:{}
+                  const styleAWinnerHighlightPOTA = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties>i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg === i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg>i.score_B_first_leg)?{color:'var(--verde)'}:{}
+                  const styleBWinnerHighlightPOTA = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties<i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg === i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg<i.score_B_first_leg)?{color:'var(--verde)'}:{}
                   
                   return (
                     <div className="match_final_fase" key={i.A}>
@@ -336,8 +335,8 @@ export default function FinalFasePage() {
               <div>
               {
                 potBTeamsMatches.map((i)=>{
-                  const styleAWinnerHighlightPOTB = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties>i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg == i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg>i.score_B_first_leg)?{color:'var(--verde)'}:{}
-                  const styleBWinnerHighlightPOTB = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties<i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg == i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg<i.score_B_first_leg)?{color:'var(--verde)'}:{}
+                  const styleAWinnerHighlightPOTB = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties>i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg === i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg>i.score_B_first_leg)?{color:'var(--verde)'}:{}
+                  const styleBWinnerHighlightPOTB = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties<i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg === i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg<i.score_B_first_leg)?{color:'var(--verde)'}:{}
                   return(
                     <div className="match_final_fase" style={{justifyContent:'left',textAlign:'left'}} key={i.B}>
                       <ul style={i.score_A_penalties||i.score_B_penalties?{fontSize:'12pt', color:'var(--amarelo)'}:{display:'none'}}

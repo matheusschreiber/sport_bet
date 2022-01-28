@@ -132,7 +132,7 @@ export default function GroupFasePage(){
         }
         setLoadedGroups(loadedGroups.push(0))
       } catch(err){
-        alert('REQUEST RESPONSE DELAY MUST BE RECONFIGURED FOR THIS CONNECTION. CONTACT THE CODE OWNER FOR DETAILS')
+        alert('Request response delay is off. Remove any nodemon activities and restart backend')
         console.log(err)
         setFinished(true);
         setLoading(false);
@@ -156,7 +156,7 @@ export default function GroupFasePage(){
           <h1>CLASSIFICATIONS</h1>  
           <h2>SEASON { localStorage.getItem('SEASON')?localStorage.getItem('SEASON'):'LOADING...' }</h2>
         </div>
-        <div className="HIGHLIGHT" onClick={getGroups}><h1>GROUP FASE</h1></div>
+        <div className="HIGHLIGHT" onClick={()=>setUpdate(update.push([]))}><h1>GROUP FASE</h1></div>
         
         <div className="groups_grid">
           <ul className="grid">

@@ -5,6 +5,8 @@ exports.up = function(knex) {
     table.string('team_name').notNullable();
     table.string('placement').notNullable();
     table.float('season_score').notNullable();
+    table.integer('points').notNullable();
+    table.integer('position_groups').notNullable();
     table.string('biggest_opponent').notNullable();
     table.string('least_opponent').notNullable();
     table.integer('wins').notNullable();
@@ -12,8 +14,8 @@ exports.up = function(knex) {
     table.integer('losses').notNullable();
     table.integer('games').notNullable();
     table.integer('fans').notNullable();
-    table.integer('goalsfor').notNullable();
-    table.integer('goalsagainst').notNullable();
+    table.integer('goals_for').notNullable();
+    table.integer('goals_against').notNullable();
   })
 };
 

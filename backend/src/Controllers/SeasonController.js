@@ -41,10 +41,12 @@ module.exports = {
     for(i=0;i<teams.length;i++){
       const [{fans}] = await connection('teams').where('name', teams[i]).select('fans');
       const season = await connection('seasons').where('id', `${year.replace(/-/g,"")} ${teams[i]}`).select('*');
-      if (season[0]) await connection('seasons').where('id', `${year.replace(/-/g,"")} ${teams[i]}`).update({id:`${year.replace(/-/g,"")} ${teams[i]}`,team_name:teams[i],
-        placement:'PENDING',season_score:0,wins:0,losses:0,dues:0,games:0,goalsfor:0,goalsagainst:0,biggest_opponent:'',least_opponent:'',fans})
+      if (season[0]) await connection('seasons').where('id', `${year.replace(/-/g,"")} ${teams[i]}`).update({
+        id:`${year.replace(/-/g,"")} ${teams[i]}`,team_name:teams[i],placement:'PENDING',season_score:0,wins:0,losses:0,
+        dues:0,games:0,goals_for:0,goals_against:0,biggest_opponent:'',least_opponent:'',fans,points:0,position_groups:0})
       else await connection('seasons').insert({id:`${year.replace(/-/g,"")} ${teams[i]}`,team_name:teams[i],
-        placement:'PENDING',season_score:0,wins:0,losses:0,dues:0,games:0,goalsfor:0,goalsagainst:0,biggest_opponent:'',least_opponent:'',fans})
+        placement:'PENDING',season_score:0,wins:0,losses:0,dues:0,games:0,goals_for:0,goals_against:0,biggest_opponent:'',
+        least_opponent:'',fans,points:0,position_groups:0})
     }
 
     var groups = [];
@@ -658,8 +660,8 @@ module.exports = {
       losses,
       dues,
       games,
-      goalsfor,
-      goalsagainst
+      goals_for,
+      goals_against
     } = request.body;
         
     const [{ fans }] = await connection('teams').where('name', team_name).select('fans')
@@ -698,21 +700,34 @@ module.exports = {
 
     let season_score;
     if (!games) season_score = 0;
-    else season_score = (wins-dues/2-losses)*(4/games)+(5*p/20)+(goalsfor-goalsagainst)*0.01
+    else season_score = (wins-dues/2-losses)*(4/games)+(5*p/20)+(goals_for-goals_against)*0.01
 
     season_score = (Math.round(season_score*100))/100
     
+    let position_groups, points;
+    const file = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'))
+    Object.entries(file.group_fase).map((i)=>{
+      Object.entries(i[1]).map((j)=>{
+        if (j[1].name===team_name){
+          position_groups = j[1].current_position;
+          points = j[1].points;
+        }
+      })
+    }) 
+
     const data = {
       id,
       team_name,
       placement,
       season_score,
+      points,
+      position_groups,
       wins,
       losses,
       dues,
       games,
-      goalsfor,
-      goalsagainst,
+      goals_for,
+      goals_against,
       biggest_opponent,
       least_opponent,
       fans,
