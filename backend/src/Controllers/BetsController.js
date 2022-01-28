@@ -22,28 +22,29 @@ module.exports = {
     Object.entries(allSeasons).map((i)=>{ averageGoals+=i[1].goals_for; })
     averageGoals/=seasons;
 
-    return response.json(averageGoals)
-
-    
+    let averageQualifiers;
+    Object.entries(allSeasons).map((i)=>{ if (i[1].placement!=='GROUPS') averageQualifiers+=1 });
+    averageDisQualifiers = (seasons-averageQualifiers)/seasons;
+    averageQualifiers/=seasons;
+   
     let coef=0;
     switch(description){
       case "IN LAST": coef = 1/lastPosition; break;
       case "IN FIRST": coef = 1/(5-lastPosition); break;
+      case "CLASSIFIED": coef = 1/averageQualifiers; break;
+      case "DISCLASSIFIED": coef = 1/averageDisQualifiers; break;
     }
 
     if (description==="IN LAST") coef = 1/lastPosition; 
     else if (description==="IN FIRST") coef = 1/(5-lastPosition);
     else if (description.includes("POINTS")) coef=parseInt(description.split(' ')[1])?parseInt(description.split(' ')[1])/averagePoints:1/averagePoints;
 
-    return response.json(coef)
-
-
-
     const [playerInfo] = await connection('players').where('name', player).select('*')
     if (value>playerInfo.wallet) return response.json({message: "Insufficient funds"})
     
     const [teamInfo] = await connection('teams').where('name', team).select('*')
     const parameter = Math.random()/teamInfo.fans;
+    
     let odd;
     if (parameter<0.00001) odd=50*Math.random();
     else if (parameter<0.0005) odd=10*Math.random();
@@ -53,7 +54,7 @@ module.exports = {
     else if (parameter<0.3) odd=1+Math.random();
     else if (parameter>0.3) odd=Math.random();
     
-    return response.json({odd:parseFloat(odd.toFixed(2))})   
+    return response.json({odd:parseFloat(odd.toFixed(2)), coef})   
   },
   
   async registerBet(request,response){

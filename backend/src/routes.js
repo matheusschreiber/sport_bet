@@ -39,4 +39,24 @@ router.post('/registerBet', BetsController.registerBet);
 router.post('/createPlayer/:name', BetsController.createPlayer);
 
 
+//i am using a temporary method here, with 2 requests, to see if the server was
+//started using nodemon or normal node. Thats because the auto-reload feature of 
+//nodemon causes issues during code execution.
+
+router.put('/connectionTest1', function(request,response){
+  const fs = require('fs');
+  let payload;
+  try { payload = request.body; }
+  catch(err) { return response.status(500); }
+  fs.unlink(`./src/database/test.json`,()=>{});
+  return response.json(payload.payload*1000)
+})
+
+router.get('/connectionTest2', function(request,response){
+  const fs = require('fs');
+  fs.writeFile(`./src/database/test.json`, "TRY", 'utf8', ()=>{});
+  return response.json({});
+})
+
+
 module.exports = router;

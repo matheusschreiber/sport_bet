@@ -11,6 +11,8 @@ import './style.css'
 
 import Header from '../Components/header'
 import Footer from '../Components/footer'
+import DBlog from '../Components/databaseConnection'
+
 import api from "../../services/api";
 
 export default function StartPage(){
@@ -34,6 +36,7 @@ export default function StartPage(){
   return(
     <div className="start_container">
       <Header />
+      <DBlog />
       <div className="main_container">
         <div className="history_linker" onClick={()=>nav('/history')}>
           <h2>TEAMS HISTORY</h2>
