@@ -34,9 +34,10 @@ router.get('/getTeam/:team',TeamsController.getTeam);
 router.post('/rgmatch', MatchesController.registerMatch); 
 router.put('/getGoalsOpponent', MatchesController.getScoresbyOpponent);
 
-router.post('/createBet', BetsController.createBetOdd);
+router.post('/createODD', BetsController.createODD);
 router.post('/registerBet', BetsController.registerBet);
 router.post('/createPlayer/:name', BetsController.createPlayer);
+router.get('/listBets/:year', BetsController.listBets);
 
 
 //i am using a temporary method here, with 2 requests, to see if the server was

@@ -149,7 +149,8 @@ export default function FinalFasePage() {
     setLoading(false);
     setLoadingRound(false);
     if (fase==='GRAND FINAL') {
-      updateSeasonWinner()
+      const response = await api.put('file', {year:localStorage.getItem('SEASON')})
+      updateSeasonWinner(response.data.final_fase.final.match)
       setbuttonStatus('FINISH SEASON')
     } else setbuttonStatus('NEXT');
   }
@@ -367,7 +368,15 @@ export default function FinalFasePage() {
             <div className="semis_container">
               <div className="semi_final_container">
                 <div className="semi_text_container" style={{textAlign: 'right'}}>
-                  <h2>{potATeamsMatches[0]?potATeamsMatches[0].A:'LOADING'}</h2>
+                  <h2 style={
+                    potATeamsMatches[0]&&
+                    (potATeamsMatches[0].score_A_first_leg+potATeamsMatches[0].score_A_second_leg+potATeamsMatches[0].score_A_penalties
+                    >
+                    potATeamsMatches[0].score_B_first_leg+potATeamsMatches[0].score_B_second_leg+potATeamsMatches[0].score_B_penalties
+                    || potATeamsMatches[0].score_A_second_leg>potATeamsMatches[0].score_B_first_leg)
+                    ?
+                    {color:'var(--verde)'}:{}
+                  }>{potATeamsMatches[0]?potATeamsMatches[0].A:'LOADING'}</h2>
                 </div>
                 <img src={potATeamsMatches[0]?potATeamsMatches[0].jerseyA:'LOADING'} alt="jersey" />
                 <div className="scores">
@@ -378,7 +387,15 @@ export default function FinalFasePage() {
                 </div>
                 <img src={potATeamsMatches[0]?potATeamsMatches[0].jerseyB:'LOADING'} alt="jersey"/>
                 <div className="semi_text_container" style={{textAlign: 'left'}}>
-                  <h2>{potATeamsMatches[0]?potATeamsMatches[0].B:'LOADING'}</h2>
+                  <h2 style={ 
+                    potATeamsMatches[0]&&
+                    (potATeamsMatches[0].score_A_first_leg+potATeamsMatches[0].score_A_second_leg+potATeamsMatches[0].score_A_penalties
+                    <
+                    potATeamsMatches[0].score_B_first_leg+potATeamsMatches[0].score_B_second_leg+potATeamsMatches[0].score_B_penalties
+                    || potATeamsMatches[0].score_A_second_leg<potATeamsMatches[0].score_B_first_leg)
+                    ?
+                    {color:'var(--verde)'}:{}
+                  }>{potATeamsMatches[0]?potATeamsMatches[0].B:'LOADING'}</h2>
                 </div>
                 <h2 style={potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties||potATeamsMatches[0].score_B_penalties?{}:{display:'none'}:{display:'none'}}>
                   {potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties:'LOADING'} - {potATeamsMatches[0]?potATeamsMatches[0].score_B_penalties:'LOADING'}
@@ -387,7 +404,15 @@ export default function FinalFasePage() {
             </div>
             <div className="semi_final_container" style={{textAlign: 'right'}}>
               <div className="semi_text_container">
-                <h2>{potBTeamsMatches[0]?potBTeamsMatches[0].A:'LOADING'}</h2>
+                <h2 style={
+                    potBTeamsMatches[0]&&
+                    (potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
+                    >
+                    potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
+                    || potBTeamsMatches[0].score_A_second_leg>potBTeamsMatches[0].score_B_first_leg)
+                    ?
+                    {color:'var(--verde)'}:{}
+                  }>{potBTeamsMatches[0]?potBTeamsMatches[0].A:'LOADING'}</h2>
               </div>
               <img src={potBTeamsMatches[0]?potBTeamsMatches[0].jerseyA:'LOADING'} alt=""/>
               <div className="scores">
@@ -398,7 +423,15 @@ export default function FinalFasePage() {
               </div>
               <img src={potBTeamsMatches[0]?potBTeamsMatches[0].jerseyB:'LOADING'} alt=""/>
               <div className="semi_text_container" style={{textAlign: 'left'}}>
-                <h2>{potBTeamsMatches[0]?potBTeamsMatches[0].B:'LOADING'}</h2>
+                <h2 style={ 
+                    potBTeamsMatches[0]&&
+                    (potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
+                    <
+                    potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
+                    || potBTeamsMatches[0].score_A_second_leg<potBTeamsMatches[0].score_B_first_leg)
+                    ?
+                    {color:'var(--verde)'}:{}
+                  }>{potBTeamsMatches[0]?potBTeamsMatches[0].B:'LOADING'}</h2>
               </div>
               <h2 style={potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties||potATeamsMatches[0].score_B_penalties?{}:{display:'none'}:{display:'none'}}>
                 {potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties:'LOADING'} - {potATeamsMatches[0]?potATeamsMatches[0].score_B_penalties:'LOADING'}
@@ -449,8 +482,8 @@ export default function FinalFasePage() {
         <h3>{winningSeason.losses} losses</h3>
         <h3>{winningSeason.dues} dues</h3>
         <h3>{winningSeason.games} games</h3>
-        <h3>{winningSeason.goalsfor} goals for</h3>
-        <h3>{winningSeason.goalsagainst} goals against</h3>
+        <h3>{winningSeason.goals_for} goals for</h3>
+        <h3>{winningSeason.goals_against} goals against</h3>
         <h2>SEASON SCORE {winningSeason.season_score} </h2>
       </div>
       </div>

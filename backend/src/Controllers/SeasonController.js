@@ -702,6 +702,8 @@ module.exports = {
     if (!games) season_score = 0;
     else season_score = (wins-dues/2-losses)*(4/games)+(5*p/20)+(goals_for-goals_against)*0.01
 
+    if (season_score<0) {season_score*=-1;season_score/=10;}
+
     season_score = (Math.round(season_score*100))/100
     
     let position_groups, points;

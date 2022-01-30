@@ -1,9 +1,6 @@
 - relacionar a fan_quota de cada partida de acordo com a importancia do jogo
 - a fan quota altera diretamente as odds da aposta
 - contabilizar allTimeRecord na geração de placares (só no final)
-- ao rodar uma partida: 
-  - playMatch TeamsController
-  - registerMatch MatchesController
-  - verifica se maior oponente
-  - verifica se menor oponente
 - criar a hall of shame
+- criar uma maneira de passar um grupo por vez na group fase
+- criar players aleatorios que fazem apostas aleatorias (dinheiro infinito)

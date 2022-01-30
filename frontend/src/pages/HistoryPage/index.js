@@ -137,7 +137,7 @@ export default function Historypage(){
           <div className="hall_card">
             <div>
               <div className="HIGHLIGHT"><h1>TOP SCORER</h1></div>
-              <div className="HIGHLIGHT_SUB"><h2>{ hall[1]?hall[1].goalsfor:'LOADING...' } GOALS</h2></div>
+              <div className="HIGHLIGHT_SUB"><h2>{ hall[1]?hall[1].goals_for:'LOADING...' } GOALS</h2></div>
             </div>
             <img src={hall[1]?hall[1].jersey:""} alt=""/>
             <h1>{hall[1]?hall[1].name:'LOADING...'}</h1>

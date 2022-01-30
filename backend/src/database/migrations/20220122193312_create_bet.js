@@ -4,7 +4,8 @@ exports.up = function(knex) {
     table.string('id').primary().notNullable();
     table.string('player').notNullable();
     table.float('odd').notNullable();
-    table.integer('value').notNullable();
+    table.float('value').notNullable();
+    table.float('profit').notNullable();
     table.boolean('outcome').notNullable();
     table.string('description').notNullable();
     table.string('year').notNullable();
