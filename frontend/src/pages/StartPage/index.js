@@ -20,7 +20,7 @@ export default function StartPage(){
   const navigate = useNavigate();
   const [ loading, setLoading ] = useState(false);
   const [ year, setYear ] = useState(['','']);
-  const nav = useNavigate();
+  const nav = useNavigate(); 
 
   async function getLatestYear(){
     const response = await api.get('/getAnyFile')
@@ -44,7 +44,6 @@ export default function StartPage(){
             <h2>TEAMS HISTORY</h2>
             <FiAward size={40}/>
           </div>
-          <Addbet/>
           <img src={Welcome} alt="Welcome to Sport Bet Platform Project"/>
           <div className="text_container">
             <h1>PROJECT DESCRIPTION</h1>
@@ -82,6 +81,7 @@ export default function StartPage(){
         </div>
         <Footer />
       </div>
+      <Addbet/>
     </main>
   );
 }
