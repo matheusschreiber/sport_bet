@@ -77,3 +77,27 @@ body {
   transition: .2s;
   left: -30px;
 }
+
+.player_container {
+  text-align: center;
+  color: white;
+  display: flex;
+  justify-content: space-around;
+  width: 40%;
+  align-items: center;
+  position: absolute;
+  top:400px;
+  left:30%;
+}
+
+.player_container input{
+  background-color: transparent;
+  border: none;
+  border-bottom: 5px solid var(--vermelho_claro);
+  width: 300px;
+  color: white;
+  font-size: 24pt;
+  text-align: center;
+  font-family: Concert One;
+  line-height: 45px;
+}

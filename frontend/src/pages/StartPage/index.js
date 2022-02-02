@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
 
-import { FiAward } from 'react-icons/fi';
+import { FiAward, FiArrowRightCircle } from 'react-icons/fi';
 
 import Welcome from '../../assets/Welcome.png'
 import { Dots } from "react-activity";
@@ -20,6 +20,7 @@ export default function StartPage(){
   const navigate = useNavigate();
   const [ loading, setLoading ] = useState(false);
   const [ year, setYear ] = useState(['','']);
+  const [ player, setPlayer ] = useState("");
   const nav = useNavigate(); 
 
   async function getLatestYear(){
@@ -30,6 +31,8 @@ export default function StartPage(){
     nextYear = `${nextYear.slice(0, 4)}-${nextYear.slice(4,8)}`
     array.push(nextYear)
     setYear(array)
+    localStorage.setItem('SEASON',array[0]);
+    // localStorage.setItem('PLAYER',"Matheus");
   }
 
   useEffect(()=>getLatestYear(),[])
@@ -43,6 +46,15 @@ export default function StartPage(){
           <div className="history_linker" onClick={()=>nav('/history')}>
             <h2>TEAMS HISTORY</h2>
             <FiAward size={40}/>
+          </div>
+          <div className="player_container">
+            <h1>YOUR NAME</h1>
+            <input type="text" value={player} onChange={(e)=>setPlayer(e.target.value.toUpperCase())}/>
+            <FiArrowRightCircle 
+              size={30} 
+              color={'var(--vermelho_claro)'} 
+              style={{cursor:'pointer'}}
+              onClick={()=>localStorage.setItem('PLAYER',player)}/>
           </div>
           <img src={Welcome} alt="Welcome to Sport Bet Platform Project"/>
           <div className="text_container">
@@ -71,7 +83,11 @@ export default function StartPage(){
                   navigate('/groups')
                 }}>CONTINUE SEASON</div>
             </div>
-            <p>LAST SEASON: <span>{year[0]}</span> NEXT SEASON: <span>{year[1]}</span> </p>
+            <div style={{
+              display:'flex',
+              justifyContent: 'space-around'
+            }}><p>LAST SEASON: <span>{year[0]}</span></p><p>NEXT SEASON: <span>{year[1]}</span> </p></div>
+            
           </div>
           <div className="year_selector">
             <ul>

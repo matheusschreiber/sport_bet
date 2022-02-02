@@ -152,8 +152,8 @@ export default function Historypage(){
             <img src={hall[2]?hall[2].team[0].jersey:""} alt=""/>
             <h1>{hall[2]?hall[2].team[0].name:'LOADING...'}</h1>
             <br/>
-            <p>{ hall[2]?hall[2].season.goalsfor:'loading...' } GOALS FOR</p>
-            <p>{ hall[2]?hall[2].season.goalsagainst:'loading...' } GOALS AGAINST</p>
+            <p>{ hall[2]?hall[2].season.goals_for:'loading...' } GOALS FOR</p>
+            <p>{ hall[2]?hall[2].season.goals_against:'loading...' } GOALS AGAINST</p>
             <p>{ hall[2]?hall[2].season.wins:'loading...' } WINS</p>
             <p>{ hall[2]?hall[2].season.losses:'loading...' } LOSSES</p>
             <p>{ hall[2]?hall[2].season.placement:'loading...' } </p>

@@ -38,6 +38,8 @@ router.post('/createODD', BetsController.createODD);
 router.post('/registerBet', BetsController.registerBet);
 router.post('/createPlayer/:name', BetsController.createPlayer);
 router.get('/listBets/:year', BetsController.listBets);
+router.get('/getPlayer/:name', BetsController.getPlayer);
+router.delete('/deleteBet/:id', BetsController.deleteBet);
 
 
 //i am using a temporary method here, with 2 requests, to see if the server was

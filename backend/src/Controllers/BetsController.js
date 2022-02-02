@@ -110,11 +110,28 @@ module.exports = {
     return response.json(data)
   },
 
+  async deleteBet(request,response){
+    const { id } = request.params;
+    const player= request.headers.authorization;
+    const name = await connection('bets').where({'id':id,'player':player}).select('player');
+    
+    if (name[0]) await connection('bets').where('id',id).del();
+    else return response.status(401).json('Unauthorized');
+    
+    return response.json("Successfuly deleted");
+  },
+
   async createPlayer(request,response){
     const { name } = request.params;
     const data = {id: crypto.randomBytes(10).toString('HEX'), name, wallet:1000}
     await connection('players').insert(data)
     return response.json(data)
+  },
+
+  async getPlayer(request,response){
+    const { name } = request.params;
+    const player = await connection('players').where('name',name).select('*');
+    return response.json(player);
   },
 
   async listBets(request,response){

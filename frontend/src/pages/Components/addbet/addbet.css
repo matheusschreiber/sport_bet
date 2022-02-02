@@ -47,7 +47,7 @@ ul {
 .bet_board_inner {
   background-color: var(--vermelho_claro);
   width: 60%;
-  height: 600px;
+  height: 620px;
   position:absolute;
   left:20%;
   top: 400px;
@@ -94,6 +94,10 @@ ul {
   align-items: top;
   justify-content: center;
   margin-left: 70%;
+}
+
+.wallet span {
+  color: var(--amarelo);
 }
 
 .focus {
@@ -152,6 +156,14 @@ ul {
   font-size: 12pt;
 }
 
+.option_container#x_value {
+  width: 50px;
+}
+
+.option_container#x_value input{
+  width: 50px;
+}
+
 .focus_lower{
   display: flex;
   justify-content: space-around;
@@ -160,9 +172,16 @@ ul {
   font-size:10pt;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 .list_container{
   display: flex;
-  margin-top: 30px;
+  margin-top: 20px;
+  padding-bottom: 50px;
+  max-height: 160px;
+  overflow-y: auto;
 }
 
 .market_container ul{
@@ -171,8 +190,18 @@ ul {
 
 .bet_log_container ul {
   margin-top: 10px;
+  margin-right: 5px;
 }
 
 .list_container ul li{
   margin-top: 10px;
+  height: 10px;
+}
+
+.profit_container {
+  color: var(--verde);
+  display: flex;
+  justify-content: right;
+  width: 90%;
+  font-size: 16pt;
 }
