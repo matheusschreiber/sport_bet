@@ -48,13 +48,14 @@ export default function StartPage(){
             <FiAward size={40}/>
           </div>
           <div className="player_container">
-            <h1>YOUR NAME</h1>
-            <input type="text" value={player} onChange={(e)=>setPlayer(e.target.value.toUpperCase())}/>
+            <h1 style={localStorage.getItem('PLAYER')?{display:'none'}:{}}>YOUR NAME</h1>
+            <input type="text" value={player} onChange={(e)=>setPlayer(e.target.value.toUpperCase())} style={localStorage.getItem('PLAYER')?{display:'none'}:{}}/>
             <FiArrowRightCircle 
               size={30} 
               color={'var(--vermelho_claro)'} 
-              style={{cursor:'pointer'}}
-              onClick={()=>localStorage.setItem('PLAYER',player)}/>
+              style={localStorage.getItem('PLAYER')?{display:'none'}:{cursor:'pointer'}}
+              onClick={()=>{localStorage.setItem('PLAYER',player);window.location.reload()}}/>
+            <h1 style={localStorage.getItem('PLAYER')?{}:{display:'none'}}>HELLO <span>{localStorage.getItem('PLAYER')}</span>, WELCOME!</h1>
           </div>
           <img src={Welcome} alt="Welcome to Sport Bet Platform Project"/>
           <div className="text_container">

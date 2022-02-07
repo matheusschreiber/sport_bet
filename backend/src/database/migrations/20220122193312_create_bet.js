@@ -10,6 +10,7 @@ exports.up = function(knex) {
     table.string('description').notNullable();
     table.string('year').notNullable();
     table.string('team').notNullable();
+    table.string('fase').notNullable();
   })
 };
 

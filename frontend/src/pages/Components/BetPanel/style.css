@@ -1,0 +1,36 @@
+.bet_panel_container{
+  margin-top: 100px;
+  line-height: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.bet_panel_container .wallet span{
+  color:var(--verde_escuro);
+}
+
+.bet_panel_container .wallet {
+  background-color: var(--amarelo);
+  color: var(--azul_escuro);
+  width: fit-content;
+  padding: 0 30px;
+  height: 40px;
+  white-space: nowrap;
+  margin: 90px auto;
+}
+
+.bet_panel_container table {
+  width: 60%;
+  font-size: 15pt;
+}
+
+.bet_panel_container td {
+  width: 50%;
+}
+
+.bet_panel_container th {
+  height: 100px;
+}
+

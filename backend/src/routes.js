@@ -40,6 +40,7 @@ router.post('/createPlayer/:name', BetsController.createPlayer);
 router.get('/listBets/:year', BetsController.listBets);
 router.get('/getPlayer/:name', BetsController.getPlayer);
 router.delete('/deleteBet/:id', BetsController.deleteBet);
+router.get('/verifyBet/:id', BetsController.verifyBet)
 
 
 //i am using a temporary method here, with 2 requests, to see if the server was

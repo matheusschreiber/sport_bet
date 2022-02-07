@@ -21,12 +21,16 @@ export default function Addbet(){
   const [ teams, setTeams ] = useState(['LOADING']);
   const [ allBets, setAllBets ] = useState([]);
   const [ playerBets, setPlayerBets ] = useState([]);
-  const [ player, setPlayer ] = useState([{wallet:'LOADING'}]);
+  const [ player, setPlayer ] = useState([{id:'LOADING', wallet:'LOADING'}]);
 
-  const [ sumProfit, setSumProfit ] = useState();
+  const [ sumProfit, setSumProfit ] = useState(0);
   
 
   async function handleSubmit(){
+    let fase;
+    if (localStorage.getItem('FASE')==='FINAL' && description==="CLASSIFIED") fase = "TITLE"
+    else if (localStorage.getItem('FASE')==='FINAL' && description==="DISCLASSIFIED") fase = "FINALIST"
+    else fase = localStorage.getItem('FASE');
     const data = {
       team,
       player:player[0].name,
@@ -34,16 +38,17 @@ export default function Addbet(){
       description,
       year:localStorage.getItem('SEASON'),
       odd,
+      fase
     }
     await api.post('registerBet',data);
     loadBets();
   }
   
   async function calculateODD(team,description, x){
-    if (team && description!="") {
+    if (team && description!=="") {
       if (description.includes('WITH')) {
         let array = description.split(' ');
-        array[1] = x==""?"0":x;
+        array[1] = x===""?"0":x;
         array = array.join().replace(/,/g," ");
         setDescription(array);
       }
@@ -67,16 +72,16 @@ export default function Addbet(){
   }
 
   async function loadBets(){
-    const response = await api.get(`listBets/${localStorage.getItem('SEASON')}`);
-    let sum=0, pBets=[], aBets=[];
-    response.data.map((i)=>{
-      console.log(i.player + player[0].name)
-      sum+=i.profit;
-      if (i.player==player[0].name) pBets.push(i);
-      aBets.push(i)
-    })
-    setAllBets(aBets);
-    setPlayerBets(pBets);
+    let sum=0;
+    const aBets = await api.get(`listBets/${localStorage.getItem('SEASON')}`);
+    const pBets = await api.get(`listBets/${localStorage.getItem('SEASON')}`, {headers: {authorization:player[0].name}});
+    
+    pBets.data.map((i)=>sum+=i.profit)
+
+    console.log(pBets)
+
+    setAllBets(aBets.data);
+    setPlayerBets(pBets.data);
     setSumProfit(sum);
   }
 
@@ -101,7 +106,7 @@ export default function Addbet(){
   useEffect(()=>{
     loadPlayer();
     loadTeams();
-    loadBets();
+    loadBets(); //eslint-disable-next-line
   },[])
 
   return(
@@ -184,7 +189,7 @@ export default function Addbet(){
               </div>
             </div>
           </div>
-          <div className="profit_container"><p>PROFIT: +{sumProfit}$</p></div>
+          <div className="profit_container"><p>PROFIT: +{sumProfit.toFixed(2)}$</p></div>
           <div className="button" style={{backgroundColor:'var(--vermelho_escuro)'}}
             onClick={handleSubmit}>SUBMIT BET</div>
         </div>

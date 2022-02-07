@@ -244,6 +244,7 @@ export default function FinalFasePage() {
     const response = await api.put('file', {year:localStorage.getItem('SEASON')})
     if (response.data.final_fase.final) {
       setFase('GRAND FINAL')
+      localStorage.setItem('FASE', 'FINAL');
       const aux = response.data.final_fase.final.match
       await updateSeasonWinner(aux);
       setPotATeamsMatches([aux]);
@@ -252,6 +253,7 @@ export default function FinalFasePage() {
       else setbuttonStatus('SIMULATE ROUND')
     } else if (response.data.final_fase.semi_finals) {
       setFase('SEMI FINALS')
+      localStorage.setItem('FASE', 'SEMIS');
       const aux = response.data.final_fase.semi_finals
       setPotATeamsMatches([aux.match_1])
       setPotBTeamsMatches([aux.match_2])
@@ -260,6 +262,7 @@ export default function FinalFasePage() {
     } else if (response.data.final_fase.quarter_finals) {
       const aux = response.data.final_fase.quarter_finals
       setFase('QUARTER FINALS')
+      localStorage.setItem('FASE', 'QUARTERS');
       setPotATeamsMatches([aux.match_1, aux.match_2])
       setPotBTeamsMatches([aux.match_3, aux.match_4])
       if(aux.match_1.score_A_first_leg||aux.match_1.score_B_first_leg||aux.match_1.score_A_second_leg||aux.match_1.score_B_second_leg||aux.match_1.score_A_penalties||aux.match_1.score_B_penalties) setbuttonStatus('NEXT')
@@ -267,6 +270,7 @@ export default function FinalFasePage() {
     } else if (response.data.final_fase.round_of_8) {
       const aux = response.data.final_fase.round_of_8
       setFase('ROUND OF 8')
+      localStorage.setItem('FASE', 'ROUNDOF8');
       setPotATeamsMatches([aux.match_1, aux.match_2, aux.match_3, aux.match_4])
       setPotBTeamsMatches([aux.match_5, aux.match_6, aux.match_7, aux.match_8])
       if(aux.match_1.score_A_first_leg||aux.match_1.score_B_first_leg||aux.match_1.score_A_second_leg||aux.match_1.score_B_second_leg||aux.match_1.score_A_penalties||aux.match_1.score_B_penalties) setbuttonStatus('NEXT')

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
 import { FiChevronUp, FiChevronDown, FiMinus} from 'react-icons/fi'
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 import './style.css'
@@ -7,6 +7,8 @@ import './style.css'
 import { Dots } from "react-activity";
 import "react-activity/dist/Dots.css";
 
+import Addbet from '../Components/addbet/addbet';
+import BetPanel from '../Components/BetPanel';
 import Header from "../Components/header";
 import Footer from "../Components/footer";
 
@@ -145,7 +147,8 @@ export default function GroupFasePage(){
   
   useEffect(()=>{
     if (update.length===0) window.scroll(0,0);
-    setTimeout(getGroups, 500)
+    getGroups();
+    localStorage.setItem('FASE', 'GROUPS');
   }, [update])
   
   return(
@@ -216,12 +219,15 @@ export default function GroupFasePage(){
           <div className="load_square" style={loadedGroups>7?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
         </div>
         <Dots color="var(--vermelho_escuro)" style={loading?{display:'block'}:{display:'none'}}/>
-        <div className="button" style={finished?{display:'none'}:{}} onClick={simulateGroupFase} id={loading?'pressed':''}>
+        <div className="button" style={finished?{display:'none'}:{marginTop:'100px'}} onClick={simulateGroupFase} id={loading?'pressed':''}>
           {loading?'LOADING':'SIMULATE ENTIRE GROUP FASE'}</div>
 
-        <div className="button" style={finished?{}:{display:'none'}} onClick={()=>nav('/finals')}>GO TO FINAL FASE</div>
+        <div className="button" style={finished?{marginTop:'100px'}:{display:'none'}} onClick={()=>nav('/finals')}>GO TO FINAL FASE</div>
+
+        <BetPanel player_name={localStorage.getItem('PLAYER')} />
       </div>
       <Footer />
+      <Addbet/>
     </div>
   );
 }

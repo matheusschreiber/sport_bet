@@ -101,3 +101,7 @@ body {
   font-family: Concert One;
   line-height: 45px;
 }
+
+.player_container span{
+  color: var(--vermelho_claro)
+}

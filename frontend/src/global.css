@@ -29,6 +29,7 @@ body {
   --amarelo: #FFEB4D;
   --amarelo_escuro: #BBB520;
   --verde: #3DFF73;
+  --verde_escuro: #0B9A22;
   --cinza: #BEC7C7;
   --bronze: #E89A52;
 }
@@ -72,7 +73,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 10px auto;
+  margin: 100px auto;
   font-size: 8pt;
   line-height: 10pt;
   padding-bottom: 10px;
