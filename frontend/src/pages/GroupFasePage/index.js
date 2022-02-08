@@ -141,8 +141,24 @@ export default function GroupFasePage(){
         break;
       }
     }
+    registerSeason();
     setFinished(true);
     setLoading(false);
+  }
+
+  async function registerSeason(){
+    await Promise.all(groups.map(async(g)=>{
+      for(let i=0;i<4;i++){
+        const response = await api.put(`/getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${g.data[i][0]}`)
+        const season = response.data[0]
+        season.biggest_opponent = "0-"
+        season.least_opponent = "0-"
+        season.year = localStorage.getItem('SEASON')
+        season.points = g.data[i][1]
+        season.position_groups = g.data[i][2]
+        await api.put('updateSeason', season)
+      }
+    }))
   }
   
   useEffect(()=>{
@@ -223,11 +239,11 @@ export default function GroupFasePage(){
           {loading?'LOADING':'SIMULATE ENTIRE GROUP FASE'}</div>
 
         <div className="button" style={finished?{marginTop:'100px'}:{display:'none'}} onClick={()=>nav('/finals')}>GO TO FINAL FASE</div>
-
-        <BetPanel player_name={localStorage.getItem('PLAYER')} />
+        {/* <div className="button" onClick={()=>setUpdate(true)}>RegisterResults</div> */}
+        <BetPanel player_name={localStorage.getItem('PLAYER')} ready={update}/>
       </div>
       <Footer />
-      <Addbet/>
+      <Addbet />
     </div>
   );
 }

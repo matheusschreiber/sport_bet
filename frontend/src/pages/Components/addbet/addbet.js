@@ -26,6 +26,12 @@ export default function Addbet(){
   const [ sumProfit, setSumProfit ] = useState(0);
   
 
+  async function fetchData(){
+    const p = await loadPlayer();
+    await loadTeams();
+    await loadBets(p); 
+  }
+
   async function handleSubmit(){
     let fase;
     if (localStorage.getItem('FASE')==='FINAL' && description==="CLASSIFIED") fase = "TITLE"
@@ -41,7 +47,7 @@ export default function Addbet(){
       fase
     }
     await api.post('registerBet',data);
-    loadBets();
+    loadBets(player[0]);
   }
   
   async function calculateODD(team,description, x){
@@ -52,8 +58,13 @@ export default function Addbet(){
         array = array.join().replace(/,/g," ");
         setDescription(array);
       }
+
+      String.prototype.toProperCase = function () {
+        return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+      };
+
       const data = {
-        team: team.charAt(0).toUpperCase() + team.slice(1).toLowerCase(),
+        team: team.toProperCase(),
         description,
         year:localStorage.getItem('SEASON'),
         fase:"GROUPS"
@@ -71,15 +82,11 @@ export default function Addbet(){
     setTeams(array);
   }
 
-  async function loadBets(){
+  async function loadBets(p){
     let sum=0;
     const aBets = await api.get(`listBets/${localStorage.getItem('SEASON')}`);
-    const pBets = await api.get(`listBets/${localStorage.getItem('SEASON')}`, {headers: {authorization:player[0].name}});
-    
+    const pBets = await api.get(`listBets/${localStorage.getItem('SEASON')}`, {headers: {authorization:p.name}});
     pBets.data.map((i)=>sum+=i.profit)
-
-    console.log(pBets)
-
     setAllBets(aBets.data);
     setPlayerBets(pBets.data);
     setSumProfit(sum);
@@ -91,22 +98,21 @@ export default function Addbet(){
       return
     }
     const response = await api.get(`getPlayer/${localStorage.getItem('PLAYER')}`);
-    setPlayer(response.data);
+    setPlayer(response.data)
+    return response.data[0]
   }
 
   async function deleteBet(id){
     try { 
       await api.delete(`deleteBet/${id}`, {headers:{authorization:localStorage.getItem('PLAYER')}});
-      loadBets();
+      loadBets(player[0]);
     }
     catch(err){ alert("Player Unauthorized!"); }
 
   }
 
   useEffect(()=>{
-    loadPlayer();
-    loadTeams();
-    loadBets(); //eslint-disable-next-line
+    fetchData();
   },[])
 
   return(

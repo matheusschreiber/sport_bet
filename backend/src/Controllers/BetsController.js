@@ -180,18 +180,18 @@ module.exports = {
       else if(!classified) bet.outcome = 1;
       else bet.outcome = 0
     } else if (bet.description.includes('GOALS')){
-      const x = bet.description.split(' ')[1]
+      const x = parseInt(bet.description.split(' ')[1])
       if (season.goals_for==x) bet.outcome=1;
     } else if (bet.description.includes('POINTS')){
-      const x = bet.description.split(' ')[1]
+      const x = parseInt(bet.description.split(' ')[1])
       if (season.points==x) bet.outcome=1;
     }
     else if (bet.description=='IN FIRST' && season.position_groups==1) bet.outcome=1;
     else if (bet.description=='IN LAST' && season.position_groups==4) bet.outcome=1;
-    else bet.outcome=0;
-
+    
+    if (bet.outcome==-1) bet.outcome=0;
     await connection('bets').where('id', bet.id).update(bet);
-    if (bet.outcome) return response.json('BET ACCOMPLISHED');
+    if (bet.outcome==1) return response.json('BET ACCOMPLISHED');
     else return response.json('BET UNACCOMPLISHED');
   }
 }
