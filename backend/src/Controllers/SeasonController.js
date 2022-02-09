@@ -421,6 +421,7 @@ module.exports = {
             return response.json({
               round_of_8:seasonFile.final_fase.round_of_8,
               disclassified,
+              classified
             })
           })
         } else return response.json({error:'Problems during database connection'})
@@ -493,9 +494,10 @@ module.exports = {
         file.final_fase['quarter_finals'] = quarter_finals;
         fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
           if (err) throw Error("Unable to write in season file at quarter finals")
-          response.json({
+          return response.json({
             quarter_finals:file.final_fase.quarter_finals,
             disclassified,
+            classified
           })
         });
       },1000)
@@ -560,9 +562,10 @@ module.exports = {
         file.final_fase['semi_finals'] = semi_finals;
         fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
           if (err) throw Error("Unable to write in season file at semi finals")
-          response.json({
+          return response.json({
             semi_finals: file.final_fase.semi_finals,
-            disclassified
+            disclassified,
+            classified
           })
         });
       },1000)
@@ -613,8 +616,7 @@ module.exports = {
         'San Siro - Spain',
         'Olympiastadion Berlin - Germany'
       ]
-      const stadium = choices[Math.round(Math.random()*10)]
-
+      const stadium = choices[Math.round(Math.random()*choices.length)]
       const jerseyA = await connection('teams').where('name',classified[0]).select('jersey')
       const jerseyB = await connection('teams').where('name',classified[1]).select('jersey')
 
@@ -633,9 +635,10 @@ module.exports = {
       }
       fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
         if (err) throw Error("Unable to write in season file at finals")
-        response.json({
+        return response.json({
           final: file.final_fase.final,
-          disclassified
+          disclassified,
+          classified
         })
       });
     } else if (Object.keys(file.final_fase).length!=5) {
@@ -692,10 +695,7 @@ module.exports = {
         await connection('teams').where('name', team_name).update('titles', titles+1)
         p = 20;
         break;
-      case "PENDING":
-        break;
-      default:
-        throw Error("Wrong placement informed");
+      default: break;
     }
 
     let season_score;
@@ -733,7 +733,8 @@ module.exports = {
       biggest_opponent,
       least_opponent,
       fans,
-    }
+    } 
+
     const season = await connection('seasons').where('id',id).select('*')
     if (season[0]) await connection('seasons').where('id',id).update(data)
     else await connection('seasons').insert(data)
@@ -792,6 +793,14 @@ module.exports = {
     fs.readdir('./src/database/seasons', (err, files)=>{
       if(err) return response.json(err)
       return response.json(files[files.length-2]);
+    })
+  },
+
+  async deletefile(request,response){
+    const { file } = request.params;
+    await fs.unlink(`./src/database/seasons/${file}.json`, (err)=>{
+      if (err) return response.json("COULDN'T DELETE FILE")
+      else return response.json('SUCCESSFULY DELETED')
     })
   }
 

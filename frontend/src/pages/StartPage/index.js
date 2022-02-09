@@ -87,7 +87,7 @@ export default function StartPage(){
             <div style={{
               display:'flex',
               justifyContent: 'space-around'
-            }}><p>LAST SEASON: <span>{year[0]}</span></p><p>NEXT SEASON: <span>{year[1]}</span> </p></div>
+            }}><p>NEXT SEASON: <span>{year[1]}</span> </p><p>LAST SEASON: <span>{year[0]}</span></p></div>
             
           </div>
           <div className="year_selector">

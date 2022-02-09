@@ -5,6 +5,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  color: white;
+  text-align: center;
 }
 
 .bet_panel_container .wallet span{
@@ -27,7 +29,7 @@
 }
 
 .bet_panel_container td {
-  width: 50%;
+  width: 60%;
 }
 
 .bet_panel_container th {

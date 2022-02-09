@@ -19,6 +19,7 @@ router.get('/getbestWinstreak', SeasonController.getbestWinstreak);
 router.put('/getGroup', SeasonController.getGroup);
 router.put('/getSeason/:id', SeasonController.getSeason)
 router.get('/getAnyFile', SeasonController.getAnyFile);
+router.delete('/deletefile/:file', SeasonController.deletefile);
 
 router.put('/updateOpponent', TeamsController.updateOpponents);
 router.post('/newteam', TeamsController.createTeam);

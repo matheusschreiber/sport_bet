@@ -58,16 +58,11 @@ export default function Addbet(){
         array = array.join().replace(/,/g," ");
         setDescription(array);
       }
-
-      String.prototype.toProperCase = function () {
-        return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-      };
-
       const data = {
-        team: team.toProperCase(),
+        team: team,
         description,
         year:localStorage.getItem('SEASON'),
-        fase:"GROUPS"
+        fase:localStorage.getItem('FASE')
       }
       const response = await api.post('createODD', data)
       setOdd(response.data.odd);
@@ -113,6 +108,7 @@ export default function Addbet(){
 
   useEffect(()=>{
     fetchData();
+    // eslint-disable-next-line
   },[])
 
   return(
@@ -128,8 +124,11 @@ export default function Addbet(){
           <FiChevronLeft id="back_arrow" size={40} onClick={()=>{setPressed(false);}}/>
           <h1>NEW BET</h1>
           <div className="focus_container">
-            <div className="wallet"> <p>WALLET:<span style={player[0].wallet<100?{color:'var(--vermelho_claro_plus)'}:
-              player[0].wallet<1000?{color:'var(--amarelo)'}:{color:'var(--verde)'}}>{player[0].wallet}$</span></p>
+            <div className="top_boxes">
+              <div><p>FASE: <span>{localStorage.getItem('FASE')}</span></p></div>
+              <div><p>WALLET:<span style={player[0].wallet<100?{color:'var(--vermelho_claro_plus)'}:
+                player[0].wallet<1000?{color:'var(--amarelo)'}:{color:'var(--verde)'}}>{player[0].wallet}$</span></p>
+              </div>
             </div>
             <form className="focus">
               <div className="option_container">
@@ -185,7 +184,7 @@ export default function Addbet(){
                 <ul style={{textAlign:'right'}}> { playerBets.map((i)=>(<li key={i.id+i.team}>{i.team.toUpperCase()} {i.description.toUpperCase()}</li>))} </ul>
                 <ul> { playerBets.map((i)=>(<li key={i.id+i.odd} style={{color:'var(--verde)'}}>({i.odd})</li>))} </ul>
                 <ul> { playerBets.map((i)=>(<li key={i.id+i.value}>{i.value}$</li>))} </ul>
-                <ul> { playerBets.map((i)=>(<li key={i.id+i.profit}>+{i.profit}$</li>))} </ul>
+                <ul> { playerBets.map((i)=>(<li key={i.id+i.profit}>+{i.profit.toFixed(2)}$</li>))} </ul>
                 <ul> { playerBets.map((i)=>(<li key={i.id+i}>
                   <FiMinusCircle 
                     color={'var(--vermelho_claro_plus)'} 

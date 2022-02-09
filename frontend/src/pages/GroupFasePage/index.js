@@ -20,6 +20,7 @@ export default function GroupFasePage(){
   const [ finished, setFinished ] = useState(false);
   const [ loadedGroups, setLoadedGroups ] = useState([])
   const [ match_log, setMatchLog ] = useState([[],[],[],[],[],[],[],[],[]])
+  const [ readyToRefreshBet, setReadyRefreshBet ]  = useState(false);
   const [ groups, setGroups ] = useState([{
     group: 'A',
     data: [
@@ -55,6 +56,7 @@ export default function GroupFasePage(){
   
   async function simulateGroupFase(){
     setLoading(true)
+    setReadyRefreshBet(false)
     
     async function generateMatchOutcome(match, team_1, team_2, id){
       let answer = []
@@ -135,6 +137,7 @@ export default function GroupFasePage(){
         setLoadedGroups(loadedGroups.push(0))
       } catch(err){
         alert('Request response delay is off. Remove any nodemon activities and restart backend')
+        api.delete(`deletefile/${localStorage.getItem('SEASON')}`);
         console.log(err)
         setFinished(true);
         setLoading(false);
@@ -165,6 +168,7 @@ export default function GroupFasePage(){
     if (update.length===0) window.scroll(0,0);
     getGroups();
     localStorage.setItem('FASE', 'GROUPS');
+    setReadyRefreshBet(true);
   }, [update])
   
   return(
@@ -240,7 +244,8 @@ export default function GroupFasePage(){
 
         <div className="button" style={finished?{marginTop:'100px'}:{display:'none'}} onClick={()=>nav('/finals')}>GO TO FINAL FASE</div>
         {/* <div className="button" onClick={()=>setUpdate(true)}>RegisterResults</div> */}
-        <BetPanel player_name={localStorage.getItem('PLAYER')} ready={update}/>
+        <h3 style={readyToRefreshBet?{display:'none'}:{}}>ADVANCE TO FINAL FASE TO UPDATE BETS</h3>
+        <BetPanel player_name={localStorage.getItem('PLAYER')} ready={readyToRefreshBet}/>
       </div>
       <Footer />
       <Addbet />

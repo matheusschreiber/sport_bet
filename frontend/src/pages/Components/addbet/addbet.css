@@ -47,7 +47,7 @@ ul {
 .bet_board_inner {
   background-color: var(--vermelho_claro);
   width: 60%;
-  height: 620px;
+  height: 630px;
   position:absolute;
   left:20%;
   top: 400px;
@@ -79,13 +79,21 @@ ul {
   background-color: var(--vermelho_escuro);
   border-radius: 8px;
   width: 80%;
-  height: 180px; 
+  height: 200px; 
   margin: 10px auto;
   margin-top: 40px;
   padding-top: 10px;
 }
 
-.wallet{
+.top_boxes {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  margin: 5px auto;
+  margin-bottom: 20px;
+}
+
+.top_boxes div{
   background-color: var(--vermelho_claro);
   color: var(--vermelho_escuro);
   width: 150px;
@@ -93,7 +101,10 @@ ul {
   display: flex;
   align-items: top;
   justify-content: center;
-  margin-left: 70%;
+}
+
+.top_boxes span {
+  color: var(--azul_escuro);
 }
 
 .wallet span {

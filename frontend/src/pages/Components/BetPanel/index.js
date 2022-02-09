@@ -27,7 +27,7 @@ export default function BetPanel({player_name, ready}){
     setBets(response2.data);
     setTotal(sum);
 
-    if (ready) await Promise.all(response2.data.map(async(i)=>{await api.get(`verifyBet/${i.id}`);}))
+    if (ready) await Promise.all(response2.data.map(async(i)=>{ await api.get(`verifyBet/${i.id}`);}))
 
     setLoading(false);
   }
@@ -37,17 +37,18 @@ export default function BetPanel({player_name, ready}){
   }, [ready])
 
   return (
-    <div className="bet_panel_container">
+    <div className="bet_panel_container" style={ready?{}:{opacity:'.3',cursor:'not-allowed'}}>
       <div style={{display:'flex',alignItems: 'center',width: '120px',justifyContent: 'space-around'}}>
         <h2>PROFITS</h2>
         <FiRotateCw size={20} onClick={()=>loadPanel(ready)} style={loading?{display:'none'}:{cursor:'pointer'}}/>
         <Levels style={loading?{}:{display:'none'}}/>
       </div>
+      {/* <p>READY: <span style={ready?{color:'var(--verde)'}:{color:'var(--vermelho_claro_plus)'}}>{ready?"YES":"NO"}</span></p> */}
       <div className="wallet">
         <h2>
           WALLET: {player.wallet}$ 
           <span style={total>0?{color:'var(--verde_escuro)'}:{color:'var(--vermelho_escuro)'}}>
-            {total>0?` (+${total})`:total<0?` (${total})`:""}
+            {total>0?` (+${total.toFixed(2)})`:total<0?` (-${total.toFixed(2)})`:""}
           </span>
         </h2>
       </div>
@@ -64,13 +65,17 @@ export default function BetPanel({player_name, ready}){
           {
             player?bets.map((i)=>(
               <tr key={`${i.id} tr`}>
-                <td key={`${i.id} td1`}>{`${i.team.toUpperCase()} ${i.description}`}</td>
+                <td key={`${i.id} td1`}>
+                  {(i.fase==='FINALIST'||i.fase==='TITLE')&&(i.description==='CLASSIFIED'||i.description==='DISCLASSIFIED')
+                  ?`${i.team.toUpperCase()} ${i.fase}`
+                  :`${i.team.toUpperCase()} ${i.description} IN ${i.fase}`}
+                  </td>
                 <td key={`${i.id} td2`} style={
                     i.outcome>0?{color:'var(--verde)'}:i.outcome===0?{color:'var(--vermelho_claro_plus)'}:{color:'var(--cinza)'}
                   }>
-                  {i.outcome>0?`+${i.profit}`:i.outcome===0?`-${i.profit}`:"--"}</td>
+                  {ready?i.outcome>0?`+${i.profit.toFixed(2)}`:i.outcome===0?`-${i.profit.toFixed(2)}`:"--":"--"}</td>
               </tr>
-            )):""
+            )):"LOADING"
           }
           
         </tbody>
