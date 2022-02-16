@@ -151,51 +151,51 @@ module.exports = {
             }
           })
         })
-      })
-
-      Object.entries(groups).forEach((i)=>{
-        const [ key, value ] = i
-        var teams = [
-          [value.team_1.name, value.team_1.points],
-          [value.team_2.name, value.team_2.points],
-          [value.team_3.name, value.team_3.points],
-          [value.team_4.name, value.team_4.points]
-        ]
-
-        teams.sort(function(a, b){
-          if (a[1]>b[1]) return -1;
-          else if (a[1]<b[1]) return 1;
-          return 0;
-        })
-
-        for(i=0;i<4;i++){
-          switch (teams[i][0]) {
-            case value.team_1.name:
-              value.team_1.old_position = value.team_1.current_position
-              value.team_1.current_position = i+1
-              break;
-            case value.team_2.name:
-              value.team_2.old_position = value.team_2.current_position
-              value.team_2.current_position = i+1
-              break;
-            case value.team_3.name:
-              value.team_3.old_position = value.team_3.current_position
-              value.team_3.current_position = i+1
-              break;
-            case value.team_4.name:
-              value.team_4.old_position = value.team_4.current_position
-              value.team_4.current_position = i+1
-              break;
+        Object.entries(groups).forEach((i)=>{
+          const [ key, value ] = i
+          if (key==group){
+            var teams = [
+              [value.team_1.name, value.team_1.points],
+              [value.team_2.name, value.team_2.points],
+              [value.team_3.name, value.team_3.points],
+              [value.team_4.name, value.team_4.points]
+            ]
+    
+            teams.sort(function(a, b){
+              if (a[1]>b[1]) return -1;
+              else if (a[1]<b[1]) return 1;
+              return 0;
+            })
+    
+            for(i=0;i<4;i++){
+              switch (teams[i][0]) {
+                case value.team_1.name:
+                  value.team_1.old_position = value.team_1.current_position
+                  value.team_1.current_position = i+1
+                  break;
+                case value.team_2.name:
+                  value.team_2.old_position = value.team_2.current_position
+                  value.team_2.current_position = i+1
+                  break;
+                case value.team_3.name:
+                  value.team_3.old_position = value.team_3.current_position
+                  value.team_3.current_position = i+1
+                  break;
+                case value.team_4.name:
+                  value.team_4.old_position = value.team_4.current_position
+                  value.team_4.current_position = i+1
+                  break;
+              }
+            }
           }
-        }
+        })
+        
+        file.group_fase = groups      
       })
-      
-      file.group_fase = groups      
       fs.writeFile(`./src/database/seasons/${year}.json`, JSON.stringify(file), 'utf8', (err)=>{
         if (err) throw Error(err)
         return response.json(file);
       });      
-
     } else if (fase=="round of 8"){
       var matches = Object.entries(file.final_fase.round_of_8)
       outcomes.map((i)=>{
@@ -338,94 +338,94 @@ module.exports = {
           else if (jvalue.name) disclassified.push(jvalue.name);
         })
       })
-
       let potA=[], potB=[];
-  
-      classified.map(async(i)=>{
+      
+      await Promise.all(classified.map(async(i)=>{
         const [{country, jersey}] = await connection('teams').where('name',i).select('country','jersey')
         if (classified.indexOf(i)%2) potA.push([i,country,jersey])
         else potB.push([i,country,jersey])
-      })
+      }))
 
-      setTimeout(()=>{
-        if (potA && potB) {
-          function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+      if (potA && potB) {
+        function shuffleArray(array) {
+          for (let i = array.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [array[i], array[j]] = [array[j], array[i]];
+          }
+        }
+        let toBeShuffled = true, control=0;
+        while(toBeShuffled){
+          shuffleArray(potA)
+          shuffleArray(potB)
+          for(i=0;i<8;i+=2){
+            if (potA[i][1]==potA[i+1][1]) {
+              toBeShuffled = true;
+              break;
+            } else toBeShuffled = false;
+            if (potB[i][1]==potB[i+1][1]) {
+              toBeShuffled = true;
+              break;
+            } else toBeShuffled = false;
+          }
+          control++;
+          if (control>=100) return response.json({error: `Couldn't find a right shuffle after ${control} times`})
+        }
+
+
+        var round_of_8 = {};
+        for(i=0, j=1;i<16;i+=2, j++){
+          if (i<8){
+            var match = {
+              "A": potA[i][0],
+              "jerseyA":potA[i][2],
+              "B": potA[i+1][0],
+              "jerseyB":potA[i+1][2],
+              "score_A_first_leg": 0,
+              "score_B_first_leg": 0,
+              "score_A_second_leg": 0,
+              "score_B_second_leg": 0,
+              "score_A_penalties":0,
+              "score_B_penalties":0,
+              "localA": potA[i][1],
+              "localB": potA[i+1][1]
+            }
+          } else {
+            var match = {
+              "A": potB[i-8][0],
+              "jerseyA":potB[i-8][2],
+              "B": potB[i-7][0],
+              "jerseyB":potB[i-7][2],
+              "score_A_first_leg": 0,
+              "score_B_first_leg": 0,
+              "score_A_second_leg": 0,
+              "score_B_second_leg": 0,
+              "score_A_penalties":0,
+              "score_B_penalties":0,
+              "localA": potB[i-8][1],
+              "localB": potB[i-7][1]
             }
           }
-          
-          let toBeShuffled = true, control=0;
-          while(toBeShuffled){
-            shuffleArray(potA)
-            shuffleArray(potB)
-            for(i=0;i<8;i+=2){
-              if (potA[i][1]==potA[i+1][1]) {
-                toBeShuffled = true;
-                break;
-              } else toBeShuffled = false;
-              if (potB[i][1]==potB[i+1][1]) {
-                toBeShuffled = true;
-                break;
-              } else toBeShuffled = false;
-            }
-            control++;
-            if (control>=100) return response.json({error: `Couldn't find a right shuffle after ${control} times`})
-          }
+          round_of_8[`match_${j}`] = match
+        }
 
-          var round_of_8 = {};
-          for(i=0, j=1;i<16;i+=2, j++){
-            if (i<8){
-              var match = {
-                "A": potA[i][0],
-                "jerseyA":potA[i][2],
-                "B": potA[i+1][0],
-                "jerseyB":potA[i+1][2],
-                "score_A_first_leg": 0,
-                "score_B_first_leg": 0,
-                "score_A_second_leg": 0,
-                "score_B_second_leg": 0,
-                "score_A_penalties":0,
-                "score_B_penalties":0,
-                "localA": potA[i][1],
-                "localB": potA[i+1][1]
-              }
-            } else {
-              var match = {
-                "A": potB[i-8][0],
-                "jerseyA":potB[i-8][2],
-                "B": potB[i-7][0],
-                "jerseyB":potB[i-7][2],
-                "score_A_first_leg": 0,
-                "score_B_first_leg": 0,
-                "score_A_second_leg": 0,
-                "score_B_second_leg": 0,
-                "score_A_penalties":0,
-                "score_B_penalties":0,
-                "localA": potB[i-8][1],
-                "localB": potB[i-7][1]
-              }
-            }
-            round_of_8[`match_${j}`] = match
-          }
+        seasonFile.group_fase['classified'] = classified;
+        seasonFile.group_fase['disclassified'] = disclassified;
 
-          seasonFile.final_fase = {
-            teams_pot_A: potA,
-            teams_pot_B: potB,
-            round_of_8
-          }
-    
-          fs.writeFile(`./src/database/seasons/${year}.json`, JSON.stringify(seasonFile), 'utf-8', (err)=>{
-            if (err) throw Error("Unable to write in season file at round of 8")
-            return response.json({
-              round_of_8:seasonFile.final_fase.round_of_8,
-              disclassified,
-              classified
-            })
+        seasonFile.final_fase = {
+          teams_pot_A: potA,
+          teams_pot_B: potB,
+          round_of_8
+        }
+  
+        fs.writeFile(`./src/database/seasons/${year}.json`, JSON.stringify(seasonFile), 'utf-8', (err)=>{
+          if (err) throw Error("Unable to write in season file at round of 8")
+          return response.json({
+            round_of_8:seasonFile.final_fase.round_of_8,
+            disclassified,
+            classified
           })
-        } else return response.json({error:'Problems during database connection'})
-      },1000)
+        })
+      } else return response.json({error:'Problems during database connection'})
      
     } else if (Object.keys(seasonFile.final_fase).length!=0) {
       console.log('error')
@@ -467,40 +467,42 @@ module.exports = {
   
       let infos=[]
 
-      classified.map(async(i)=>{
+      await Promise.all(classified.map(async(i)=>{
         const [{ country, jersey }] = await connection('teams').where('name', i).select('country', 'jersey')
         infos.push([i,country,jersey])
-      })
-      setTimeout(()=>{
-        var quarter_finals = {}
-        for(i=0,j=1;i<8;i+=2, j++){
-          var match = {
-            "A": infos[i][0],
-            "jerseyA":infos[i][2],
-            "B": infos[i+1][0],
-            "jerseyB":infos[i+1][2],
-            "score_A_first_leg": 0,
-            "score_B_first_leg": 0,
-            "score_A_second_leg": 0,
-            "score_B_second_leg": 0,
-            "score_A_penalties": 0,
-            "score_B_penalties":0,
-            "localA":infos[i][1],
-            "localB":infos[i+1][1]
-          }
-          quarter_finals[`match_${j}`] = match
+      }))
+      var quarter_finals = {}
+      for(i=0,j=1;i<8;i+=2, j++){
+        var match = {
+          "A": infos[i][0],
+          "jerseyA":infos[i][2],
+          "B": infos[i+1][0],
+          "jerseyB":infos[i+1][2],
+          "score_A_first_leg": 0,
+          "score_B_first_leg": 0,
+          "score_A_second_leg": 0,
+          "score_B_second_leg": 0,
+          "score_A_penalties": 0,
+          "score_B_penalties":0,
+          "localA":infos[i][1],
+          "localB":infos[i+1][1]
         }
-    
-        file.final_fase['quarter_finals'] = quarter_finals;
-        fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
-          if (err) throw Error("Unable to write in season file at quarter finals")
-          return response.json({
-            quarter_finals:file.final_fase.quarter_finals,
-            disclassified,
-            classified
-          })
-        });
-      },1000)
+        quarter_finals[`match_${j}`] = match
+      }
+  
+      file.final_fase['quarter_finals'] = quarter_finals;
+
+      file.final_fase.round_of_8['classified'] = classified;
+      file.final_fase.round_of_8['disclassified'] = disclassified;
+
+      fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
+        if (err) throw Error("Unable to write in season file at quarter finals")
+        return response.json({
+          quarter_finals:file.final_fase.quarter_finals,
+          disclassified,
+          classified
+        })
+      });
       
     } else if (Object.keys(file.final_fase).length!=3) {
       throw Error("Trying to create quarter finals data which alerady exists")
@@ -534,41 +536,43 @@ module.exports = {
 
       let infos=[]
 
-      classified.map(async(i)=>{
+      await Promise.all(classified.map(async(i)=>{
         const [{ country, jersey }] = await connection('teams').where('name', i).select('country', 'jersey')
         infos.push([i,country,jersey])
-      })
+      }))
 
-      setTimeout(()=>{
-        var semi_finals = {}
-        for(i=0,j=1;i<4;i+=2, j++){
-          var match = {
-            "A": infos[i][0],
-            "jerseyA":infos[i][2],
-            "B": infos[i+1][0],
-            "jerseyB":infos[i+1][2],
-            "score_A_first_leg": 0,
-            "score_B_first_leg": 0,
-            "score_A_second_leg": 0,
-            "score_B_second_leg": 0,
-            "score_A_penalties":0,
-            "score_B_penalties":0,
-            "localA":infos[i][1],
-            "localB":infos[i+1][1]
-          }
-          semi_finals[`match_${j}`] = match
+      var semi_finals = {}
+      for(i=0,j=1;i<4;i+=2, j++){
+        var match = {
+          "A": infos[i][0],
+          "jerseyA":infos[i][2],
+          "B": infos[i+1][0],
+          "jerseyB":infos[i+1][2],
+          "score_A_first_leg": 0,
+          "score_B_first_leg": 0,
+          "score_A_second_leg": 0,
+          "score_B_second_leg": 0,
+          "score_A_penalties":0,
+          "score_B_penalties":0,
+          "localA":infos[i][1],
+          "localB":infos[i+1][1]
         }
-    
-        file.final_fase['semi_finals'] = semi_finals;
-        fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
-          if (err) throw Error("Unable to write in season file at semi finals")
-          return response.json({
-            semi_finals: file.final_fase.semi_finals,
-            disclassified,
-            classified
-          })
-        });
-      },1000)
+        semi_finals[`match_${j}`] = match
+      }
+  
+      file.final_fase['semi_finals'] = semi_finals;
+
+      file.final_fase.quarter_finals['classified'] = classified;
+      file.final_fase.quarter_finals['disclassified'] = disclassified;
+      
+      fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
+        if (err) throw Error("Unable to write in season file at semi finals")
+        return response.json({
+          semi_finals: file.final_fase.semi_finals,
+          disclassified,
+          classified
+        })
+      });
 
     } else if (Object.keys(file.final_fase).length!=4) {
       throw Error("Trying to create semi finals data which alerady exists")
@@ -633,6 +637,10 @@ module.exports = {
           "local": stadium
         }
       }
+
+      file.final_fase.semi_finals['classified'] = classified;
+      file.final_fase.semi_finals['disclassified'] = disclassified;
+
       fs.writeFile(`./src/database/seasons/${year}.json`,JSON.stringify(file), 'utf-8', (err)=>{
         if (err) throw Error("Unable to write in season file at finals")
         return response.json({
@@ -792,7 +800,8 @@ module.exports = {
   async getAnyFile(request,response){
     fs.readdir('./src/database/seasons', (err, files)=>{
       if(err) return response.json(err)
-      return response.json(files[files.length-2]);
+      if (files[files.length-2]) return response.json(files[files.length-2]);
+      else return response.json('2020-2021.json');
     })
   },
 
@@ -802,6 +811,40 @@ module.exports = {
       if (err) return response.json("COULDN'T DELETE FILE")
       else return response.json('SUCCESSFULY DELETED')
     })
+  },
+
+  async getClassified(request,response){
+    const { fase, year } = request.body;
+    const seasonFile = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'))   
+    switch(fase){
+      case 'GROUPS':
+        return response.json(seasonFile.group_fase.classified);
+      case 'ROUNDOF8':
+        return response.json(seasonFile.final_fase.round_of_8.classified);
+      case 'QUARTERS':
+        return response.json(seasonFile.final_fase.quarter_finals.classified);
+      case 'SEMIS':
+        return response.json(seasonFile.final_fase.semi_finals.classified);
+      case 'FINAL':
+        return response.json(seasonFile.final_fase.final.classified);
+    }
+  },
+
+  async getDisclassified(request,response){
+    const { fase, year } = request.body;
+    const seasonFile = JSON.parse(fs.readFileSync(`./src/database/seasons/${year}.json`, 'utf-8'))   
+    switch(fase){
+      case 'GROUPS':
+        return response.json(seasonFile.group_fase.disclassified);
+      case 'ROUNDOF8':
+        return response.json(seasonFile.final_fase.round_of_8.disclassified);
+      case 'QUARTERS':
+        return response.json(seasonFile.final_fase.quarter_finals.disclassified);
+      case 'SEMIS':
+        return response.json(seasonFile.final_fase.semi_finals.disclassified);
+      case 'FINAL':
+        return response.json(seasonFile.final_fase.final.disclassified);
+    }
   }
 
 }

@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { FiRotateCw } from 'react-icons/fi';
-import api from '../../../services/api';
+import api from '../../services/api';
 
 import { Levels } from "react-activity";
 import "react-activity/dist/Levels.css";
 
 import './style.css';
 
-export default function BetPanel({player_name, ready}){
+export default function BetPanel({player_name, ready, round_finished}){
 
   const [ player, setPlayer ] = useState({wallet:'LOADING'});
   const [ total, setTotal ] = useState(0)
   const [ bets, setBets ] = useState([]);
   const [ loading, setLoading ] = useState(false);
 
-  async function loadPanel(ready){
+  async function loadPanel(){
     setLoading(true);
 
     if (!player_name) {setPlayer([{id:0,name:0,wallet:0}]);return}
@@ -27,28 +27,28 @@ export default function BetPanel({player_name, ready}){
     setBets(response2.data);
     setTotal(sum);
 
-    if (ready) await Promise.all(response2.data.map(async(i)=>{ await api.get(`verifyBet/${i.id}`);}))
+    if (round_finished) await Promise.all(response2.data.map(async(i)=>{ await api.get(`verifyBet/${i.id}`);}))
 
     setLoading(false);
   }
 
   useEffect(()=>{
-    loadPanel(ready); // eslint-disable-next-line
+    loadPanel(); // eslint-disable-next-line
   }, [ready])
 
   return (
     <div className="bet_panel_container" style={ready?{}:{opacity:'.3',cursor:'not-allowed'}}>
-      <div style={{display:'flex',alignItems: 'center',width: '120px',justifyContent: 'space-around'}}>
+      <div className="bet_panel_title">
         <h2>PROFITS</h2>
-        <FiRotateCw size={20} onClick={()=>loadPanel(ready)} style={loading?{display:'none'}:{cursor:'pointer'}}/>
+        <FiRotateCw size={20} onClick={()=>loadPanel()} style={loading?{display:'none'}:{cursor:'pointer'}}/>
         <Levels style={loading?{}:{display:'none'}}/>
       </div>
-      {/* <p>READY: <span style={ready?{color:'var(--verde)'}:{color:'var(--vermelho_claro_plus)'}}>{ready?"YES":"NO"}</span></p> */}
+      <p>READY: <span style={round_finished?{color:'var(--verde)'}:{color:'var(--vermelho_claro_plus)'}}>{round_finished?"YES":"NO"}</span></p>
       <div className="wallet">
         <h2>
           WALLET: {player.wallet}$ 
           <span style={total>0?{color:'var(--verde_escuro)'}:{color:'var(--vermelho_escuro)'}}>
-            {total>0?` (+${total.toFixed(2)})`:total<0?` (-${total.toFixed(2)})`:""}
+            {total>0&&ready?` (+${total.toFixed(2)})`:total<0&&ready?` (${total.toFixed(2)})`:""}
           </span>
         </h2>
       </div>
@@ -71,13 +71,12 @@ export default function BetPanel({player_name, ready}){
                   :`${i.team.toUpperCase()} ${i.description} IN ${i.fase}`}
                   </td>
                 <td key={`${i.id} td2`} style={
-                    i.outcome>0?{color:'var(--verde)'}:i.outcome===0?{color:'var(--vermelho_claro_plus)'}:{color:'var(--cinza)'}
+                    i.outcome>0&&ready?{color:'var(--verde)'}:i.outcome===0&&ready?{color:'var(--vermelho_claro_plus)'}:{color:'var(--cinza)'}
                   }>
                   {ready?i.outcome>0?`+${i.profit.toFixed(2)}`:i.outcome===0?`-${i.profit.toFixed(2)}`:"--":"--"}</td>
               </tr>
             )):"LOADING"
           }
-          
         </tbody>
       </table>
     </div>

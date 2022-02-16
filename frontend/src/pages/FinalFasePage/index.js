@@ -6,11 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { Dots } from "react-activity";
 import "react-activity/dist/Dots.css";
 
-import Header from "../Components/header";
-import Footer from "../Components/footer";
+import Header from "../../Components/header";
+import Footer from "../../Components/footer";
 import thropy from '../../assets/Thropy.png'
-import BetPanel from "../Components/BetPanel";
-import Addbet from '../Components/addbet/addbet';
+import BetPanel from "../../Components/BetPanel";
+import Addbet from '../../Components/addbet';
+
+import { FiArrowLeft } from 'react-icons/fi';
 
 import api from '../../services/api';
 
@@ -110,6 +112,7 @@ export default function FinalFasePage() {
         aux[0].score_A_penalties = answer[3]
         aux[0].score_B_penalties = answer[4]
         setPotATeamsMatches(aux)
+        setReadyRefreshBet(true);
         return [1, answer[1], answer[2], answer[3], answer[4]]
       }
 
@@ -156,7 +159,6 @@ export default function FinalFasePage() {
       updateSeasonWinner(response.data.final_fase.final.match)
       setbuttonStatus('FINISH SEASON')
     } else setbuttonStatus('NEXT');
-    setReadyRefreshBet(true);
   }
   
   async function updateSeasonWinner(data){
@@ -197,7 +199,6 @@ export default function FinalFasePage() {
   
   async function updateRound(){
     setLoading(true);
-    setReadyRefreshBet(false);
     if (fase === "ROUND OF 8" && buttonStatus==='NEXT') {
       const round = await api.put('setup4',{year:localStorage.getItem('SEASON')})
       setPotATeamsMatches([round.data.quarter_finals.match_1,round.data.quarter_finals.match_2]);
@@ -239,7 +240,7 @@ export default function FinalFasePage() {
       setLoading(false);
       setbuttonStatus('SIMULATE ROUND');
     }
-    setReadyRefreshBet(true);
+    setTimeout(()=>setReadyRefreshBet(true),500);
   }
 
   async function changeStage(){
@@ -312,6 +313,10 @@ export default function FinalFasePage() {
     <div style={{color:'white', textAlign:'center'}}>
       <Header />
       <div className="final_container">
+        <div className="back_groups">
+          <h2 onClick={()=>nav('/Groups')}>BACK TO GROUPS</h2>
+          <FiArrowLeft size={27}/>
+        </div>
         <div className="title_container">
           <h1>CLASSIFICATIONS</h1>  
           <h2>SEASON {localStorage.getItem('SEASON')}</h2>
@@ -511,9 +516,10 @@ export default function FinalFasePage() {
       <h3 style={readyToRefreshBet?{display:'none'}:{}}>CLICK NEXT TO UPDATE BETS</h3>
       <BetPanel 
         player_name={localStorage.getItem('PLAYER')} 
-        ready={readyToRefreshBet}/>
+        ready={readyToRefreshBet}
+        round_finished={buttonStatus==='NEXT' || buttonStatus==='FINISH SEASON'?true:false}/>
       <Footer />
-      <Addbet />
+      <Addbet betsAvailable={readyToRefreshBet} />
     </div>
 
   );

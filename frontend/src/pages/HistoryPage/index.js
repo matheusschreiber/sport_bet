@@ -8,8 +8,8 @@ import "react-activity/dist/Dots.css";
 import './style.css'
 import { FiArrowRight, FiRotateCw } from 'react-icons/fi'
 
-import Footer from "../Components/footer";
-import Header from "../Components/header";
+import Footer from "../../Components/footer";
+import Header from "../../Components/header";
 
 export default function Historypage(){  
   const nav = useNavigate();

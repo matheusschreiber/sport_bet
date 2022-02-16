@@ -20,6 +20,8 @@ router.put('/getGroup', SeasonController.getGroup);
 router.put('/getSeason/:id', SeasonController.getSeason)
 router.get('/getAnyFile', SeasonController.getAnyFile);
 router.delete('/deletefile/:file', SeasonController.deletefile);
+router.put('/getClassified', SeasonController.getClassified);
+router.put('/getDisclassified', SeasonController.getDisclassified);
 
 router.put('/updateOpponent', TeamsController.updateOpponents);
 router.post('/newteam', TeamsController.createTeam);

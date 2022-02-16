@@ -4,7 +4,7 @@ import { FiCheckCircle, FiXCircle } from 'react-icons/fi';
 import { Spinner } from "react-activity";
 import "react-activity/dist/Spinner.css";
 
-import api from '../../services/api'
+import api from '../services/api'
 
 
 

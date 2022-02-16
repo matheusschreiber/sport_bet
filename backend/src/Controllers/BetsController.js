@@ -9,22 +9,22 @@ module.exports = {
     lastYear = `${lastYear.slice(0, 4)}-${lastYear.slice(4,8)}`
 
     const [ lastSeason ] = await connection('seasons').where('id',`${lastYear.replace(/-/g,"")} ${team}`).select('*')
-    lastPosition = lastSeason.position_groups;
+    if (!lastSeason) lastPosition = 4;
+    else lastPosition = lastSeason.position_groups;
 
-    const allSeasons = await connection('seasons').where('team_name', team).select('*')
-    
-    let averagePoints=0, seasons=0;
-    Object.entries(allSeasons).map((i)=>{ averagePoints+=i[1].points; seasons+=1; })
-    averagePoints/=seasons;
+    let averagePoints=0.1, seasons=0.1, averageGoals=0.1, averageSeasonScore=0.1;
+    let allSeasons = await connection('seasons').where('team_name', team).select('*')
 
-    let averageGoals=0;
-    Object.entries(allSeasons).map((i)=>{ averageGoals+=i[1].goals_for; })
-    averageGoals/=seasons;
+    if (allSeasons){
+      Object.entries(allSeasons).map((i)=>{ averagePoints+=i[1].points; seasons+=1; })
+      averagePoints/=seasons;
 
-    let averageSeasonScore=0;
-    Object.entries(allSeasons).map((i)=>{ averageSeasonScore += i[1].season_score; })
-    averageSeasonScore/=seasons;
-    
+      Object.entries(allSeasons).map((i)=>{ averageGoals+=i[1].goals_for; })
+      averageGoals/=seasons;
+
+      Object.entries(allSeasons).map((i)=>{ averageSeasonScore += i[1].season_score; })
+      averageSeasonScore/=seasons;
+    } 
 
     let coef=0;
     if (description.includes("GOALS") && fase==='GROUPS') coef=parseInt(description.split(' ')[1])?(parseInt(description.split(' ')[1])/averageGoals)*0.65:0.65/averageGoals;
@@ -150,34 +150,15 @@ module.exports = {
     let [ bet ] = await connection('bets').where('id',id).select('*');
     const [ season ] = await connection('seasons').where('id', bet.year.replace("-","") + " " + bet.team)    
 
+    if (bet.outcome!=-1) return response.json("BET ALREADY CHECKED");
+
     if (bet.description=='CLASSIFIED' || bet.description=='DISCLASSIFIED'){
-      if (season.placement.includes('PENDING')) bet.outcome = -1;
+      if (season.placement=='PENDING') classified = -1;
       else {
-        let classified=0;
-        switch(bet.fase){
-          case "GROUPS":
-            if (season.placement!='GROUPS') classified=1;
-            break;
-          case "ROUNDOF8":
-            if (season.placement!='GROUPS'
-              &&season.placement!='ROUNDOF8') classified=1;
-            break;
-          case "QUARTERS":
-            if (season.placement!='GROUPS'
-              &&season.placement!='ROUNDOF8'
-              &&season.placement!='QUARTERS') classified=1;
-            break;
-          case "SEMIS":
-            if (season.placement!='GROUPS'
-              &&season.placement!='ROUNDOF8'
-              &&season.placement!='QUARTERS'
-              &&season.placement!='SEMIS') classified=1;
-            break;
-          case "TITLE":
-            if (season.placement=='TITLE') classified=1;
-            break;
-          default:classified=0;break;
-        }
+        let classified;
+        if (season.placement==bet.fase) classified=0;
+        else if (season.placement==`PENDING ${bet.fase}`) classified=1;
+
         if (bet.description=='CLASSIFIED') bet.outcome = classified;
         else if (!classified) bet.outcome = 1;
         else bet.outcome = 0;
@@ -190,7 +171,9 @@ module.exports = {
       if (season.points==x) bet.outcome=1;
     }
     else if (bet.description=='IN FIRST' && season.position_groups==1) bet.outcome=1;
+    else if (bet.description=='IN FIRST' && season.position_groups!=1) bet.outcome=0;
     else if (bet.description=='IN LAST' && season.position_groups==4) bet.outcome=1;
+    else if (bet.description=='IN LAST' && season.position_groups!=4) bet.outcome=0;
     
     await connection('bets').where('id', bet.id).update(bet);
     if (bet.outcome==1) return response.json('BET ACCOMPLISHED');

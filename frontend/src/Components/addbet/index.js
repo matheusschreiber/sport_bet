@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from "react";
 import { FiPlus, FiMinusCircle, FiChevronLeft } from 'react-icons/fi';
 
-import './addbet.css';
+import './style.css';
 
 import { Levels } from "react-activity";
 import "react-activity/dist/Levels.css";
 
-import api from '../../../services/api'
+import api from '../../services/api'
 
-export default function Addbet(){
+export default function Addbet({betsAvailable=false}){
   const [ pressed, setPressed ] = useState(false);
   
   const [ team, setTeam ] = useState();
@@ -71,14 +71,26 @@ export default function Addbet(){
   }
 
   async function loadTeams(){
-    const response = await api.get('getTeamsJSON');
-    let array = response.data;
+    let response;
+    switch(localStorage.getItem('FASE')){
+      case "ROUNDOF8": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"GROUPS"});break;
+      case "QUARTERS": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"ROUNDOF8"});break;
+      case "SEMIS": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"QUARTERS"});break;
+      case "FINAL": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"SEMIS"});break;
+      default: response = await api.get('getTeamsJSON'); break;
+    }
+    
+    let array;
+    if (!response.data) response = await api.get('getTeamsJSON'); 
+    array = response.data;
     array.sort();
     setTeams(array);
   }
 
   async function loadBets(p){
     let sum=0;
+    if (!(localStorage.getItem('SEASON') && localStorage.getItem('PLAYER'))) return;
+
     const aBets = await api.get(`listBets/${localStorage.getItem('SEASON')}`);
     const pBets = await api.get(`listBets/${localStorage.getItem('SEASON')}`, {headers: {authorization:p.name}});
     pBets.data.map((i)=>sum+=i.profit)
@@ -113,7 +125,7 @@ export default function Addbet(){
 
   return(
     <div>
-      <div className="slideStyle" onClick={()=>{if (player[0].id) setPressed(true)}} style={player[0].id?{}:{opacity:'.2',cursor:'not-allowed'}}>
+      <div className="slideStyle" onClick={()=>{if (betsAvailable) {setPressed(true)};loadTeams();}} style={betsAvailable?{}:{opacity:'.2',cursor:'not-allowed'}}>
         <FiPlus size={40}/>
         <div className="textContainer">
           <h2 className="text">ADD BET</h2>
@@ -142,11 +154,11 @@ export default function Addbet(){
                 <h2>BET</h2>
                 <select onChange={(e)=>{setDescription(e.target.value);calculateODD(team,e.target.value,betValue)}}>
                   <option hidden>SELECT ODD</option>
-                  <option>IN LAST</option>
-                  <option>IN FIRST</option>
+                  <option style={localStorage.getItem('FASE')==='GROUPS'?{}:{display:'none'}}>IN LAST</option>
+                  <option style={localStorage.getItem('FASE')==='GROUPS'?{}:{display:'none'}}>IN FIRST</option>
                   <option>CLASSIFIED</option>
                   <option>DISCLASSIFIED</option>
-                  <option>WITH X POINTS</option>
+                  <option style={localStorage.getItem('FASE')==='GROUPS'?{}:{display:'none'}}>WITH X POINTS</option>
                   <option>WITH X GOALS</option>
                 </select>
                 <p style={odd?{}:{display:'none'}}>({odd})</p>
@@ -188,13 +200,13 @@ export default function Addbet(){
                 <ul> { playerBets.map((i)=>(<li key={i.id+i}>
                   <FiMinusCircle 
                     color={'var(--vermelho_claro_plus)'} 
-                    style={{cursor:'pointer'}}
+                    style={i.outcome==-1?{cursor:'pointer'}:{display:'none'}}
                     onClick={()=>deleteBet(i.id)}/>
                   </li>))} </ul>
               </div>
             </div>
           </div>
-          <div className="profit_container"><p>PROFIT: +{sumProfit.toFixed(2)}$</p></div>
+          <div className="profit_container"><p>PLANNED PROFIT: +{sumProfit.toFixed(2)}$</p></div>
           <div className="button" style={{backgroundColor:'var(--vermelho_escuro)'}}
             onClick={handleSubmit}>SUBMIT BET</div>
         </div>

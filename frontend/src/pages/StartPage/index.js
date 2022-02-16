@@ -9,15 +9,14 @@ import "react-activity/dist/Dots.css";
 
 import './style.css'
 
-import Header from '../Components/header';
-import Footer from '../Components/footer';
-import DBlog from '../Components/databaseConnection';
-import Addbet from '../Components/addbet/addbet';
+import Header from '../../Components/header';
+import Footer from '../../Components/footer';
+import DBlog from '../../Components/databaseConnection';
+import Addbet from '../../Components/addbet';
 
 import api from "../../services/api";
 
 export default function StartPage(){
-  const navigate = useNavigate();
   const [ loading, setLoading ] = useState(false);
   const [ year, setYear ] = useState(['','']);
   const [ player, setPlayer ] = useState("");
@@ -32,7 +31,7 @@ export default function StartPage(){
     array.push(nextYear)
     setYear(array)
     localStorage.setItem('SEASON',array[0]);
-    // localStorage.setItem('PLAYER',"Matheus");
+    setPlayer(localStorage.getItem('PLAYER'));
   }
 
   useEffect(()=>getLatestYear(),[])
@@ -75,13 +74,13 @@ export default function StartPage(){
                 const response = await api.get('getTeamsJSON')
                 await api.post('newseason',{year:year[1],teams:response.data})
                 setLoading(false)
-                navigate('/groups')
+                nav('/groups')
               }}>START NEW SEASON</div>
 
               <div className="button" onClick={async () => {
                   localStorage.setItem('SEASON',year[0])
                   setLoading(true)
-                  navigate('/groups')
+                  nav('/groups')
                 }}>CONTINUE SEASON</div>
             </div>
             <div style={{
@@ -98,7 +97,7 @@ export default function StartPage(){
         </div>
         <Footer />
       </div>
-      <Addbet/>
+      <Addbet betsAvailable={localStorage.getItem('PLAYER')?true:false}/>
     </main>
   );
 }

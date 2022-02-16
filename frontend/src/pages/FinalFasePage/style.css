@@ -7,6 +7,20 @@
   margin: 150px auto;
 }
 
+.back_groups {
+  color: var(--vermelho_claro);
+  display: flex;
+  width: 100%;
+  text-align: left ;
+  justify-content: left;
+  padding-left: 50px;
+}
+
+.back_groups h2 {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
 .title_container {
   line-height: 20pt;
   margin-bottom: 50px;

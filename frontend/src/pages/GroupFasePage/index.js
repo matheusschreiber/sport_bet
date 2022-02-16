@@ -7,10 +7,10 @@ import './style.css'
 import { Dots } from "react-activity";
 import "react-activity/dist/Dots.css";
 
-import Addbet from '../Components/addbet/addbet';
-import BetPanel from '../Components/BetPanel';
-import Header from "../Components/header";
-import Footer from "../Components/footer";
+import Addbet from '../../Components/addbet';
+import BetPanel from '../../Components/BetPanel';
+import Header from "../../Components/header";
+import Footer from "../../Components/footer";
 
 
 export default function GroupFasePage(){
@@ -33,7 +33,6 @@ export default function GroupFasePage(){
   
   
   async function getGroups(){
-    console.log('UPDATING GROUPS, YEAR: '+localStorage.getItem('SEASON'))
     try{
       let array=[], response;
       response = await api.put('/getGroup', {year: localStorage.getItem('SEASON'),group:"a",}); array[0] = response.data;
@@ -47,10 +46,15 @@ export default function GroupFasePage(){
       
       array.map((i)=>{i.data.sort((a,b)=>a[2]-b[2]); return 0;})
       setGroups(array)
-      if (array[7].data[0][1]||array[7].data[1][1]||array[7].data[2][1]||array[7].data[3][1]) setFinished(true)
-      else setFinished(false)
+      
+      if (array[7].data[0][1]||array[7].data[1][1]||array[7].data[2][1]||array[7].data[3][1]) setFinished(true);
+      else setFinished(false);
+
+      
+      if (!(array[0].data[0][1]||array[0].data[1][1]||array[0].data[2][1]||array[0].data[3][1])) setReadyRefreshBet(true);
+      else setReadyRefreshBet(false);
     } catch(err){
-      alert('PROBLEM IN CONNECTION WITH BACKEND TRY RESTARTING THE PAGE')
+      alert('PROBLEM IN BACKEND CONNECTION TRY RESTARTING THE PAGE')
     }
   }
   
@@ -105,11 +109,10 @@ export default function GroupFasePage(){
 
     let i=0;
     for(i=0;i<8;i++) {
-      let data, done = false;
+      let data;
       try {
         const response = await api.put('/getGroup', {year:localStorage.getItem('SEASON'),group:groups[i].group})
-        if (response.data.data[0][1]||response.data.data[1][1]||response.data.data[2][1]||response.data.data[3][1]) done = true;
-        if (!done) {
+        if (!(response.data.data[0][1]||response.data.data[1][1]||response.data.data[2][1]||response.data.data[3][1])) {
           switch (groups[i].group){
             case "A": data = {group_a: await generateGroupOutcomes(groups[i].data, i)};break;
             case "B": data = {group_b: await generateGroupOutcomes(groups[i].data, i)};break;
@@ -136,7 +139,7 @@ export default function GroupFasePage(){
         }
         setLoadedGroups(loadedGroups.push(0))
       } catch(err){
-        alert('Request response delay is off. Remove any nodemon activities and restart backend')
+        alert('Request response delay is off. Remove any nodemon activities and restart backend! (deleting current file)')
         api.delete(`deletefile/${localStorage.getItem('SEASON')}`);
         console.log(err)
         setFinished(true);
@@ -245,10 +248,13 @@ export default function GroupFasePage(){
         <div className="button" style={finished?{marginTop:'100px'}:{display:'none'}} onClick={()=>nav('/finals')}>GO TO FINAL FASE</div>
         {/* <div className="button" onClick={()=>setUpdate(true)}>RegisterResults</div> */}
         <h3 style={readyToRefreshBet?{display:'none'}:{}}>ADVANCE TO FINAL FASE TO UPDATE BETS</h3>
-        <BetPanel player_name={localStorage.getItem('PLAYER')} ready={readyToRefreshBet}/>
+        <BetPanel
+          player_name={localStorage.getItem('PLAYER')}
+          ready={readyToRefreshBet}
+          round_finished={finished}/>
       </div>
       <Footer />
-      <Addbet />
+      <Addbet betsAvailable={readyToRefreshBet}/>
     </div>
   );
 }

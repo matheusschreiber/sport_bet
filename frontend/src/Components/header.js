@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom'
 
-import ChampionsBall from '../../assets/ChampionsBall.png'
+import ChampionsBall from '../assets/ChampionsBall.png'
 
 const start_header = {
   backgroundColor: "var(--vermelho_claro)",

@@ -36,3 +36,13 @@
   height: 100px;
 }
 
+.bet_panel_title {
+  display:flex;
+  align-items: center;
+  width: 120px;
+  justify-content: space-around;
+}
+
+.bet_panel_title h2 {
+  margin-bottom: 10px;
+}
