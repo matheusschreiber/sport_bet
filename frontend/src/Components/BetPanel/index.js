@@ -7,12 +7,13 @@ import "react-activity/dist/Levels.css";
 
 import './style.css';
 
-export default function BetPanel({player_name, ready, round_finished}){
+export default function BetPanel({player_name, ready, bet_added, finished}){
 
   const [ player, setPlayer ] = useState({wallet:'LOADING'});
   const [ total, setTotal ] = useState(0)
   const [ bets, setBets ] = useState([]);
   const [ loading, setLoading ] = useState(false);
+  const [ alreadyDiscounted, setAlreadyDiscounted ] = useState(false);
 
   async function loadPanel(){
     setLoading(true);
@@ -27,8 +28,11 @@ export default function BetPanel({player_name, ready, round_finished}){
     setBets(response2.data);
     setTotal(sum);
 
-    if (round_finished) await Promise.all(response2.data.map(async(i)=>{ await api.get(`verifyBet/${i.id}`);}))
-
+    if (!bet_added) await Promise.all(response2.data.map(async(i)=>{ await api.get(`verifyBet/${i.id}`);}))
+    if (finished && !alreadyDiscounted) {
+      await api.put('discountBets', {playerName: localStorage.getItem('PLAYER'), value: total})
+      setAlreadyDiscounted(true);
+    }
     setLoading(false);
   }
 
@@ -40,10 +44,10 @@ export default function BetPanel({player_name, ready, round_finished}){
     <div className="bet_panel_container" style={ready?{}:{opacity:'.3',cursor:'not-allowed'}}>
       <div className="bet_panel_title">
         <h2>PROFITS</h2>
-        <FiRotateCw size={20} onClick={()=>loadPanel()} style={loading?{display:'none'}:{cursor:'pointer'}}/>
+        <FiRotateCw size={20} onClick={loadPanel} style={loading?{display:'none'}:{cursor:'pointer'}}/>
         <Levels style={loading?{}:{display:'none'}}/>
       </div>
-      <p>READY: <span style={round_finished?{color:'var(--verde)'}:{color:'var(--vermelho_claro_plus)'}}>{round_finished?"YES":"NO"}</span></p>
+      <p>RECENTLY BETTED: <span style={bet_added?{color:'var(--vermelho_claro_plus)'}:{color:'var(--verde)'}}>{bet_added?"YES":"NO"}</span></p>
       <div className="wallet">
         <h2>
           WALLET: {player.wallet}$ 

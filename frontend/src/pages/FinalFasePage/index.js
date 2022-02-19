@@ -37,9 +37,15 @@ export default function FinalFasePage() {
   const [ loadedMatches, setLoadedMatches ] = useState([]);
   const [ loading, setLoading ] = useState(false);
   const [ fase, setFase ] = useState('ROUND OF 8');
+  
   const [ readyToRefreshBet, setReadyRefreshBet ]  = useState(false);
+  const [ betAdded, setBetAdded ] = useState(false);
 
   const nav = useNavigate();
+  
+  const childToParent = (prop) => {
+    setBetAdded(prop)
+  }
 
   async function simulateRound(){
     setReadyRefreshBet(false);
@@ -154,10 +160,11 @@ export default function FinalFasePage() {
     setLoadedMatches([]);
     setLoading(false);
     setLoadingRound(false);
+    setBetAdded(false);
     if (fase==='GRAND FINAL') {
       const response = await api.put('file', {year:localStorage.getItem('SEASON')})
       updateSeasonWinner(response.data.final_fase.final.match)
-      setbuttonStatus('FINISH SEASON')
+      setbuttonStatus('FINISH SEASON');
     } else setbuttonStatus('NEXT');
   }
   
@@ -209,6 +216,8 @@ export default function FinalFasePage() {
       localStorage.setItem('FASE', 'QUARTERS');
       setbuttonStatus('SIMULATE ROUND');
       setLoading(false);
+      setReadyRefreshBet(true);
+      setBetAdded(false);
     } else if (fase === "QUARTER FINALS" && buttonStatus==='NEXT') {
       const round = await api.put('setup2',{year:localStorage.getItem('SEASON')})
       setPotATeamsMatches([round.data.semi_finals.match_1]);
@@ -219,6 +228,8 @@ export default function FinalFasePage() {
       localStorage.setItem('FASE', 'SEMIS');
       setbuttonStatus('SIMULATE ROUND');
       setLoading(false);
+      setReadyRefreshBet(true);
+      setBetAdded(false);
     } else if (fase === "SEMI FINALS" && buttonStatus==='NEXT') {
       const round = await api.put('setupfinal',{year:localStorage.getItem('SEASON')})
       setFase("GRAND FINAL");
@@ -229,6 +240,8 @@ export default function FinalFasePage() {
       await registerSeason(round.data.disclassified, 'SEMIS')
       setbuttonStatus('SIMULATE ROUND');
       setLoading(false);
+      setReadyRefreshBet(true);
+      setBetAdded(false);
     } else {
       const round = await api.put('setup8',{year:localStorage.getItem('SEASON')})
       setPotATeamsMatches([round.data.round_of_8.match_1,round.data.round_of_8.match_2,round.data.round_of_8.match_3,round.data.round_of_8.match_4]);
@@ -239,8 +252,9 @@ export default function FinalFasePage() {
       localStorage.setItem('FASE', 'ROUNDOF8');
       setLoading(false);
       setbuttonStatus('SIMULATE ROUND');
+      setReadyRefreshBet(true);
+      setBetAdded(false);
     }
-    setTimeout(()=>setReadyRefreshBet(true),500);
   }
 
   async function changeStage(){
@@ -297,6 +311,7 @@ export default function FinalFasePage() {
       updateRound()
     }
     setReadyRefreshBet(true);
+    setBetAdded(false);
   }
 
   useEffect(()=>{    
@@ -517,9 +532,10 @@ export default function FinalFasePage() {
       <BetPanel 
         player_name={localStorage.getItem('PLAYER')} 
         ready={readyToRefreshBet}
-        round_finished={buttonStatus==='NEXT' || buttonStatus==='FINISH SEASON'?true:false}/>
+        bet_added={betAdded}
+        finished={buttonStatus==='FINISH SEASON'?true:false}/>
       <Footer />
-      <Addbet betsAvailable={readyToRefreshBet} />
+      <Addbet betsAvailable={readyToRefreshBet} childToParent={childToParent}/>
     </div>
 
   );

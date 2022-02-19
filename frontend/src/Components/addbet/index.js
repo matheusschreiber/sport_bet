@@ -8,7 +8,7 @@ import "react-activity/dist/Levels.css";
 
 import api from '../../services/api'
 
-export default function Addbet({betsAvailable=false}){
+export default function Addbet({betsAvailable=false, childToParent}){
   const [ pressed, setPressed ] = useState(false);
   
   const [ team, setTeam ] = useState();
@@ -46,13 +46,15 @@ export default function Addbet({betsAvailable=false}){
       odd,
       fase
     }
-    await api.post('registerBet',data);
+    if (player[0].wallet>=betValue) await api.post('registerBet',data);
+    else alert('Insuficient Funds!');
     loadBets(player[0]);
+    childToParent(true)
   }
   
   async function calculateODD(team,description, x){
     if (team && description!=="") {
-      if (description.includes('WITH')) {
+      if (description.includes('OVER')) {
         let array = description.split(' ');
         array[1] = x===""?"0":x;
         array = array.join().replace(/,/g," ");
@@ -92,7 +94,17 @@ export default function Addbet({betsAvailable=false}){
     if (!(localStorage.getItem('SEASON') && localStorage.getItem('PLAYER'))) return;
 
     const aBets = await api.get(`listBets/${localStorage.getItem('SEASON')}`);
+    await Promise.all(aBets.data.map(async(i)=>{
+      const team = await api.get(`getTeam/${i.team}`);
+      aBets.data[aBets.data.indexOf(i)].team = team.data[0].acronym
+    }))
+
     const pBets = await api.get(`listBets/${localStorage.getItem('SEASON')}`, {headers: {authorization:p.name}});
+    await Promise.all(pBets.data.map(async(i)=>{
+      const team = await api.get(`getTeam/${i.team}`);
+      pBets.data[pBets.data.indexOf(i)].team = team.data[0].acronym
+    }))
+
     pBets.data.map((i)=>sum+=i.profit)
     setAllBets(aBets.data);
     setPlayerBets(pBets.data);
@@ -158,12 +170,12 @@ export default function Addbet({betsAvailable=false}){
                   <option style={localStorage.getItem('FASE')==='GROUPS'?{}:{display:'none'}}>IN FIRST</option>
                   <option>CLASSIFIED</option>
                   <option>DISCLASSIFIED</option>
-                  <option style={localStorage.getItem('FASE')==='GROUPS'?{}:{display:'none'}}>WITH X POINTS</option>
-                  <option>WITH X GOALS</option>
+                  <option style={localStorage.getItem('FASE')==='GROUPS'?{}:{display:'none'}}>OVER X POINTS</option>
+                  <option>OVER X TOTAL GOALS</option>
                 </select>
                 <p style={odd?{}:{display:'none'}}>({odd})</p>
               </div>
-              <div className="option_container" id="x_value" style={description.includes("WITH")?{}:{display:'none'}}>
+              <div className="option_container" id="x_value" style={description.includes("OVER")?{}:{display:'none'}}>
                 <h2>X</h2>
                 <input type="number" onChange={(e)=>{setX(e.target.value);calculateODD(team,description, e.target.value)}} value={xVariable} />
               </div>
@@ -200,7 +212,7 @@ export default function Addbet({betsAvailable=false}){
                 <ul> { playerBets.map((i)=>(<li key={i.id+i}>
                   <FiMinusCircle 
                     color={'var(--vermelho_claro_plus)'} 
-                    style={i.outcome==-1?{cursor:'pointer'}:{display:'none'}}
+                    style={i.outcome===-1?{cursor:'pointer'}:{display:'none'}}
                     onClick={()=>deleteBet(i.id)}/>
                   </li>))} </ul>
               </div>

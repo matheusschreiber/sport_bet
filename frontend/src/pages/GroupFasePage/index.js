@@ -21,6 +21,7 @@ export default function GroupFasePage(){
   const [ loadedGroups, setLoadedGroups ] = useState([])
   const [ match_log, setMatchLog ] = useState([[],[],[],[],[],[],[],[],[]])
   const [ readyToRefreshBet, setReadyRefreshBet ]  = useState(false);
+  const [ betAdded, setBetAdded ] = useState(false);
   const [ groups, setGroups ] = useState([{
     group: 'A',
     data: [
@@ -31,6 +32,9 @@ export default function GroupFasePage(){
     ]
   }]);
   
+  function childToParent(props){
+    setBetAdded(props)
+  }
   
   async function getGroups(){
     try{
@@ -251,10 +255,10 @@ export default function GroupFasePage(){
         <BetPanel
           player_name={localStorage.getItem('PLAYER')}
           ready={readyToRefreshBet}
-          round_finished={finished}/>
+          bet_added={betAdded}/>
       </div>
       <Footer />
-      <Addbet betsAvailable={readyToRefreshBet}/>
+      <Addbet betsAvailable={readyToRefreshBet} childToParent={childToParent}/>
     </div>
   );
 }

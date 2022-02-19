@@ -162,21 +162,37 @@ module.exports = {
         if (bet.description=='CLASSIFIED') bet.outcome = classified;
         else if (!classified) bet.outcome = 1;
         else bet.outcome = 0;
+
+        if (bet.fase=='TITLE' && season.placement=='TITLE') bet.outcome=1;
+        else if (bet.fase=='TITLE' && season.placement!='TITLE') bet.outcome=0;
+        else if (bet.fase=='FINALIST' && season.placement=='FINALIST') bet.outcome=1;
+        else if (bet.fase=='FINALIST' && season.placement!='FINALIST') bet.outcome=0;
       }
     } else if (bet.description.includes('GOALS')){
       const x = parseInt(bet.description.split(' ')[1])
-      if (season.goals_for==x) bet.outcome=1;
+      if (season.goals_for>=x) bet.outcome=1;
+      else bet.outcome=0;
     } else if (bet.description.includes('POINTS')){
       const x = parseInt(bet.description.split(' ')[1])
-      if (season.points==x) bet.outcome=1;
+      if (season.points>=x) bet.outcome=1;
+      else bet.outcome=0;
     }
-    else if (bet.description=='IN FIRST' && season.position_groups==1) bet.outcome=1;
-    else if (bet.description=='IN FIRST' && season.position_groups!=1) bet.outcome=0;
-    else if (bet.description=='IN LAST' && season.position_groups==4) bet.outcome=1;
-    else if (bet.description=='IN LAST' && season.position_groups!=4) bet.outcome=0;
+    else if (bet.description=='IN FIRST' && season.position_groups==1 && season.placement!='PENDING') bet.outcome=1;
+    else if (bet.description=='IN FIRST' && season.position_groups!=1 && season.placement!='PENDING') bet.outcome=0;
+    else if (bet.description=='IN LAST'  && season.position_groups==4 && season.placement!='PENDING') bet.outcome=1;
+    else if (bet.description=='IN LAST'  && season.position_groups!=4 && season.placement!='PENDING') bet.outcome=0;
     
     await connection('bets').where('id', bet.id).update(bet);
     if (bet.outcome==1) return response.json('BET ACCOMPLISHED');
     else return response.json('BET UNACCOMPLISHED');
+  },
+
+  async discountBets(request, response){
+    const { playerName, value } = request.body;
+    const [{wallet}] = await connection('players').where('name', playerName).select('wallet');
+    await connection('players').where('name', playerName).update({wallet: wallet+value});
+    const [player] = await connection('players').where('name', playerName).select('*');
+    return response.json(player);
   }
+  
 }

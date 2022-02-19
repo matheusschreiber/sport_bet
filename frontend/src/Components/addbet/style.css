@@ -180,6 +180,7 @@ ul {
   justify-content: space-around;
   width:85%;
   margin:20px auto;
+  margin-bottom: 0px;
   font-size:10pt;
 }
 
