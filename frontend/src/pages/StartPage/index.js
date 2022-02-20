@@ -20,6 +20,7 @@ export default function StartPage(){
   const [ loading, setLoading ] = useState(false);
   const [ year, setYear ] = useState(['','']);
   const [ player, setPlayer ] = useState("");
+  const [ storagedPlayer, setStoragedPlayer ] = useState(localStorage.getItem('PLAYER'));
   const nav = useNavigate(); 
 
   async function getLatestYear(){
@@ -30,8 +31,12 @@ export default function StartPage(){
     nextYear = `${nextYear.slice(0, 4)}-${nextYear.slice(4,8)}`
     array.push(nextYear)
     setYear(array)
-    localStorage.setItem('SEASON',array[0]);
-    setPlayer(localStorage.getItem('PLAYER'));
+    localStorage.setItem('SEASON',array[0]);   
+  }
+  
+  async function loadPlayer(){
+    localStorage.setItem('PLAYER', player);
+    setStoragedPlayer(player)
   }
 
   useEffect(()=>getLatestYear(),[])
@@ -47,15 +52,17 @@ export default function StartPage(){
             <FiAward size={40}/>
           </div>
           <div className="player_container">
-            <h1 style={localStorage.getItem('PLAYER')?{display:'none'}:{}}>YOUR NAME</h1>
-            <input type="text" value={player} onChange={(e)=>setPlayer(e.target.value.toUpperCase())} style={localStorage.getItem('PLAYER')?{display:'none'}:{}}/>
+            <h1 style={storagedPlayer!==""?{display:'none'}:{}}>YOUR NAME</h1>
+            <input type="text" value={player} onChange={(e)=>setPlayer(e.target.value.toUpperCase())} style={storagedPlayer!==""?{display:'none'}:{}}/>
             <FiArrowRightCircle 
               size={30} 
               color={'var(--vermelho_claro)'} 
-              style={localStorage.getItem('PLAYER')?{display:'none'}:{cursor:'pointer'}}
-              onClick={()=>{localStorage.setItem('PLAYER',player);window.location.reload()}}/>
-            <h1 style={localStorage.getItem('PLAYER')?{}:{display:'none'}}>HELLO <span>{localStorage.getItem('PLAYER')}</span>, WELCOME!</h1>
+              style={storagedPlayer!==""?{display:'none'}:{cursor:'pointer'}}
+              onClick={loadPlayer}/>
+            <h1 style={storagedPlayer!==""?{}:{display:'none'}}>
+              HELLO <span onClick={()=>setStoragedPlayer("")}>{storagedPlayer}</span>, WELCOME!</h1>
           </div>
+          
           <img src={Welcome} alt="Welcome to Sport Bet Platform Project"/>
           <div className="text_container">
             <h1>PROJECT DESCRIPTION</h1>

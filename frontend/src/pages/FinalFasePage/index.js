@@ -118,7 +118,6 @@ export default function FinalFasePage() {
         aux[0].score_A_penalties = answer[3]
         aux[0].score_B_penalties = answer[4]
         setPotATeamsMatches(aux)
-        setReadyRefreshBet(true);
         return [1, answer[1], answer[2], answer[3], answer[4]]
       }
 
@@ -149,7 +148,6 @@ export default function FinalFasePage() {
       return answer;
     }
 
-    
     let data ={
       year: localStorage.getItem('SEASON'),
       fase: fase.toLowerCase(),
@@ -165,6 +163,8 @@ export default function FinalFasePage() {
       const response = await api.put('file', {year:localStorage.getItem('SEASON')})
       updateSeasonWinner(response.data.final_fase.final.match)
       setbuttonStatus('FINISH SEASON');
+      setBetAdded(true);
+      setReadyRefreshBet(true);
     } else setbuttonStatus('NEXT');
   }
   
@@ -266,6 +266,7 @@ export default function FinalFasePage() {
       await updateRound();
     } else if (buttonStatus==='FINISH SEASON'){
       setbuttonStatus('PRESSED');
+      // await api.delete(`deletefile/${localStorage.getItem('SEASON')}`)
       nav('/')
     }
   }
@@ -310,8 +311,18 @@ export default function FinalFasePage() {
       console.log("No current final fase found, creating one...")
       updateRound()
     }
-    setReadyRefreshBet(true);
-    setBetAdded(false);
+    
+    if (buttonStatus==='NEXT') {
+      setReadyRefreshBet(false);
+      setBetAdded(true);
+    } else if (buttonStatus==='FINISH SEASON') {
+      setReadyRefreshBet(true);
+      setBetAdded(true);
+    } else {
+      setBetAdded(false);
+      setReadyRefreshBet(true);
+    }
+    
   }
 
   useEffect(()=>{    
@@ -325,7 +336,7 @@ export default function FinalFasePage() {
   
 
   return (
-    <div style={{color:'white', textAlign:'center'}}>
+    <main style={{color:'white', textAlign:'center'}}>
       <Header />
       <div className="final_container">
         <div className="back_groups">
@@ -351,7 +362,7 @@ export default function FinalFasePage() {
                   const styleBWinnerHighlightPOTA = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties<i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg === i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg<i.score_B_first_leg)?{color:'var(--verde)'}:{}
                   
                   return (
-                    <div className="match_final_fase" key={i.A}>
+                    <aside className="match_final_fase" key={i.A}>
                       <ul className="teams_final_fase" key={i.A + "UL1"}>
                         <li key={i.A + "UL1_li1"} style={styleAWinnerHighlightPOTA}>{i.A.toUpperCase()}</li>
                         <li key={i.A + "UL1_li2"} style={styleBWinnerHighlightPOTA}>{i.B.toUpperCase()}</li>
@@ -369,7 +380,7 @@ export default function FinalFasePage() {
                         <li key={i.A + "UL4_li1"}>{i.score_A_penalties}</li>
                         <li key={i.A + "UL4_li2"}>{i.score_B_penalties}</li>
                       </ul>
-                    </div>
+                    </aside>
                   )
                 })
               }
@@ -380,7 +391,7 @@ export default function FinalFasePage() {
                   const styleAWinnerHighlightPOTB = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties>i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg === i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg>i.score_B_first_leg)?{color:'var(--verde)'}:{}
                   const styleBWinnerHighlightPOTB = i.score_A_first_leg+i.score_A_second_leg+i.score_A_penalties<i.score_B_first_leg+i.score_B_second_leg+i.score_B_penalties || (i.score_A_first_leg+i.score_A_second_leg === i.score_B_first_leg+i.score_B_second_leg && i.score_A_second_leg<i.score_B_first_leg)?{color:'var(--verde)'}:{}
                   return(
-                    <div className="match_final_fase" style={{justifyContent:'left',textAlign:'left'}} key={i.B}>
+                    <aside className="match_final_fase" style={{justifyContent:'left',textAlign:'left'}} key={i.B}>
                       <ul style={i.score_A_penalties||i.score_B_penalties?{fontSize:'12pt', color:'var(--amarelo)'}:{display:'none'}}
                         key={i.B + "UL1"}>
                         <li key={i.B + "UL1_li1"}>{i.score_A_penalties}</li>
@@ -398,7 +409,7 @@ export default function FinalFasePage() {
                         <li key={i.B + "UL4_li1"}style={styleAWinnerHighlightPOTB}>{i.A.toUpperCase()}</li>
                         <li key={i.B + "UL4_li2"}style={styleBWinnerHighlightPOTB}>{i.B.toUpperCase()}</li>
                       </ul>
-                    </div>
+                    </aside>
                   )
                 })
               }
@@ -504,12 +515,18 @@ export default function FinalFasePage() {
         <div className="load_square_container" style={loadingRound?{}:{display:'none'}}>
           {
             potATeamsMatches.map((i)=>(
-              <div className="load_square" style={loadedMatches>potATeamsMatches.indexOf(i)?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
+              <div
+                className="load_square"
+                key={i.A}
+                style={loadedMatches>potATeamsMatches.indexOf(i)?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
             ))
           }
           {
             potBTeamsMatches.map((i)=>(
-              <div className="load_square" style={loadedMatches-potATeamsMatches.length>potBTeamsMatches.indexOf(i)?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
+              <div 
+              className="load_square"
+              key={i.A}
+              style={loadedMatches-potATeamsMatches.length>potBTeamsMatches.indexOf(i)?{backgroundColor:'var(--verde)'}:{backgroundColor:'var(--vermelho_claro_plus'}}></div>
             ))
           }
         </div>
@@ -536,8 +553,7 @@ export default function FinalFasePage() {
         finished={buttonStatus==='FINISH SEASON'?true:false}/>
       <Footer />
       <Addbet betsAvailable={readyToRefreshBet} childToParent={childToParent}/>
-    </div>
-
+    </main>
   );
 }
 

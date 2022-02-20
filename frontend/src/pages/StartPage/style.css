@@ -103,5 +103,6 @@ body {
 }
 
 .player_container span{
-  color: var(--vermelho_claro)
+  color: var(--vermelho_claro);
+  cursor:pointer;
 }

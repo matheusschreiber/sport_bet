@@ -117,8 +117,14 @@ export default function Addbet({betsAvailable=false, childToParent}){
       return
     }
     const response = await api.get(`getPlayer/${localStorage.getItem('PLAYER')}`);
-    setPlayer(response.data)
-    return response.data[0]
+    if (response.data!==[]) {
+      setPlayer([{id:0,name:"",wallet:0}]);
+      return [{id:0,name:"",wallet:0}];
+    } else {
+      setPlayer(response.data)
+      return response.data[0]
+    }
+    
   }
 
   async function deleteBet(id){

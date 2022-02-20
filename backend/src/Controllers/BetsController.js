@@ -1,6 +1,17 @@
 const connection = require('../database/connection')
 const crypto = require('crypto')
 
+/*
+
+BET CONFIGURATION
+  -1 - UNACOMPLISHED (YET NOT VERIFIED)
+   0 - UNACOMPLISHED (ALREADY VERIFIED)
+   1 - ACCOMPLISHED 
+   2 - ACCOMPLISHED AND VALUE DISCOUNTED
+   3 - UNACOMPLISHED AND VALUE DISCOUNTED
+*/
+
+
 module.exports = {
   async createODD(request, response){
     const { team, description, year, fase } = request.body;
@@ -188,11 +199,27 @@ module.exports = {
   },
 
   async discountBets(request, response){
-    const { playerName, value } = request.body;
+    const { playerName, year } = request.body;
+    let k=0, j=0;
+
+    const bets = await connection('bets').where({player:playerName, year}).select('*');
     const [{wallet}] = await connection('players').where('name', playerName).select('wallet');
-    await connection('players').where('name', playerName).update({wallet: wallet+value});
-    const [player] = await connection('players').where('name', playerName).select('*');
-    return response.json(player);
+    
+    await Promise.all(bets.map(async(i)=>{
+      if (i.outcome!=2 && i.outcome!=3) {
+        k++;
+        if (i.outcome==1) {
+          await connection('players').where('name', playerName).update({wallet: wallet+i.value});
+          await connection('bets').where('id', i.id).update('outcome', 2);
+        } else if (i.outcome==0) {
+          await connection('players').where('name', playerName).update({wallet: wallet-i.value});
+          await connection('bets').where('id', i.id).update('outcome', 3);
+        }
+      }
+      j++;
+    }))
+
+    return response.json({'bets discounted':k, 'total bets':j});
   }
   
 }

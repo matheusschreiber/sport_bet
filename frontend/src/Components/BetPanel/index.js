@@ -13,7 +13,6 @@ export default function BetPanel({player_name, ready, bet_added, finished}){
   const [ total, setTotal ] = useState(0)
   const [ bets, setBets ] = useState([]);
   const [ loading, setLoading ] = useState(false);
-  const [ alreadyDiscounted, setAlreadyDiscounted ] = useState(false);
 
   async function loadPanel(){
     setLoading(true);
@@ -29,10 +28,7 @@ export default function BetPanel({player_name, ready, bet_added, finished}){
     setTotal(sum);
 
     if (!bet_added) await Promise.all(response2.data.map(async(i)=>{ await api.get(`verifyBet/${i.id}`);}))
-    if (finished && !alreadyDiscounted) {
-      await api.put('discountBets', {playerName: localStorage.getItem('PLAYER'), value: total})
-      setAlreadyDiscounted(true);
-    }
+    if (finished) await api.put('discountBets', {playerName: localStorage.getItem('PLAYER'), year:localStorage.getItem('SEASON')});
     setLoading(false);
   }
 
@@ -47,7 +43,8 @@ export default function BetPanel({player_name, ready, bet_added, finished}){
         <FiRotateCw size={20} onClick={loadPanel} style={loading?{display:'none'}:{cursor:'pointer'}}/>
         <Levels style={loading?{}:{display:'none'}}/>
       </div>
-      <p>RECENTLY BETTED: <span style={bet_added?{color:'var(--vermelho_claro_plus)'}:{color:'var(--verde)'}}>{bet_added?"YES":"NO"}</span></p>
+      <h3>{localStorage.getItem('SEASON')}</h3>
+      <p>NEW BET/END OF SEASON: <span style={bet_added?{color:'var(--vermelho_claro_plus)'}:{color:'var(--verde)'}}>{bet_added?"YES":"NO"}</span></p>
       <div className="wallet">
         <h2>
           WALLET: {player.wallet}$ 
@@ -77,7 +74,7 @@ export default function BetPanel({player_name, ready, bet_added, finished}){
                 <td key={`${i.id} td2`} style={
                     i.outcome>0&&ready?{color:'var(--verde)'}:i.outcome===0&&ready?{color:'var(--vermelho_claro_plus)'}:{color:'var(--cinza)'}
                   }>
-                  {ready?i.outcome>0?`+${i.profit.toFixed(2)}`:i.outcome===0?`-${i.profit.toFixed(2)}`:"--":"--"}</td>
+                  {ready?i.outcome===1||i.outcome===2?`+${i.profit.toFixed(2)}`:i.outcome===0||i.outcome===3?`-${i.profit.toFixed(2)}`:"--":"--"}</td>
               </tr>
             )):"LOADING"
           }
