@@ -43,10 +43,10 @@ module.exports = {
       const season = await connection('seasons').where('id', `${year.replace(/-/g,"")} ${teams[i]}`).select('*');
       if (season[0]) await connection('seasons').where('id', `${year.replace(/-/g,"")} ${teams[i]}`).update({
         id:`${year.replace(/-/g,"")} ${teams[i]}`,team_name:teams[i],placement:'PENDING',season_score:0,wins:0,losses:0,
-        dues:0,games:0,goals_for:0,goals_against:0,biggest_opponent:'',least_opponent:'',fans,points:0,position_groups:0})
+        dues:0,games:0,goals_for:0,goals_against:0,fans,points:0,position_groups:0})
       else await connection('seasons').insert({id:`${year.replace(/-/g,"")} ${teams[i]}`,team_name:teams[i],
-        placement:'PENDING',season_score:0,wins:0,losses:0,dues:0,games:0,goals_for:0,goals_against:0,biggest_opponent:'',
-        least_opponent:'',fans,points:0,position_groups:0})
+        placement:'PENDING',season_score:0,wins:0,losses:0,dues:0,games:0,goals_for:0,goals_against:0,
+        fans,points:0,position_groups:0})
     }
 
     var groups = [];
@@ -751,19 +751,30 @@ module.exports = {
 
   async getBestSeason(request, response){
     const seasons = await connection('seasons').select('*')
-    let bestSeason, bestSeasonScore=0;
-    seasons.map((i)=>{ 
-      if (i.season_score>bestSeasonScore) {
-        bestSeasonScore = i.season_score;
-        bestSeason = i;
-      }
-    })
+    if (seasons!=""){
+      let bestSeason, bestSeasonScore=0;
+      let worstSeason, worstSeasonScore=10000000;
+      seasons.map((i)=>{ 
+        if (i.season_score>bestSeasonScore) {
+          bestSeasonScore = i.season_score;
+          bestSeason = i;
+        }
 
-    const team = await connection('teams').where('name', bestSeason.team_name).select('*')
-    return response.json({
-      season: bestSeason,
-      team: team
-    })
+        if (i.season_score<worstSeasonScore) {
+          worstSeasonScore = i.season_score;
+          worstSeason = i;
+        }
+
+      })
+      const bestSeasonTeam = await connection('teams').where('name', bestSeason.team_name).select('*')
+      const worstSeasonTeam = await connection('teams').where('name', worstSeason.team_name).select('*')
+      return response.json({
+        bestSeason,
+        bestSeasonTeam,
+        worstSeason,
+        worstSeasonTeam,
+      })
+    } else return response.status(408).json('No seasons available')
   },
 
   async getbestWinstreak(request, response){    
@@ -775,7 +786,7 @@ module.exports = {
         .where({'team_name':i.name, 'placement':'TITLE'})
         .select('*');
         
-        let streak=1, streakID;
+      let streak=1, streakID;
       if (seasons) seasons.map((j)=>{
         if (!bestWinstreakTeam) bestWinstreakTeam = i;
         if (streakID){

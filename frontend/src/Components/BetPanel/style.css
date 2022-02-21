@@ -39,7 +39,7 @@
 .bet_panel_title {
   display:flex;
   align-items: center;
-  width: 120px;
+  width: 250px;
   justify-content: space-around;
 }
 

@@ -15,7 +15,9 @@ export default function Historypage(){
   const nav = useNavigate();
   const [ teams, setTeams ] = useState([]);
   const [ loading, setLoading ] = useState(false);
-  const [ hall, setHall ] = useState([]);
+  const [ hallFame, setHallFame ] = useState([]);
+  const [ hallShame, setHallShame ] = useState([]);
+  const [ hasSeasons, setHasSeasons ]  = useState(false);
 
 
   useEffect(()=>{
@@ -54,18 +56,45 @@ export default function Historypage(){
       else if (a.vices < b.vices) return 1;
       else return 0;
     })
+
     setTeams(a);
     setLoading(false)
   }
 
   async function getHall(){
     setLoading(true);
-    let array = [], response;
-    response = await api.get('/getBiggestWinner');  array[0]=response.data;
-    response = await api.get('/getTopScorer');      array[1]=response.data;
-    response = await api.get('/getBestSeason');     array[2]=response.data;
-    response = await api.get('/getbestWinstreak');  array[3]=response.data;
-    setHall(array.slice());
+    let best = [], worst = [], response;
+    try{
+      response = await api.get('/getBiggestWinner');  
+      best[0]=response.data.biggest; 
+      worst[0]=response.data.worst;
+      
+
+      response = await api.get('/getTopScorer');      
+      best[1]=response.data.topscorer;
+      worst[1]=response.data.worstscorer;
+      
+      response = await api.get('/getBestSeason');     
+      best[2] = {
+        team:response.data.bestSeasonTeam,
+        season: response.data.bestSeason
+      }
+      worst[2] = {
+        team:response.data.worstSeasonTeam,
+        season: response.data.worstSeason
+      }
+
+      response = await api.get('/getbestWinstreak');  
+      best[3]=response.data;
+
+
+      setHasSeasons(true);
+    } catch (err) {
+      // alert('No seasons/teams registered!');
+      setHasSeasons(false);
+    }
+    setHallFame(best.slice());
+    setHallShame(worst.slice());
     setLoading(false);    
   }
 
@@ -81,7 +110,7 @@ export default function Historypage(){
         </div>
         <div className="table_title">
           <h1>ALL TIME RECORDS</h1>
-          <FiRotateCw size={20} onClick={updateTable} style={{cursor:'pointer'}}/>
+          <FiRotateCw size={20} onClick={updateTable} style={loading?{display:'none'}:{cursor:'pointer'}}/>
           <Dots color="var(--vermelho_escuro)" style={loading?{display:'block'}:{display:'none'}}/>
         </div>
         <table>
@@ -100,11 +129,10 @@ export default function Historypage(){
           <tbody>
           {
             teams.map((i)=>{return(
-              <tr style={teams.indexOf(i)+1===1?{color:'var(--amarelo)'}:
+              <tr key={i.name} style={teams.indexOf(i)+1===1?{color:'var(--amarelo)'}:
               teams.indexOf(i)+1===2?{color:'var(--cinza)'}:
               teams.indexOf(i)+1===3?{color:'var(--bronze)'}:
-              teams.indexOf(i)+1>=30?{color:'var(--vermelho_escuro)'}:{}}
-              key={i.name}>
+              teams.indexOf(i)+1>=30?{color:'var(--vermelho_escuro)'}:{}}>
                 <td>{teams.indexOf(i)+1}</td>
                 <td>{i.name.toUpperCase()}</td>
                 <td>{i.goals_for}</td>
@@ -119,56 +147,120 @@ export default function Historypage(){
           </tbody>
         </table>
       </div>
+
+
       <div className="table_title" style={{color: "var(--amarelo)"}}>
         <h1>HALL OF FAME</h1>
-        <FiRotateCw size={20} onClick={getHall} style={{cursor:'pointer'}}/>
+        <FiRotateCw size={20} onClick={getHall} style={loading?{display:'none'}:{cursor:'pointer'}}/>
         <Dots color="var(--amarelo)" style={loading?{display:'block'}:{display:'none'}}/>
       </div>
       <div className="hall">
         <section>
           <div className="hall_card">
-            <div>
+            <div className="HIGHLIGHT_CONTAINER">
               <div className="HIGHLIGHT"><h1>BIGGEST WINNER</h1></div>
-              <div className="HIGHLIGHT_SUB"><h2>{ hall[0]?hall[0].titles:'LOADING...' } TITLES</h2></div>
+              <div className="HIGHLIGHT_SUB">
+                <h2>{ hallFame[0]?hallFame[0].titles:'LOADING...' } TITLES { hallFame[0]?hallFame[0].vices:'LOADING...' } VICES</h2>
+              </div>
             </div>
-            <img src={hall[0]?hall[0].jersey:""} alt="" />
-            <h1>{hall[0]?hall[0].name:'LOADING...'}</h1>
+            <img src={hallFame[0]?hallFame[0].jersey:""} alt="" />
+            <h1>{hallFame[0]?hallFame[0].name:'LOADING...'}</h1>
           </div>
           <div className="hall_card">
-            <div>
+            <div className="HIGHLIGHT_CONTAINER">
               <div className="HIGHLIGHT"><h1>TOP SCORER</h1></div>
-              <div className="HIGHLIGHT_SUB"><h2>{ hall[1]?hall[1].goals_for:'LOADING...' } GOALS</h2></div>
+              <div className="HIGHLIGHT_SUB"><h2>{ hallFame[1]?hallFame[1].goals_for:'LOADING...' } GOALS</h2></div>
             </div>
-            <img src={hall[1]?hall[1].jersey:""} alt=""/>
-            <h1>{hall[1]?hall[1].name:'LOADING...'}</h1>
+            <img src={hallFame[1]?hallFame[1].jersey:""} alt=""/>
+            <h1>{hallFame[1]?hallFame[1].name:'LOADING...'}</h1>
           </div>
         </section>
         <section>
-          <div className="hall_card">
-            <div>
+          <div className="hall_card" style={hasSeasons?{}:{display:'none'}}>
+            <div className="HIGHLIGHT_CONTAINER">
               <div className="HIGHLIGHT"><h1>BEST SEASON</h1></div>
-              <div className="HIGHLIGHT_SUB"><h2>{ hall[2]?`${(hall[2].season.id).slice(0,4)}-${(hall[2].season.id).slice(4,8)}`:'LOADING...' }</h2></div>
+              <div className="HIGHLIGHT_SUB"><h2>{ hallFame[2]?`${(hallFame[2].season.id).slice(0,4)}-${(hallFame[2].season.id).slice(4,8)}`:'LOADING...' }</h2></div>
             </div>
-            <img src={hall[2]?hall[2].team[0].jersey:""} alt=""/>
-            <h1>{hall[2]?hall[2].team[0].name:'LOADING...'}</h1>
+            <img src={hallFame[2]?hallFame[2].team[0].jersey:""} alt=""/>
+            <h1>{hallFame[2]?hallFame[2].team[0].name:'LOADING...'}</h1>
             <br/>
-            <p>{ hall[2]?hall[2].season.goals_for:'loading...' } GOALS FOR</p>
-            <p>{ hall[2]?hall[2].season.goals_against:'loading...' } GOALS AGAINST</p>
-            <p>{ hall[2]?hall[2].season.wins:'loading...' } WINS</p>
-            <p>{ hall[2]?hall[2].season.losses:'loading...' } LOSSES</p>
-            <p>{ hall[2]?hall[2].season.placement:'loading...' } </p>
-            <p style={{color:'var(--amarelo)'}}>{ hall[2]?hall[2].season.season_score:'loading...' } </p>
+            <p>{ hallFame[2]?hallFame[2].season.goals_for:'loading...' } GOALS FOR</p>
+            <p>{ hallFame[2]?hallFame[2].season.goals_against:'loading...' } GOALS AGAINST</p>
+            <p>{ hallFame[2]?hallFame[2].season.wins:'loading...' } WINS</p>
+            <p>{ hallFame[2]?hallFame[2].season.losses:'loading...' } LOSSES</p>
+            <p>{ hallFame[2]?hallFame[2].season.placement:'loading...' } </p>
+            <p style={{color:'var(--amarelo)'}}>{ hallFame[2]?hallFame[2].season.season_score:'loading...' } </p>
           </div>
-          <div className="hall_card">
-            <div>
+          <div className="hall_card" style={hasSeasons?{}:{display:'none'}}>
+            <div className="HIGHLIGHT_CONTAINER">
               <div className="HIGHLIGHT"><h1>BIGGEST WINSTREAK</h1></div>
-              <div className="HIGHLIGHT_SUB"><h2> {hall[3]?hall[3].streak:'LOADING...'} SEASONS</h2></div>
+              <div className="HIGHLIGHT_SUB"><h2> {hallFame[3]?hallFame[3].streak:'LOADING...'} SEASONS</h2></div>
             </div>
-            <img src={hall[3]?hall[3].team.jersey:""} alt=""/>
-            <h1>{hall[3]?hall[3].team.name:'LOADING...'}</h1>
+            <img src={hallFame[3]?hallFame[3].team.jersey:""} alt=""/>
+            <h1>{hallFame[3]?hallFame[3].team.name:'LOADING...'}</h1>
           </div>
         </section>
       </div>
+
+
+
+
+      <div className="table_title" style={{color: "var(--vermelho_claro_plus)", marginTop: '100px'}}>
+        <h1>HALL OF SHAME</h1>
+        <FiRotateCw size={20} onClick={getHall} style={loading?{display:'none'}:{cursor:'pointer'}}/>
+        <Dots color="var(--amarelo)" style={loading?{display:'block',color:'var(--vermelho)'}:{display:'none'}}/>
+      </div>
+      <div className="hall">
+        <section>
+          <div className="hall_card">
+            <div className="HIGHLIGHT_CONTAINER" id="shame">
+              <div className="HIGHLIGHT"><h1>LEAST WINNER</h1></div>
+              <div className="HIGHLIGHT_SUB"><h2>{ hallShame[0]?hallShame[0].titles:'LOADING...' } TITLES { hallShame[0]?hallShame[0].vices:'LOADING...' } VICES </h2></div>
+            </div>
+            <img src={hallShame[0]?hallShame[0].jersey:""} alt="" />
+            <h1>{hallShame[0]?hallShame[0].name:'LOADING...'}</h1>
+          </div>
+          <div className="hall_card">
+            <div className="HIGHLIGHT_CONTAINER" id="shame">
+              <div className="HIGHLIGHT"><h1>WORST SCORER</h1></div>
+              <div className="HIGHLIGHT_SUB"><h2>{ hallShame[1]?hallShame[1].goals_for:'LOADING...' } GOALS</h2></div>
+            </div>
+            <img src={hallShame[1]?hallShame[1].jersey:""} alt=""/>
+            <h1>{hallShame[1]?hallShame[1].name:'LOADING...'}</h1>
+          </div>
+        </section>
+        <section>
+          <div className="hall_card" style={hasSeasons?{}:{display:'none'}}>
+            <div className="HIGHLIGHT_CONTAINER" id="shame">
+              <div className="HIGHLIGHT"><h1>WORST SEASON</h1></div>
+              <div className="HIGHLIGHT_SUB"><h2>{ hallShame[2]?`${(hallShame[2].season.id).slice(0,4)}-${(hallShame[2].season.id).slice(4,8)}`:'LOADING...' }</h2></div>
+            </div>
+            <img src={hallShame[2]?hallShame[2].team[0].jersey:""} alt=""/>
+            <h1>{hallShame[2]?hallShame[2].team[0].name:'LOADING...'}</h1>
+            <br/>
+            <p>{ hallShame[2]?hallShame[2].season.goals_for:'loading...' } GOALS FOR</p>
+            <p>{ hallShame[2]?hallShame[2].season.goals_against:'loading...' } GOALS AGAINST</p>
+            <p>{ hallShame[2]?hallShame[2].season.wins:'loading...' } WINS</p>
+            <p>{ hallShame[2]?hallShame[2].season.losses:'loading...' } LOSSES</p>
+            <p>{ hallShame[2]?hallShame[2].season.placement:'loading...' } </p>
+            <p style={{color:'var(--amarelo)'}}>{ hallShame[2]?hallShame[2].season.season_score:'loading...' } </p>
+          </div>
+
+          {/* <div className="hall_card" style={hasSeasons?{}:{display:'none'}}>
+            <div className="HIGHLIGHT_CONTAINER" id="shame">
+              <div className="HIGHLIGHT"><h1>BIGGEST WINSTREAK</h1></div>
+              <div className="HIGHLIGHT_SUB"><h2> {hallShame[3]?hallShame[3].streak:'LOADING...'} SEASONS</h2></div>
+            </div>
+            <img src={hallShame[3]?hallShame[3].team.jersey:""} alt=""/>
+            <h1>{hallShame[3]?hallShame[3].team.name:'LOADING...'}</h1>
+          </div> */}
+
+        </section>
+      </div>
+
+
+
+
       <Footer/>
     </div>
   );

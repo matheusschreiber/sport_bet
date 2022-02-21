@@ -90,3 +90,16 @@
 .hall_card p {
   color: white;
 }
+
+#shame .HIGHLIGHT{
+  background-color: var(--vermelho_claro);
+}
+
+#shame .HIGHLIGHT h1{
+  color:white;
+}
+
+#shame .HIGHLIGHT_SUB{
+  background-color: var(--vermelho_claro_plus);
+  color:white;
+}

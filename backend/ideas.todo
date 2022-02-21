@@ -1,12 +1,12 @@
-- relacionar a fan_quota de cada partida de acordo com a importancia do jogo
-- a fan quota altera diretamente as odds da aposta
-- contabilizar allTimeRecord na geração de placares (só no final)
-- criar a hall of shame
-- criar uma maneira de passar um grupo por vez na group fase
-- criar players aleatorios que fazem apostas aleatorias (dinheiro infinito)
-- criar botao para ver o outcome de outras seasons (só ler o json delas)
-- adicionar sistema de INVESTIMENTO em times
-  - o jogador coloca dinheiro em algum time, para aumentar sua chance de vitoria nos jogos
-- adicionar interface para inserir novo time
-- adicionar interface para mostrar quanto gols o time fez no campeonato ate entao
-- adicionar switcher ao lado do botao de finalizar season para perguntar se o usuario quer apagar ou nao o arquivo .json da season atual
+- [ ] relacionar a fan_quota de cada partida de acordo com a importancia do jogo
+- [ ] a fan quota altera diretamente as odds da aposta
+- [ ] contabilizar allTimeRecord na geração de placares (só no final)
+- [x] criar a hall of shame
+- [ ] criar uma maneira de passar um grupo por vez na group fase
+- [ ] criar players aleatorios que fazem apostas aleatorias (dinheiro infinito)
+- [ ] criar botao para ver o outcome de outras seasons (só ler o json delas)
+- [ ] adicionar sistema de INVESTIMENTO em times
+  - [ ] o jogador coloca dinheiro em algum time, para aumentar sua chance de vitoria nos jogos
+- [ ] adicionar interface para inserir novo time
+- [ ] adicionar interface para mostrar quanto gols o time fez no campeonato ate entao
+- [ ] adicionar switcher ao lado do botao de finalizar season para perguntar se o usuario quer apagar ou nao o arquivo .json da season atual

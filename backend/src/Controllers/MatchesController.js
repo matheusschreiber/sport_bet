@@ -49,4 +49,50 @@ module.exports = {
     return response.json({easy:leastScorer, easyScore:leastScore, hard: biggestScorer, hardScore: biggestScore})
   },
 
+  async updateAllTimeOpponent(request, response){
+    const { team } = request.params;
+
+    const teams = await connection('teams').whereNot('name', team).select('*')
+    let biggestScore=0, biggestScorer=""
+    let leastScore=100000, leastScorer=""
+    
+    await Promise.all(teams.map(async(t)=>{
+      var totalGoals=0;
+      
+      const goalsA = await connection('matches')
+      .where({'team_B': team, 'team_A':t.name})
+      .select('score_A')
+      const goalsB = await connection('matches')
+      .where({'team_A': team, 'team_B':t.name})
+      .select('score_B')
+      
+      goalsA.map((i)=>{totalGoals+=parseInt(i.score_A)})
+      goalsB.map((i)=>{totalGoals+=parseInt(i.score_B)})
+      
+      if (totalGoals>biggestScore){
+        biggestScore = totalGoals
+        biggestScorer = t.name
+      }
+      if (totalGoals<leastScore){
+        leastScore=totalGoals
+        leastScorer=t.name
+      }
+    }))
+
+    let [ teamInfo ] = await connection('teams').where('name', team).select('*');
+    teamInfo.biggest_opponent=biggestScorer;
+    teamInfo.biggest_opponent_score=biggestScore;
+    teamInfo.least_opponent=leastScorer;
+    teamInfo.least_opponent_score=leastScore;
+
+    await connection('teams').where('name', team).update(teamInfo)
+
+    return response.json({
+      least_opponent:leastScorer,
+      least_opponent_score:leastScore,
+      biggest_opponent: biggestScorer,
+      biggest_opponent_score: biggestScore
+    })
+  }
+
 }

@@ -23,7 +23,7 @@ router.delete('/deletefile/:file', SeasonController.deletefile);
 router.put('/getClassified', SeasonController.getClassified);
 router.put('/getDisclassified', SeasonController.getDisclassified);
 
-router.put('/updateOpponent', TeamsController.updateOpponents);
+// router.put('/updateOpponent', TeamsController.updateOpponents);
 router.post('/newteam', TeamsController.createTeam);
 router.put('/match', TeamsController.playMatch);
 router.put('/penalties', TeamsController.penalties);
@@ -36,6 +36,7 @@ router.get('/getTeam/:team',TeamsController.getTeam);
 
 router.post('/rgmatch', MatchesController.registerMatch); 
 router.put('/getGoalsOpponent', MatchesController.getScoresbyOpponent);
+router.get('/updateAllTimeOpponent/:team', MatchesController.updateAllTimeOpponent);
 
 router.post('/createODD', BetsController.createODD);
 router.post('/registerBet', BetsController.registerBet);

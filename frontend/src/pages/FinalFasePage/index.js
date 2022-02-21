@@ -158,13 +158,10 @@ export default function FinalFasePage() {
     setLoadedMatches([]);
     setLoading(false);
     setLoadingRound(false);
-    setBetAdded(false);
     if (fase==='GRAND FINAL') {
       const response = await api.put('file', {year:localStorage.getItem('SEASON')})
       updateSeasonWinner(response.data.final_fase.final.match)
       setbuttonStatus('FINISH SEASON');
-      setBetAdded(true);
-      setReadyRefreshBet(true);
     } else setbuttonStatus('NEXT');
   }
   
@@ -183,24 +180,14 @@ export default function FinalFasePage() {
     }
   }
   
-  async function registerSeason(disclassified, placement){
-    await Promise.all(disclassified.map(async(d)=>{
-      let response;
-      response = await api.put(`/getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${d}`)
-      const season = response.data
-      response = await api.put('/getGoalsOpponent', {year:localStorage.getItem('SEASON'), team:d})
-      
-      await api.put('updateOpponent', {
-        team:d,
-        bg_opponent:`${response.data.hardScore} - ${response.data.hard}`,
-        lt_opponent:`${response.data.easyScore} - ${response.data.easy}`
-      })
-
-      season[0].biggest_opponent = `${response.data.hardScore} - ${response.data.hard}`
-      season[0].least_opponent = `${response.data.easyScore} - ${response.data.easy}`
-      season[0].placement = placement
-      season[0].year = localStorage.getItem('SEASON');
-      await api.put('updateSeason', season[0])
+  async function registerSeason(array, placement){
+    await Promise.all(array.map(async(d)=>{
+      const response = await api.put(`/getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${d}`)
+      const [ season ] = response.data
+      await api.get(`updateAllTimeOpponent/${d}`);
+      season.placement = placement
+      season.year = localStorage.getItem('SEASON');
+      await api.put('updateSeason', season)
     }))
   }
   
@@ -216,8 +203,6 @@ export default function FinalFasePage() {
       localStorage.setItem('FASE', 'QUARTERS');
       setbuttonStatus('SIMULATE ROUND');
       setLoading(false);
-      setReadyRefreshBet(true);
-      setBetAdded(false);
     } else if (fase === "QUARTER FINALS" && buttonStatus==='NEXT') {
       const round = await api.put('setup2',{year:localStorage.getItem('SEASON')})
       setPotATeamsMatches([round.data.semi_finals.match_1]);
@@ -228,8 +213,6 @@ export default function FinalFasePage() {
       localStorage.setItem('FASE', 'SEMIS');
       setbuttonStatus('SIMULATE ROUND');
       setLoading(false);
-      setReadyRefreshBet(true);
-      setBetAdded(false);
     } else if (fase === "SEMI FINALS" && buttonStatus==='NEXT') {
       const round = await api.put('setupfinal',{year:localStorage.getItem('SEASON')})
       setFase("GRAND FINAL");
@@ -240,8 +223,6 @@ export default function FinalFasePage() {
       await registerSeason(round.data.disclassified, 'SEMIS')
       setbuttonStatus('SIMULATE ROUND');
       setLoading(false);
-      setReadyRefreshBet(true);
-      setBetAdded(false);
     } else {
       const round = await api.put('setup8',{year:localStorage.getItem('SEASON')})
       setPotATeamsMatches([round.data.round_of_8.match_1,round.data.round_of_8.match_2,round.data.round_of_8.match_3,round.data.round_of_8.match_4]);
@@ -252,8 +233,6 @@ export default function FinalFasePage() {
       localStorage.setItem('FASE', 'ROUNDOF8');
       setLoading(false);
       setbuttonStatus('SIMULATE ROUND');
-      setReadyRefreshBet(true);
-      setBetAdded(false);
     }
   }
 
@@ -267,7 +246,7 @@ export default function FinalFasePage() {
     } else if (buttonStatus==='FINISH SEASON'){
       setbuttonStatus('PRESSED');
       // await api.delete(`deletefile/${localStorage.getItem('SEASON')}`)
-      nav('/')
+      nav('/');
     }
   }
 
@@ -312,16 +291,7 @@ export default function FinalFasePage() {
       updateRound()
     }
     
-    if (buttonStatus==='NEXT') {
-      setReadyRefreshBet(false);
-      setBetAdded(true);
-    } else if (buttonStatus==='FINISH SEASON') {
-      setReadyRefreshBet(true);
-      setBetAdded(true);
-    } else {
-      setBetAdded(false);
-      setReadyRefreshBet(true);
-    }
+    
     
   }
 
@@ -332,8 +302,23 @@ export default function FinalFasePage() {
     setLoading(false); //eslint-disable-next-line
   }, [])
 
+  useEffect(()=>{
+    // if (loading) {
+    //   setReadyRefreshBet(false); 
+    //   setBetAdded(true);
+    // } 
+    if (buttonStatus==='NEXT' || buttonStatus==='PRESSED') {
+      setReadyRefreshBet(false);
+      setBetAdded(true);
+    } else if (buttonStatus==='FINISH SEASON') {
+      setReadyRefreshBet(true);
 
-  
+      setBetAdded(true);
+    } else {
+      setBetAdded(false);
+      setReadyRefreshBet(true);
+    }
+  }, [buttonStatus])
 
   return (
     <main style={{color:'white', textAlign:'center'}}>
@@ -347,7 +332,7 @@ export default function FinalFasePage() {
           <h1>CLASSIFICATIONS</h1>  
           <h2>SEASON {localStorage.getItem('SEASON')}</h2>
         </div>
-        <div className="HIGHIGHT_container">
+        <div className="HIGHLIGHT_CONTAINER">
           <div className="HIGHLIGHT"><h1>Final FASE</h1></div>
           <div className="HIGHLIGHT_SUB"><h2>{fase}</h2></div>
         </div>
@@ -421,11 +406,21 @@ export default function FinalFasePage() {
               <div className="semi_final_container">
                 <div className="semi_text_container" style={{textAlign: 'right'}}>
                   <h2 style={
-                    potATeamsMatches[0]&&
+                    potATeamsMatches[0]&&potATeamsMatches[0].score_A_first_leg&&potATeamsMatches[0].score_B_first_leg
+                    &&potATeamsMatches[0].score_A_second_leg&&potATeamsMatches[0].score_B_second_leg
+                    &&potATeamsMatches[0].score_A_penalties&&potATeamsMatches[0].score_B_penalties
+                    &&
                     (potATeamsMatches[0].score_A_first_leg+potATeamsMatches[0].score_A_second_leg+potATeamsMatches[0].score_A_penalties
                     >
                     potATeamsMatches[0].score_B_first_leg+potATeamsMatches[0].score_B_second_leg+potATeamsMatches[0].score_B_penalties
-                    || potATeamsMatches[0].score_A_second_leg>potATeamsMatches[0].score_B_first_leg)
+                    || (
+                      (
+                        potATeamsMatches[0].score_A_first_leg+potATeamsMatches[0].score_A_second_leg+potATeamsMatches[0].score_A_penalties
+                        === potATeamsMatches[0].score_B_first_leg+potATeamsMatches[0].score_B_second_leg+potATeamsMatches[0].score_B_penalties
+                      )
+                        && (potATeamsMatches[0].score_A_second_leg>potATeamsMatches[0].score_B_first_leg) 
+                      )
+                    )
                     ?
                     {color:'var(--verde)'}:{}
                   }>{potATeamsMatches[0]?potATeamsMatches[0].A:'LOADING'}</h2>
@@ -436,32 +431,54 @@ export default function FinalFasePage() {
                   <h1>{potATeamsMatches[0]?potATeamsMatches[0].score_A_first_leg:'LOADING'} - {potATeamsMatches[0]?potATeamsMatches[0].score_B_first_leg:'LOADING'}</h1>
                   <h2>SECOND LEG ({potATeamsMatches[0]?potATeamsMatches[0].localB:'LOADING'})</h2>
                   <h1>{potATeamsMatches[0]?potATeamsMatches[0].score_A_second_leg:'LOADING'} - {potATeamsMatches[0]?potATeamsMatches[0].score_B_second_leg:'LOADING'}</h1>
+                  <h2 style={potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties||potATeamsMatches[0].score_B_penalties?{color:'var(--amarelo)'}:{display:'none'}:{display:'none'}}>
+                    {potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties:'LOADING'} - {potATeamsMatches[0]?potATeamsMatches[0].score_B_penalties:'LOADING'}
+                  </h2>
                 </div>
                 <img src={potATeamsMatches[0]?potATeamsMatches[0].jerseyB:'LOADING'} alt="jersey"/>
                 <div className="semi_text_container" style={{textAlign: 'left'}}>
                   <h2 style={ 
-                    potATeamsMatches[0]&&
-                    (potATeamsMatches[0].score_A_first_leg+potATeamsMatches[0].score_A_second_leg+potATeamsMatches[0].score_A_penalties
+                    potATeamsMatches[0]&&potATeamsMatches[0].score_A_first_leg&&potATeamsMatches[0].score_B_first_leg
+                    &&potATeamsMatches[0].score_A_second_leg&&potATeamsMatches[0].score_B_second_leg
+                    &&potATeamsMatches[0].score_A_penalties&&potATeamsMatches[0].score_B_penalties
+                    &&
+                    (
+                      potATeamsMatches[0].score_A_first_leg+potATeamsMatches[0].score_A_second_leg+potATeamsMatches[0].score_A_penalties
                     <
-                    potATeamsMatches[0].score_B_first_leg+potATeamsMatches[0].score_B_second_leg+potATeamsMatches[0].score_B_penalties
-                    || potATeamsMatches[0].score_A_second_leg<potATeamsMatches[0].score_B_first_leg)
+                      potATeamsMatches[0].score_B_first_leg+potATeamsMatches[0].score_B_second_leg+potATeamsMatches[0].score_B_penalties
+                      || (
+                        (
+                          potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
+                          === potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
+                        )
+                          && (potBTeamsMatches[0].score_A_second_leg<potBTeamsMatches[0].score_B_first_leg) 
+                        )
+                      )
                     ?
                     {color:'var(--verde)'}:{}
                   }>{potATeamsMatches[0]?potATeamsMatches[0].B:'LOADING'}</h2>
                 </div>
-                <h2 style={potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties||potATeamsMatches[0].score_B_penalties?{}:{display:'none'}:{display:'none'}}>
-                  {potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties:'LOADING'} - {potATeamsMatches[0]?potATeamsMatches[0].score_B_penalties:'LOADING'}
-                </h2>
               </div>
+                
             </div>
             <div className="semi_final_container" style={{textAlign: 'right'}}>
               <div className="semi_text_container">
                 <h2 style={
-                    potBTeamsMatches[0]&&
+                    potBTeamsMatches[0]&&potBTeamsMatches[0].score_A_first_leg&&potBTeamsMatches[0].score_B_first_leg
+                    &&potBTeamsMatches[0].score_A_second_leg&&potBTeamsMatches[0].score_B_second_leg
+                    &&potBTeamsMatches[0].score_A_penalties&&potBTeamsMatches[0].score_B_penalties
+                    &&
                     (potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
                     >
                     potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
-                    || potBTeamsMatches[0].score_A_second_leg>potBTeamsMatches[0].score_B_first_leg)
+                    || (
+                      (
+                        potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
+                        === potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
+                      )
+                        && (potBTeamsMatches[0].score_A_second_leg>potBTeamsMatches[0].score_B_first_leg) 
+                      )
+                    )
                     ?
                     {color:'var(--verde)'}:{}
                   }>{potBTeamsMatches[0]?potBTeamsMatches[0].A:'LOADING'}</h2>
@@ -472,22 +489,33 @@ export default function FinalFasePage() {
                 <h1>{potBTeamsMatches[0]?potBTeamsMatches[0].score_A_first_leg:'LOADING'} - {potBTeamsMatches[0]?potBTeamsMatches[0].score_B_first_leg:'LOADING'}</h1>
                 <h2>SECOND LEG ({potBTeamsMatches[0]?potBTeamsMatches[0].localB:'LOADING'})</h2>
                 <h1>{potBTeamsMatches[0]?potBTeamsMatches[0].score_A_second_leg:'LOADING'} - {potBTeamsMatches[0]?potBTeamsMatches[0].score_B_second_leg:'LOADING'}</h1>
+                <h2 style={potBTeamsMatches[0]?potBTeamsMatches[0].score_A_penalties||potBTeamsMatches[0].score_B_penalties?{color:'var(--amarelo)'}:{display:'none'}:{display:'none'}}>
+                  {potBTeamsMatches[0]?potBTeamsMatches[0].score_A_penalties:'LOADING'} - {potBTeamsMatches[0]?potBTeamsMatches[0].score_B_penalties:'LOADING'}
+                </h2>
               </div>
               <img src={potBTeamsMatches[0]?potBTeamsMatches[0].jerseyB:'LOADING'} alt=""/>
               <div className="semi_text_container" style={{textAlign: 'left'}}>
                 <h2 style={ 
-                    potBTeamsMatches[0]&&
+                    potBTeamsMatches[0]&&potBTeamsMatches[0].score_A_first_leg&&potBTeamsMatches[0].score_B_first_leg
+                    &&potBTeamsMatches[0].score_A_second_leg&&potBTeamsMatches[0].score_B_second_leg
+                    &&potBTeamsMatches[0].score_A_penalties&&potBTeamsMatches[0].score_B_penalties
+                    &&
                     (potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
                     <
                     potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
-                    || potBTeamsMatches[0].score_A_second_leg<potBTeamsMatches[0].score_B_first_leg)
+                    || (
+                        (
+                          potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
+                          === potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
+                        )
+                          && (potBTeamsMatches[0].score_A_second_leg<potBTeamsMatches[0].score_B_first_leg) 
+                        )
+                      )
                     ?
                     {color:'var(--verde)'}:{}
                   }>{potBTeamsMatches[0]?potBTeamsMatches[0].B:'LOADING'}</h2>
               </div>
-              <h2 style={potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties||potATeamsMatches[0].score_B_penalties?{}:{display:'none'}:{display:'none'}}>
-                {potATeamsMatches[0]?potATeamsMatches[0].score_A_penalties:'LOADING'} - {potATeamsMatches[0]?potATeamsMatches[0].score_B_penalties:'LOADING'}
-              </h2>
+              
             </div>
           </div>
           <div style={fase==='GRAND FINAL'?{}:{display:'none'}} className="final_container">
@@ -530,10 +558,12 @@ export default function FinalFasePage() {
             ))
           }
         </div>
+
         <Dots color="var(--vermelho_escuro)" style={loading?{display:'block'}:{display:'none'}}/>
         <div className="button" onClick={changeStage} id={buttonStatus==='PRESSED'?'pressed':''}>
           {buttonStatus!=='PRESSED'?buttonStatus:'LOADING'}
         </div>
+        <h1>REMEMBER TO CHECK WHY SOME TEAMS ARENT GETTING THE RIGHT PLACEMENT REGISTERED AFTER THE FASE!</h1>
       <div className="season_overall" style={buttonStatus==='FINISH SEASON'?{}:{display:'none'}}>
         <h1>{winningSeason.team_name}'s Season {winningSeason.year}</h1>
         <h3>{winningSeason.wins} wins</h3>

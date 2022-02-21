@@ -7,8 +7,6 @@ exports.up = function(knex) {
     table.float('season_score').notNullable();
     table.integer('points').notNullable();
     table.integer('position_groups').notNullable();
-    table.string('biggest_opponent').notNullable();
-    table.string('least_opponent').notNullable();
     table.integer('wins').notNullable();
     table.integer('dues').notNullable();
     table.integer('losses').notNullable();

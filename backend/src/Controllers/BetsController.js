@@ -4,8 +4,8 @@ const crypto = require('crypto')
 /*
 
 BET CONFIGURATION
-  -1 - UNACOMPLISHED (YET NOT VERIFIED)
-   0 - UNACOMPLISHED (ALREADY VERIFIED)
+  -1 - UNACOMPLISHED (YET NOT VERIFIED NEITHER DISCOUNTED)
+   0 - UNACOMPLISHED (ALREADY VERIFIED BUT NOT DISCOUNTED)
    1 - ACCOMPLISHED 
    2 - ACCOMPLISHED AND VALUE DISCOUNTED
    3 - UNACOMPLISHED AND VALUE DISCOUNTED
@@ -163,10 +163,10 @@ module.exports = {
 
     if (bet.outcome!=-1) return response.json("BET ALREADY CHECKED");
 
+    let classified;
     if (bet.description=='CLASSIFIED' || bet.description=='DISCLASSIFIED'){
       if (season.placement=='PENDING') classified = -1;
       else {
-        let classified;
         if (season.placement==bet.fase) classified=0;
         else if (season.placement==`PENDING ${bet.fase}`) classified=1;
 
@@ -203,23 +203,23 @@ module.exports = {
     let k=0, j=0;
 
     const bets = await connection('bets').where({player:playerName, year}).select('*');
-    const [{wallet}] = await connection('players').where('name', playerName).select('wallet');
-    
+    let [{ wallet }] = await connection('players').where('name', playerName).select('wallet');
     await Promise.all(bets.map(async(i)=>{
       if (i.outcome!=2 && i.outcome!=3) {
         k++;
         if (i.outcome==1) {
-          await connection('players').where('name', playerName).update({wallet: wallet+i.value});
+          wallet += parseFloat(i.profit.toFixed(2))
           await connection('bets').where('id', i.id).update('outcome', 2);
         } else if (i.outcome==0) {
-          await connection('players').where('name', playerName).update({wallet: wallet-i.value});
+          wallet -= parseFloat(i.profit.toFixed(2))
           await connection('bets').where('id', i.id).update('outcome', 3);
         }
       }
       j++;
     }))
 
-    return response.json({'bets discounted':k, 'total bets':j});
+    await connection('players').where('name', playerName).update({wallet});
+    return response.json({'bets discounted':k, 'total bets':j, wallet});
   }
   
 }

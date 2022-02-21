@@ -74,12 +74,17 @@ export default function Addbet({betsAvailable=false, childToParent}){
 
   async function loadTeams(){
     let response;
-    switch(localStorage.getItem('FASE')){
-      case "ROUNDOF8": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"GROUPS"});break;
-      case "QUARTERS": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"ROUNDOF8"});break;
-      case "SEMIS": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"QUARTERS"});break;
-      case "FINAL": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"SEMIS"});break;
-      default: response = await api.get('getTeamsJSON'); break;
+
+    try {
+      switch(localStorage.getItem('FASE')){
+        case "ROUNDOF8": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"GROUPS"});break;
+        case "QUARTERS": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"ROUNDOF8"});break;
+        case "SEMIS": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"QUARTERS"});break;
+        case "FINAL": response = await api.put('getClassified', {year: localStorage.getItem('SEASON'), fase:"SEMIS"});break;
+        default: response = await api.get('getTeamsJSON'); break;
+      }
+    } catch(err) {
+      response = await api.get('getTeamsJSON');
     }
     
     let array;
@@ -114,10 +119,10 @@ export default function Addbet({betsAvailable=false, childToParent}){
   async function loadPlayer(){
     if (!localStorage.getItem('PLAYER')) {
       setPlayer([{id:0,name:0,wallet:0}]);
-      return
+      return [{id:0,name:0,wallet:0}]
     }
     const response = await api.get(`getPlayer/${localStorage.getItem('PLAYER')}`);
-    if (response.data!==[]) {
+    if (!response.data.length) {
       setPlayer([{id:0,name:"",wallet:0}]);
       return [{id:0,name:"",wallet:0}];
     } else {
@@ -170,7 +175,7 @@ export default function Addbet({betsAvailable=false, childToParent}){
               </div>
               <div className="option_container">
                 <h2>BET</h2>
-                <select onChange={(e)=>{setDescription(e.target.value);calculateODD(team,e.target.value,betValue)}}>
+                <select onChange={(e)=>{setDescription(e.target.value);calculateODD(team,e.target.value,betValue);setValue(0);setProfit(0)}}>
                   <option hidden>SELECT ODD</option>
                   <option style={localStorage.getItem('FASE')==='GROUPS'?{}:{display:'none'}}>IN LAST</option>
                   <option style={localStorage.getItem('FASE')==='GROUPS'?{}:{display:'none'}}>IN FIRST</option>

@@ -170,44 +170,6 @@ module.exports = {
     }})
   },
 
-  async updateOpponents(request, response){
-    const { team, bg_opponent, lt_opponent } = request.body;
-    
-    const [{biggest_opponent, least_opponent}] = await connection('teams').where('name',team).select('biggest_opponent', 'least_opponent')
-    
-    if (!biggest_opponent || parseInt(biggest_opponent.split('-')[0]) < parseInt(bg_opponent.split('-')[0])) 
-      await connection('teams').where('name', team).update({'biggest_opponent': bg_opponent})
-
-    if (!least_opponent || parseInt(least_opponent.split('-')[0]) > parseInt(lt_opponent.split('-')[0])) 
-      await connection('teams').where('name', team).update({'least_opponent': lt_opponent})
-    
-    return response.json({biggest_opponent,bg_opponent,least_opponent,lt_opponent})      
-  },
-
-  async getBiggestOpponent(request, response) {
-    const { team } = request.params;
-    const [{biggest_opponent, biggest_opponent_score}] = await connection('teams').where('name', team)
-      .select(['biggest_opponent', 'biggest_opponent_score'])
-
-    return response.json({biggest_opponent, biggest_opponent_score})
-  },
-
-  async setWeakestOpponent(request, response){
-    const { team, least_opponent, goals } = request.body;
-    await connection('teams').where('name', team)
-      .update({'least_opponent': least_opponent, 'least_opponent_score': goals})
-    
-    return response.json({message: "Successfully added"})      
-  },
-
-  async getWeakestOpponent(request, response) {
-    const { team } = request.params;
-    const [{least_opponent, least_opponent_score}] = await connection('teams').where('name', team)
-      .select(['least_opponent', 'least_opponent_score'])
-
-    return response.json({least_opponent, least_opponent_score})
-  },
-
   async getTeams(request, response){
     const data = await connection('teams').select('*')
     return response.json(data)
@@ -216,30 +178,6 @@ module.exports = {
   async getAllTeams(request, response){
     const file = JSON.parse(fs.readFileSync('./src/database/seasons/teams.json', 'utf-8'))
     return response.json(file)
-  },
-
-  async getBiggestWinner(request, response){
-    const teams = await connection('teams').select('*')
-    let biggest, biggestScore=0;
-    teams.map((i)=>{
-      if (i.titles>biggestScore) {
-        biggestScore = i.titles
-        biggest = i
-      }
-    })
-    return response.json(biggest)
-  },
-
-  async getTopScorer(request, response){
-    const teams = await connection('teams').select('*')
-    let topscorer, topscore=0;
-    teams.map((i)=>{
-      if (i.goals_for>topscore) {
-        topscore = i.goals_for
-        topscorer = i
-      }
-    })
-    return response.json(topscorer)
   },
 
   async getTeamsJSON(request,response){
@@ -256,5 +194,64 @@ module.exports = {
     const {team} = request.params;
     const teamInfo = await connection('teams').where('name',team).select('*')
     return response.json(teamInfo)
-  }
+  },
+
+  // async updateOpponents(request, response){
+  //   const { team, bg_opponent, lt_opponent } = request.body;
+    
+  //   const [{biggest_opponent, least_opponent}] = await connection('teams').where('name',team).select('biggest_opponent', 'least_opponent')
+    
+  //   if (!biggest_opponent || parseInt(biggest_opponent.split('-')[0]) < parseInt(bg_opponent.split('-')[0])) 
+  //     await connection('teams').where('name', team).update({'biggest_opponent': bg_opponent})
+  
+  //   if (!least_opponent || parseInt(least_opponent.split('-')[0]) > parseInt(lt_opponent.split('-')[0])) 
+  //     await connection('teams').where('name', team).update({'least_opponent': lt_opponent})
+    
+  //   return response.json({biggest_opponent,bg_opponent,least_opponent,lt_opponent})      
+  // },
+
+  async getBiggestWinner(request, response){
+    const teams = await connection('teams').select('*')
+    let biggest, biggestScore=0;
+    let worst, worstScore=100000;
+    teams.map((i)=>{
+      if (i.titles+i.vices>biggestScore) {
+        biggestScore = i.titles+i.vices;
+        biggest = i;
+      }
+
+      if (i.titles+i.vices<worstScore){
+        worstScore = i.titles+i.vices;
+        worst = i;
+      }
+
+    })
+    return response.json({biggest, worst})
+  },
+
+  async getTopScorer(request, response){
+    const teams = await connection('teams').select('*')
+    let topscorer, topscore=0;
+    let worstscorer, worstscore=1000000;
+    teams.map((i)=>{
+      if (i.goals_for>topscore) {
+        topscore = i.goals_for
+        topscorer = i
+      }
+
+      if (i.goals_for<worstscore){
+        worstscore=i.goals_for;
+        worstscorer = i;
+      }
+    })
+    return response.json({topscorer, worstscorer})
+  },
+
+
+
 }
+
+
+
+
+
