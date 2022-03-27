@@ -212,12 +212,13 @@ module.exports = {
 
   async getBiggestWinner(request, response){
     const teams = await connection('teams').select('*')
-    let biggest, biggestScore=0;
+    let biggest, biggestScore=0, biggestTitles=0;
     let worst, worstScore=100000;
     teams.map((i)=>{
-      if (i.titles+i.vices>biggestScore) {
+      if (i.titles+i.vices>biggestScore || (i.titles+i.vices==biggestScore && i.titles>biggestTitles)) {
         biggestScore = i.titles+i.vices;
         biggest = i;
+        biggestTitles=i.titles
       }
 
       if (i.titles+i.vices<worstScore){
