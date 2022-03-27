@@ -20,7 +20,7 @@ export default function StartPage(){
   const [ loading, setLoading ] = useState(false);
   const [ year, setYear ] = useState(['','']);
   const [ player, setPlayer ] = useState("");
-  const [ storagedPlayer, setStoragedPlayer ] = useState(localStorage.getItem('PLAYER'));
+  const [ storagedPlayer, setStoragedPlayer ] = useState("");
   const nav = useNavigate(); 
 
   async function getLatestYear(){
@@ -39,7 +39,10 @@ export default function StartPage(){
     setStoragedPlayer(player)
   }
 
-  useEffect(()=>getLatestYear(),[])
+  useEffect(()=>{
+    getLatestYear() 
+    if (localStorage.getItem('PLAYER')) setStoragedPlayer(localStorage.getItem('PLAYER'))
+  },[])
   
   return(
     <main>
@@ -70,7 +73,7 @@ export default function StartPage(){
             <p>THE FULL ACCESS TO THE CODE IS AT THE GITHUB LINK AVAILABLE AT THE BOTTOM OF THE PAGE.</p><br/>
             <p>HAVE FUN BETTING!</p>
             <h2>DISCLAIMER</h2>
-            <p>THE JERSEYS AND TEAM'S MEDIAS ARE CONNECTED TO WIKIPEDIA IMAGES, SO ANY INCONSISTENCY OVER THE LOADING OF THESE CONTENTS MAY BE CAUSED BY POOR/UNAVAILABLE INTERNET CONNECTION</p>
+            <p>THE JERSEYS AND TEAM'S MEDIAS ARE CONNECTED TO WIKIPEDIA IMAGES, SO ANY INCONSISTENCY OVER THE LOADING OF THESE CONTENTS MAY BE CAUSED BY MISSCONNECTION TO THE WIKIPEDIA WEBSITE</p>
           </div>
           <div className="button_outer_container">
             <Dots color="var(--vermelho_escuro)" style={loading?{display:'block'}:{display:'none'}}/>

@@ -320,6 +320,21 @@ export default function FinalFasePage() {
     }
   }, [buttonStatus])
 
+
+  function checkWinner(json){
+    if (!json) return 0;
+    
+    let Atotal = json.score_A_first_leg+json.score_A_second_leg+json.score_A_penalties
+    let Btotal = json.score_B_first_leg+json.score_B_second_leg+json.score_B_penalties
+
+    let AOut = json.score_A_second_leg
+    let BOut = json.score_B_first_leg
+
+    
+    if (Atotal > Btotal || (Atotal===Btotal && AOut > BOut)) return 1
+    else if (Atotal < Btotal || (Atotal===Btotal && AOut < BOut)) return -1
+  }
+
   return (
     <main style={{color:'white', textAlign:'center'}}>
       <Header />
@@ -405,25 +420,9 @@ export default function FinalFasePage() {
             <div className="semis_container">
               <div className="semi_final_container">
                 <div className="semi_text_container" style={{textAlign: 'right'}}>
-                  <h2 style={
-                    potATeamsMatches[0]&&potATeamsMatches[0].score_A_first_leg&&potATeamsMatches[0].score_B_first_leg
-                    &&potATeamsMatches[0].score_A_second_leg&&potATeamsMatches[0].score_B_second_leg
-                    &&potATeamsMatches[0].score_A_penalties&&potATeamsMatches[0].score_B_penalties
-                    &&
-                    (potATeamsMatches[0].score_A_first_leg+potATeamsMatches[0].score_A_second_leg+potATeamsMatches[0].score_A_penalties
-                    >
-                    potATeamsMatches[0].score_B_first_leg+potATeamsMatches[0].score_B_second_leg+potATeamsMatches[0].score_B_penalties
-                    || (
-                      (
-                        potATeamsMatches[0].score_A_first_leg+potATeamsMatches[0].score_A_second_leg+potATeamsMatches[0].score_A_penalties
-                        === potATeamsMatches[0].score_B_first_leg+potATeamsMatches[0].score_B_second_leg+potATeamsMatches[0].score_B_penalties
-                      )
-                        && (potATeamsMatches[0].score_A_second_leg>potATeamsMatches[0].score_B_first_leg) 
-                      )
-                    )
-                    ?
-                    {color:'var(--verde)'}:{}
-                  }>{potATeamsMatches[0]?potATeamsMatches[0].A:'LOADING'}</h2>
+                  <h2 style={checkWinner(potATeamsMatches[0])===1?{color:'var(--verde)'}:{}}>
+                    {potATeamsMatches[0]?potATeamsMatches[0].A:'LOADING'}
+                  </h2>
                 </div>
                 <img src={potATeamsMatches[0]?potATeamsMatches[0].jerseyA:'LOADING'} alt="jersey" />
                 <div className="scores">
@@ -437,51 +436,18 @@ export default function FinalFasePage() {
                 </div>
                 <img src={potATeamsMatches[0]?potATeamsMatches[0].jerseyB:'LOADING'} alt="jersey"/>
                 <div className="semi_text_container" style={{textAlign: 'left'}}>
-                  <h2 style={ 
-                    potATeamsMatches[0]&&potATeamsMatches[0].score_A_first_leg&&potATeamsMatches[0].score_B_first_leg
-                    &&potATeamsMatches[0].score_A_second_leg&&potATeamsMatches[0].score_B_second_leg
-                    &&potATeamsMatches[0].score_A_penalties&&potATeamsMatches[0].score_B_penalties
-                    &&
-                    (
-                      potATeamsMatches[0].score_A_first_leg+potATeamsMatches[0].score_A_second_leg+potATeamsMatches[0].score_A_penalties
-                    <
-                      potATeamsMatches[0].score_B_first_leg+potATeamsMatches[0].score_B_second_leg+potATeamsMatches[0].score_B_penalties
-                      || (
-                        (
-                          potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
-                          === potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
-                        )
-                          && (potBTeamsMatches[0].score_A_second_leg<potBTeamsMatches[0].score_B_first_leg) 
-                        )
-                      )
-                    ?
-                    {color:'var(--verde)'}:{}
-                  }>{potATeamsMatches[0]?potATeamsMatches[0].B:'LOADING'}</h2>
+                  <h2 style={checkWinner(potATeamsMatches[0])===-1?{color:'var(--verde)'}:{}}>
+                    {potATeamsMatches[0]?potATeamsMatches[0].B:'LOADING'}
+                  </h2>
                 </div>
               </div>
                 
             </div>
             <div className="semi_final_container" style={{textAlign: 'right'}}>
               <div className="semi_text_container">
-                <h2 style={
-                    potBTeamsMatches[0]&&potBTeamsMatches[0].score_A_first_leg&&potBTeamsMatches[0].score_B_first_leg
-                    &&potBTeamsMatches[0].score_A_second_leg&&potBTeamsMatches[0].score_B_second_leg
-                    &&potBTeamsMatches[0].score_A_penalties&&potBTeamsMatches[0].score_B_penalties
-                    &&
-                    (potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
-                    >
-                    potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
-                    || (
-                      (
-                        potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
-                        === potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
-                      )
-                        && (potBTeamsMatches[0].score_A_second_leg>potBTeamsMatches[0].score_B_first_leg) 
-                      )
-                    )
-                    ?
-                    {color:'var(--verde)'}:{}
-                  }>{potBTeamsMatches[0]?potBTeamsMatches[0].A:'LOADING'}</h2>
+                <h2 style={checkWinner(potBTeamsMatches[0])===1?{color:'var(--verde)'}:{}}>
+                  {potBTeamsMatches[0]?potBTeamsMatches[0].A:'LOADING'}
+                </h2>
               </div>
               <img src={potBTeamsMatches[0]?potBTeamsMatches[0].jerseyA:'LOADING'} alt=""/>
               <div className="scores">
@@ -495,25 +461,9 @@ export default function FinalFasePage() {
               </div>
               <img src={potBTeamsMatches[0]?potBTeamsMatches[0].jerseyB:'LOADING'} alt=""/>
               <div className="semi_text_container" style={{textAlign: 'left'}}>
-                <h2 style={ 
-                    potBTeamsMatches[0]&&potBTeamsMatches[0].score_A_first_leg&&potBTeamsMatches[0].score_B_first_leg
-                    &&potBTeamsMatches[0].score_A_second_leg&&potBTeamsMatches[0].score_B_second_leg
-                    &&potBTeamsMatches[0].score_A_penalties&&potBTeamsMatches[0].score_B_penalties
-                    &&
-                    (potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
-                    <
-                    potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
-                    || (
-                        (
-                          potBTeamsMatches[0].score_A_first_leg+potBTeamsMatches[0].score_A_second_leg+potBTeamsMatches[0].score_A_penalties
-                          === potBTeamsMatches[0].score_B_first_leg+potBTeamsMatches[0].score_B_second_leg+potBTeamsMatches[0].score_B_penalties
-                        )
-                          && (potBTeamsMatches[0].score_A_second_leg<potBTeamsMatches[0].score_B_first_leg) 
-                        )
-                      )
-                    ?
-                    {color:'var(--verde)'}:{}
-                  }>{potBTeamsMatches[0]?potBTeamsMatches[0].B:'LOADING'}</h2>
+                <h2 style={checkWinner(potBTeamsMatches[0])===-1?{color:'var(--verde)'}:{}}>
+                  {potBTeamsMatches[0]?potBTeamsMatches[0].B:'LOADING'}
+                </h2>
               </div>
               
             </div>
@@ -563,7 +513,6 @@ export default function FinalFasePage() {
         <div className="button" onClick={changeStage} id={buttonStatus==='PRESSED'?'pressed':''}>
           {buttonStatus!=='PRESSED'?buttonStatus:'LOADING'}
         </div>
-        <h1>REMEMBER TO CHECK WHY SOME TEAMS ARENT GETTING THE RIGHT PLACEMENT REGISTERED AFTER THE FASE!</h1>
       <div className="season_overall" style={buttonStatus==='FINISH SEASON'?{}:{display:'none'}}>
         <h1>{winningSeason.team_name}'s Season {winningSeason.year}</h1>
         <h3>{winningSeason.wins} wins</h3>
