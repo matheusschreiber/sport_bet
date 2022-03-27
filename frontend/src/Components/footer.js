@@ -45,6 +45,9 @@ export default function Footer(){
       </div>    
       <div style={{textAlign:"center"}}>
         <h3 style={h3}>DESIGNED BY MATHEUS MEIER SCHREIBER</h3>    
+        <a href="https://github.com/matheusschreiber/sport_bet">
+          <p style={{cursor:'pointer', marginTop:"50px", color:'white', lineHeight:"100px"}}>GITHUB REPOSITORY</p>
+        </a>
       </div>
     </div>
   );
