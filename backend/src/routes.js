@@ -5,6 +5,7 @@ const router = express.Router()
 const SeasonController = require('./Controllers/SeasonController');
 const TeamsController = require('./Controllers/TeamsController');
 const BetsController = require('./Controllers/BetsController');
+const PlayersController = require('./Controllers/PlayerController');
 
 router.post('/newseason', SeasonController.createSeasonFile);
 router.put('/file', SeasonController.seasonFile);
@@ -46,6 +47,8 @@ router.get('/getPlayer/:name', BetsController.getPlayer);
 router.delete('/deleteBet/:id', BetsController.deleteBet);
 router.get('/verifyBet/:id', BetsController.verifyBet)
 router.put('/discountBets', BetsController.discountBets);
+
+router.post('/player/:name', PlayersController.newPlayer);
 
 
 //i am using a temporary method here, with 2 requests, to see if the server was

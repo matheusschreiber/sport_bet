@@ -84,12 +84,14 @@ export default function StartPage(){
                 const response = await api.get('getTeamsJSON')
                 await api.post('newseason',{year:year[1],teams:response.data})
                 setLoading(false)
+                await api.post(`player/${storagedPlayer}`)
                 nav('/groups')
               }}>START NEW SEASON</div>
 
               <div className="button" onClick={async () => {
                   localStorage.setItem('SEASON',year[0])
                   setLoading(true)
+                  await api.post(`player/${storagedPlayer}`)
                   nav('/groups')
                 }}>CONTINUE SEASON</div>
             </div>
