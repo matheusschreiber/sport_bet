@@ -170,14 +170,19 @@ module.exports = {
         if (season.placement==bet.fase) classified=0;
         else if (season.placement==`PENDING ${bet.fase}`) classified=1;
 
+        if (bet.fase=='TITLE' || bet.fase=='FINALIST') {
+          if (bet.fase==season.placement) classified = 1;
+          else classified = 0;
+        }
+
+        // if (bet.fase=='TITLE' && season.placement=='TITLE') classified=1;
+        // else if (bet.fase=='TITLE' && season.placement!='TITLE') classified=0;
+        // else if (bet.fase=='FINALIST' && season.placement=='FINALIST') classified=1;
+        // else if (bet.fase=='FINALIST' && season.placement!='FINALIST') classified=0;
+        
         if (bet.description=='CLASSIFIED') bet.outcome = classified;
         else if (!classified) bet.outcome = 1;
         else bet.outcome = 0;
-
-        if (bet.fase=='TITLE' && season.placement=='TITLE') bet.outcome=1;
-        else if (bet.fase=='TITLE' && season.placement!='TITLE') bet.outcome=0;
-        else if (bet.fase=='FINALIST' && season.placement=='FINALIST') bet.outcome=1;
-        else if (bet.fase=='FINALIST' && season.placement!='FINALIST') bet.outcome=0;
       }
     } else if (bet.description.includes('GOALS')){
       const x = parseInt(bet.description.split(' ')[1])
