@@ -29,6 +29,7 @@ export default function BetPanel({player_name, ready, bet_added, finished}){
     response2.data.map((i)=>{
       if(i.outcome===1)sum+=i.profit;
       else if(!i.outcome)sum-=i.profit;
+      return 0;
     })
     
     setBets(response2.data);

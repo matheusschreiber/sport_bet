@@ -161,7 +161,6 @@ export default function FinalFasePage() {
     if (fase==='GRAND FINAL') {
       const response = await api.put('file', {year:localStorage.getItem('SEASON')})
       updateSeasonWinner(response.data.final_fase.final.match)
-      setbuttonStatus('FINISH SEASON');
     } else setbuttonStatus('NEXT');
   }
   
@@ -178,6 +177,7 @@ export default function FinalFasePage() {
       const res = await api.put(`/getSeason/${localStorage.getItem('SEASON').replace(/-/g,"")} ${pot.B}`)
       setWinningSeason(res.data[0])
     }
+    setbuttonStatus('FINISH SEASON');
   }
   
   async function registerSeason(array, placement){
