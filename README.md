@@ -21,6 +21,10 @@ This is a web browser game with a bet concept. It envolves teams from top divisi
 
 ![picture 5](./screenshots/pic5.png)
 
+![picture 6](./screenshots/pic6.png)
+
+![picture 7](./screenshots/pic7.png)
+
 ## Incoming changes 
 
 - [ ] relate fan_quota of each match accordingly to the importance of the game
