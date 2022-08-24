@@ -166,11 +166,15 @@ export default function GroupFasePage(){
         season.year = localStorage.getItem('SEASON')
         season.points = g.data[i][1]
         season.position_groups = g.data[i][2]
-        await api.put('updateSeason', season)
+        try {
+          await api.put('updateSeason', season)
+        }catch(err){
+          console.log(season)
+        }
       }
     }))
   }
-  
+
   useEffect(()=>{
     if (update.length===0) window.scroll(0,0);
     getGroups();
