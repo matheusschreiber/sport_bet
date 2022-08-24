@@ -738,8 +738,8 @@ module.exports = {
       games,
       goals_for,
       goals_against,
-      biggest_opponent,
-      least_opponent,
+      // biggest_opponent,
+      // least_opponent,
       fans,
     } 
 
