@@ -1,5 +1,5 @@
 
-![badge](https://img.shields.io/static/v1?label=Development%20status&message=paused&color=red) ![badge](https://img.shields.io/static/v1?label=Vercel%20deploy%20status&message=Online&color=green) ![badge](https://img.shields.io/static/v1?label=Railway%20database%20status&message=Free%20Plan&color=green)
+![badge](https://img.shields.io/static/v1?label=Development%20status&message=paused&color=red) ![badge](https://img.shields.io/static/v1?label=Vercel%20deploy%20status&message=Online&color=green) ![badge](https://img.shields.io/static/v1?label=Railway%20database%20status&message=Removed&color=red) ![badge](https://img.shields.io/static/v1?label=Cyclic%20deploy%20status&message=Online&color=green)
 
 # Sport bet
 
