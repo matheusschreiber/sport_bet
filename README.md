@@ -7,8 +7,6 @@
 
 This is a web browser game with a bet concept. It envolves teams from top divisions of main leagues fighting against each other on the format of the Champions League tournament.
 
-[Click here to play on browser](https://sport-bet.vercel.app/)
-
 ## Game pictures
 
 ![picture 1](./screenshots/pic1.png)  
