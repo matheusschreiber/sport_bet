@@ -1,6 +1,3 @@
-
-![badge](https://img.shields.io/static/v1?label=Development%20status&message=paused&color=yellow) ![badge](https://img.shields.io/static/v1?label=Vercel%20deploy%20status&message=Offline&color=yellow) ![badge](https://img.shields.io/static/v1?label=Cyclic%20deploy%20status&message=Offline&color=yellow)
-
 # Sport bet
 
 ## Description
