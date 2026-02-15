@@ -1,38 +1,61 @@
-# Sport bet
+# ⚽ Sport Bet: The Ultimate UCL Simulator
 
-## Description
+**Experience the thrill of the 2021/2022 Champions League season right from your browser.** Sport Bet is a dynamic web-based simulation game where strategy meets luck. Pit Europe’s elite clubs against one another in a high-stakes tournament format, meticulously modeled after the iconic 21/22 UCL bracket.
 
-This is a web browser game with a bet concept. It envolves teams from top divisions of main leagues fighting against each other on the format of the Champions League tournament.
+[**Run Locally**](#-getting-started) | [**Report Bugs**](https://github.com/matheusschreiber/sport_bet/issues) | [**Request Feature**](https://github.com/matheusschreiber/sport_bet/issues)
 
-## Game pictures
+---
 
-![picture 1](./screenshots/pic1.png)  
+## 🕹️ Game Overview
 
-![picture 2](./screenshots/pic2.png)
+Step into the shoes of a high-roller. This isn't just a game of chance; it’s a tribute to one of the most exciting seasons in football history. Navigate through the Group Stages, survive the Knockouts, and see if your predictions can carry you to the Final.
 
-![picture 3](./screenshots/pic3.png)
+### Key Features
+* **Authentic 21/22 Format:** Relive the drama of the specific tournament structure that defined a classic era.
+* **Elite Rosters:** Features top-division powerhouses from Europe's most prestigious leagues.
+* **Instant Simulation:** High-performance logic ensures match results are calculated seamlessly.
+* **Responsive UI:** Designed for a smooth experience whether you're on a desktop or a mobile device.
 
-![picture 4](./screenshots/pic4.png)
+---
 
-![picture 5](./screenshots/pic5.png)
+## 📸 Screenshots
 
-![picture 6](./screenshots/pic6.png)
+| Match Day Overview | Betting Interface | Tournament Bracket |
+| :---: | :---: | :---: |
+| ![pic1](./screenshots/pic1.png) | ![pic2](./screenshots/pic2.png) | ![pic3](./screenshots/pic3.png) |
+| *Analyze the odds* | *Place your stakes* | *Track the progress* |
 
-![picture 7](./screenshots/pic7.png)
+|  |  |
+| :---: | :---: |
+| ![pic4](./screenshots/pic4.png) | ![pic5](./screenshots/pic5.png) | 
+![pic6](./screenshots/pic6.png) | ![pic7](./screenshots/pic7.png) |
 
-## Incoming changes 
+---
 
-- [ ] relate fan_quota of each match accordingly to the importance of the game
-- [ ] fan_quota affects game odds
-- [x] hall of fame
-- [x] hall of shame
-- [ ] option to move one group at a time on group fase 
-- [ ] create random players to keep the market flowing
-- [ ] investment on team system
-  - [ ] the more money you bet on a team, the worsen the odds gets for the nexts bets
-- [ ] add new team interface
-- [ ] mid-season statistics interface
-- [ ] add onerror property on images
-- [ ] add confirmation for deletion of .json file of the past season
+## 🚀 Getting Started
 
+### Prerequisites
+To run this locally, you just need a modern web browser. 
 
+### Installation
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/yourusername/sport-bet.git](https://github.com/yourusername/sport-bet.git)
+   ```
+   
+2. **Navigate to the directory:**
+    ```bash
+    cd sport-bet
+    Open the game:
+    Simply open index.html in your favorite browser.
+    ```
+
+## 🛠️ Built With
+
+- HTML5 - For the structural foundation.
+
+- CSS3 - Custom styling and responsive layouts.
+
+- JavaScript - The engine driving the tournament logic and betting mechanics.
+
+_**Note**: This project is for entertainment purposes and uses simulated currency._
