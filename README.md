@@ -40,14 +40,16 @@ To run this locally, you just need a modern web browser.
 ### Installation
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/yourusername/sport-bet.git](https://github.com/yourusername/sport-bet.git)
+   git clone [https://github.com/matheusschreiber/sport-bet.git](https://github.com/matheusschreiber/sport-bet.git)
    ```
    
 2. **Navigate to the directory:**
     ```bash
     cd sport-bet
-    Open the game:
-    Simply open index.html in your favorite browser.
+    ```
+3. **Run docker:**
+    ```bash
+    docker compose up -d
     ```
 
 ## 🛠️ Built With
